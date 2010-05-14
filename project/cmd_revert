@@ -1,0 +1,5 @@
+chdir "{gerrit_working_dir}";
+print "Setting tree back to commited changes only\n";
+my ($exit,$out) = $gt->runCmd("{repo_cmd} forall -c \"git reset --hard m/{gerrit_branch}\"");
+($exit,$out) = $gt->runCmd("{repo_cmd} forall -c \"git clean -xfd\"");
+

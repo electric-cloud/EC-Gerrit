@@ -1,0 +1,5 @@
+chdir "{gerrit_working_dir}";
+print "Pulling proposed changes into tree\n";
+my ($exit,$out) = $gt->runCmd("git pull " . qw({gerrit_server}) . "/". qw({project}) . " refs/changes/" . qw({changeid}) % 100 . "/" . qw({changeid}) ."/" . qw({patchid}));
+
+

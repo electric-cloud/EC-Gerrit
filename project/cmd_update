@@ -1,0 +1,3 @@
+chdir "{gerrit_working_dir}";
+my ($exit,$out) = $gt->runCmd("{repo_cmd} sync 2>&1");
+

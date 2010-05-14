@@ -1,0 +1,36 @@
+# Rules for selecting patch sets for integration
+# team build
+#
+# rule syntax
+# FILTER [MAX | MIN | COUNT] <category_id> [ lt | le | eq | ne | gt | ge ] <integer> [USER [eq | ne ] <username>]
+# MAX will be the maximum value across all approvals for this CATEGORY_ID, MIN is the minimum
+# and COUNT is the number of approvals. CATEGORY_ID is a valid APPROVAL_CATEGORIES.CATEGORY_ID
+# value from gerrit DB. All approvals are considered unless restricted to a user with
+# USER username option. A specific user can be entered or the keyword {gerrit_user} to use
+# the gerrit_user specified in the integration configuration
+# If no records are entered, the value for min/max = 0
+#
+# ACTION SUCCESS <category_id> <integer> [ USER username ]
+# if filters are met and a commander job is run, this is the rule
+# telling the integration what to do with the result.
+# Based on the success, an approval will be entered for the CATEGORY_ID and value
+# by the commander user. No action is taken if the job fails
+#
+# Multiple rules can be entered. They are combined with AND so order does not matter
+#
+
+# if at least one code review has been entered with +2
+# and
+# if no code reviews of -2 have been entered
+# and
+# if no verifications have been entered except by commander user
+# and
+# if commander has no verifications or verified with error
+FILTER MAX CRVW ge +2
+FILTER MIN CRVW gt -2
+FILTER COUNT VRIF eq 0 USER ne commander
+FILTER MAX VRIF le 0 USER eq commander
+
+# on success mark each patch set as verfied by commander user
+ACTION SUCCESS VRIF +1 USER commander
+

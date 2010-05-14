@@ -1,0 +1,2 @@
+0::{"type":"row","columns":{"max(patch_set_id)":"1"}}
+{"type":"query-stats","rowCount":1,"runTimeMilliseconds":1}
