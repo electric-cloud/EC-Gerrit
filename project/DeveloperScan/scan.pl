@@ -15,6 +15,12 @@ my $proj = "$[/myProject/projectName]";
 my $cfg = new ElectricCommander::PropDB($ec,"");
 my %cfgs = $cfg->getSheets("/projects/$proj/gerrit_cfgs");
 
+if (!ElectricCommander::PropMod::loadPerlCodeFromProperty(
+    $ec,"/myProject/scm_driver/ECGerrit") ) {
+    print "Could not load ECGerrit.pm\n";
+    exit 1;
+}
+
 # for each configuration
 foreach my $cfgName (keys %cfgs) {
     print "====Scanning configuration $cfgName =====\n";
@@ -35,11 +41,6 @@ foreach my $cfgName (keys %cfgs) {
 
     ## add other parms and values to opts
     $opts->{gerrit_cfg} = "$cfgName";
-
-    if (!ElectricCommander::PropMod::loadPerlCodeFromProperty(
-        $ec,"/myProject/scm_driver/ECGerrit") ) {
-        print "Could not load ECGerrit.pm\n";
-    }
 
     my $gt = new ECGerrit( $ec, "$opts->{gerrit_server}", $opts->{debug});
 

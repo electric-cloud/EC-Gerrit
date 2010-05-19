@@ -415,10 +415,10 @@ ntest "setECState jobRunning success", {}, sub {
 
     saveOutErr();
     my $gd = new ECGerrit();
-    my $test = $gd->setECState("549","1","jobRunning");
+    my $test = $gd->setECState("project","549","1","jobRunning","hello world", "CMDR","+1");
     my ($out,$err) = retrieveOutErr();
-    assertNe(0, $test, "success");
-    assertEq("", $out,"no output");
+    assertEq(0, $test, "success");
+    assertEq("\n\n", $out,"no output");
     assertEq("", $err,"error output");
 
 };

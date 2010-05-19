@@ -365,13 +365,13 @@ sub getOpenChanges {
 #   ec:1:1:jobRunning 3453 http://....
 #
 #   job finished for this patchid
-#   ec:1:1:jobDone success http://...
+#   ec:1:1:jobComplete success http://...
 #
 # args
 #   changeid - numeric changeid
 #   patchid - numeric patchid
 #   state - state to test
-#       valid: jobAvailable jobRunning jobDone
+#       valid: jobAvailable jobRunning jobComplete
 # 
 # returns
 #   0 - not found
@@ -416,39 +416,38 @@ sub testECState {
 # ec:change:patch:state notes
 #
 # args
-#   changeid - numeric changeid
-#   patchid - numeric patchid
-#   state -  state to add
-#       valid: jobRunning jobDone jobComplete jobAvailable
+#   project   - gerrit project 
+#   changeid  - numeric changeid
+#   patchid   - numeric patchid
+#   state     -  state to add
+#       valid: jobRunning jobComplete jobAvailable
 #   notes - other text to include in message
+#   category  - the category for approve (optional)
+#   value o   - the value for approve (optional)
 # 
 #################################################
 sub setECState {
     my $self = shift;
+    my $project  = shift;
     my $changeid = shift;
-    my $patchid = shift;
+    my $patchid  = shift;
     my $state    = shift;
     my $notes    = shift;
+    my $category = shift || "";
+    my $value    = shift || "";
 
-    $self->debugMsg(1,"setECState...c=$changeid p=$patchid s=$state n=$notes");
+    $self->debugMsg(1,"setECState...$changeid,$patchid s=$state n=$notes c=$category v=$value");
     if (!defined $self || !defined $changeid || 
         !defined $patchid || !defined $state ||
         "$changeid" eq "" || "$patchid" eq "" || \
         "$state" eq "") {
-        $self->showError( "bad arguments to testECState");
+        $self->showError( "bad arguments to setECState");
         return 0;
     }
 
-    # test for this exact state
-    my $newid = testECState($self,$changeid,$patchid,$state);
-
-    if ($newid) {
-        $self->debugMsg(1, "state already set: ec:$changeid:$patchid:$state");
-        return 1;
-    }
     my $result;
     my $msg = "$notes    ec:$changeid:$patchid:$state";
-    return $self->approve("",$changeid, $patchid,$msg,"","");
+    return $self->approve($project,$changeid, $patchid,$msg,$category,$value);
 }
 
 #################################################
@@ -488,6 +487,14 @@ sub team_approve {
 }
 
 #################################################
+# team_annotate
+#################################################
+sub team_annotate {
+    my ($self,$changes,$msg) = @_;
+    return $self->team_approve_base($changes, "", "",$msg);
+}
+
+#################################################
 # team_disappprove
 #################################################
 sub team_disapprove {
@@ -501,12 +508,15 @@ sub team_disapprove {
 sub team_approve_base {
     my ($self,$changes,$rules, $state, $msg) = @_;
 
-    my ($filters,$actions) = $self->parseRules($rules);
-
-    # lookup the category, value, and user from the 
-    # team_build_rules
-    my $category = $actions->{$state}{CAT};
-    my $value    = $actions->{$state}{VAL};
+    my $category = "";
+    my $value    = "";
+    if ("$rules" ne "") {
+        my ($filters,$actions) = $self->parseRules($rules);
+        # lookup the category, value, and user from the 
+        # team_build_rules
+        $category = $actions->{$state}{CAT};
+        $value    = $actions->{$state}{VAL};
+    }
 
     $self->debugMsg(2,"approve");
     $self->debugMsg(2,"category = $category");
@@ -889,6 +899,7 @@ sub parseRules {
     my $actions = ();
     my @lines = split (/\n/,$blob);
     my $num = 0;
+    $self->debugMsg(3,"parsing rules:$blob");
     foreach my $line (@lines ) {
         if ($line =~ /^#/) { next;}
         if ($line =~ /^[\s]*$/) { next;}
@@ -945,7 +956,7 @@ sub parseRules {
             my $state   = @tokens[1];
             my $cat     = @tokens[2];
             my $val     = @tokens[3];
-            $self->debugMsg(3, "parsing ACTION:$state $cat $val $user");
+            $self->debugMsg(3, "parsing ACTION:$state $cat $val");
             if ("$state" ne "ERROR" && "$state" ne "SUCCESS") {
                 $self->showError("ACTION ($state) must be SUCCESS or ERROR");
                 $self->showError($line);
@@ -1142,7 +1153,7 @@ sub processNewChanges {
                 . "&parameters4_name=patchid"
                 . "&parameters4_value=$patchid";
         }
-        $self->setECState($changeid, $patchid, $state, $msg);
+        $self->setECState($project,$changeid, $patchid, $state, $msg, "","");
     }
 }
 
@@ -1270,8 +1281,6 @@ sub processFinishedJobs {
             $self->debugMsg(1, "props{$name}=$props->{$name}");
         }
 
-        
-        my $msg;
         my $jobId= $jPath->findvalue('//jobId')->string_value;
         my $outcome= $jPath->findvalue('//outcome')->string_value;
 
@@ -1282,20 +1291,30 @@ sub processFinishedJobs {
         $self->getCmdr()->setProperty("/jobs/$jobId/processed_by_gerrit","done");
 
         # sanity check this job
-        if (!defined $props->{changeid} || $props->{changeid} eq "" | 
+        if (!defined $props->{changeid} || $props->{changeid} eq "" || 
           !($props->{changeid} =~ /^(\d+\.?\d*|\.\d+)$/) ) {
             $self->debugMsg(1, "changeid[$props->{changeid}] for job $jobId is invalid");
             next;
         }
+        # get rules from config
+        my $cfg = new ElectricCommander::PropDB($self->getCmdr(),"/myProject/gerrit_cfgs");
+        my $rules = $cfg->getCol($props->{gerrit_cfg},"dev_build_rules");
+        my ($filters, $actions) = parseRules("$rules");
+        my $cat   = "";
+        my $value = "";
         if ($outcome eq "success") {
-              $msg = "This change was successfully built with ElectricCommander. "
-            . "https://$opts->{cmdr_webserver}/commander/link/jobDetails/jobs/$jobId";
+            $cat   = $actions->{SUCCESS}{CAT} || "";
+            $value = $actions->{SUCCESS}{VAL} || "";
+            $msg   = "This change was successfully built with ElectricCommander. "
+                . "https://$opts->{cmdr_webserver}/commander/link/jobDetails/jobs/$jobId";
         } else {
-              $msg = "This change failed the ElectricCommander build. "
-            . "https://$opts->{cmdr_webserver}/commander/link/jobDetails/jobs/$jobId";
+            $cat   = $actions->{ERROR}{CAT} || "";
+            $value = $actions->{ERROR}{VAL} || "";
+            $msg   = "This change failed the ElectricCommander build. "
+                . "https://$opts->{cmdr_webserver}/commander/link/jobDetails/jobs/$jobId";
         }
-        $self->debugMsg(1, "$msg");
-        $self->setECState("$props->{changeid}", "$props->{patchid}","jobComplete",$msg);
+        $self->setECState("$props->{project}","$props->{changeid}", 
+            "$props->{patchid}","jobComplete", $msg, $cat, $value);
     }
     return;
 }

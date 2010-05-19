@@ -12,15 +12,11 @@ my $project = "$[project]";
 my $branch  = "$opts->{gerrit_branch}";
 my $rules   = "$opts->{team_build_rules}";
 
-
-if ($outcome ne "success") {
-      print "This change failed the ElectricCommander build."
-        . "https://$opts->{cmdr_webserver}/commander/link/jobDetails/jobs/$jobId";
-    exit 1;
-}   
+my $msg = "This change is being built with ElectricCommander."
+  . "https://$opts->{cmdr_webserver}/commander/link/jobDetails/jobs/$[jobId]";
 
 my @changes = $gt->getChanges();
-my $gt->team_annotate(@changes,$rules);
+my $gt->team_annotate(@changes,$msg);
 
 exit 0;
 

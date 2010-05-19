@@ -37,12 +37,6 @@
             <value></value>
           </property>
           <property>
-            <propertyName>cmd_rules</propertyName>
-            <description></description>
-            <expandable>1</expandable>
-            <value></value>
-          </property>
-          <property>
             <propertyName>repo_cmd</propertyName>
             <expandable>1</expandable>
             <value>repo</value>
@@ -272,6 +266,16 @@
                   </propertySheet>
                 </property>
                 <property>
+                  <propertyName>team_build_rules</propertyName>
+                  <propertySheet>
+                    <property>
+                      <propertyName>formType</propertyName>
+                      <expandable>1</expandable>
+                      <value>standard</value>
+                    </property>
+                  </propertySheet>
+                </property>
+                <property>
                   <propertyName>debug</propertyName>
                   <propertySheet>
                     <property>
@@ -316,7 +320,7 @@
       </formalParameter>
       <formalParameter>
         <formalParameterName>devbuild_cmdr_project</formalParameterName>
-        <defaultValue>Gerrit Test</defaultValue>
+        <defaultValue>@PLUGIN_NAME@</defaultValue>
         <description>The ElectricCommander project that contains the procedure to use when building individual changesets</description>
         <required>1</required>
         <type>entry</type>
@@ -355,6 +359,13 @@
         <description>The Gerrit server address</description>
         <required>1</required>
         <type>entry</type>
+      </formalParameter>
+      <formalParameter>
+        <formalParameterName>dev_build_rules</formalParameterName>
+        <defaultValue></defaultValue>
+        <description>Filter rules for developer build</description>
+        <required>1</required>
+        <type>textarea</type>
       </formalParameter>
       <formalParameter>
         <formalParameterName>team_build_rules</formalParameterName>

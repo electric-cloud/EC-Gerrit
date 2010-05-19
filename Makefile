@@ -1,7 +1,10 @@
 # Makefile
 
+
 SRCTOP=..
 include $(SRCTOP)/build/vars.mak
+
+PLUGIN_VERSION=1.0.1.0
 
 gwtmodules := gerrit/ConfigurationManagement
 

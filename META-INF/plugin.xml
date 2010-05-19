@@ -5,6 +5,7 @@
     <label>@PLUGIN_KEY@</label>
     <description>Gerrit plugin</description>
     <configure>configurations.xml</configure>
+    <help>help.xml</help>
     <author>Electric Cloud</author>
     <authorUrl>http://www.electric-cloud.com/support</authorUrl>
     <category>System</category>

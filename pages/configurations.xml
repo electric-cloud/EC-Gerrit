@@ -1,7 +1,7 @@
 <page>
     <componentContainer>
         <title>Gerrit Configurations</title>
-        <helpLink>/link/showHelp?page=gerritconfigs</helpLink>
+        <helpLink>/pages/@PLUGIN_NAME@/help</helpLink>
         <component plugin="@PLUGIN_KEY@"
                    version="@PLUGIN_VERSION@" 
                    ref="ConfigurationManagement">

@@ -32,7 +32,7 @@
         <type>entry</type>
         <label>Project for Developer Builds:</label>
         <property>devbuild_cmdr_project</property>
-        <value>EC-Gerrit-1.0.0.0</value>
+        <value>@PLUGIN_NAME@</value>
         <documentation>The Commander project that containst the procedure for developer builds.</documentation>
         <required>1</required>
     </formElement>
@@ -90,14 +90,22 @@
     </formElement>
     <formElement>
         <type>textarea</type>
-        <label>Team Build Filters:</label>
+        <label>Developer Build Rules:</label>
+        <property>dev_build_rules</property>
+        <value>ACTION SUCCESS VRIF +1
+ACTION ERROR VRIF -1</value>
+        <required>1</required>
+    </formElement>
+    <formElement>
+        <type>textarea</type>
+        <label>Team Build Rules:</label>
         <property>team_build_rules</property>
         <value>FILTER MAX CRVW ge +2
 FILTER MIN CRVW gt -2
 FILTER COUNT VRIF eq 0 USER ne commander
 FILTER MAX VRIF le 0 USER eq commander
-ACTION SUCCESS VRIF +1 USER commander
-ACTION ERROR VRIF -1 USER commander</value>
+ACTION SUCCESS VRIF +1
+ACTION ERROR VRIF -1</value>
         <required>1</required>
     </formElement>
     <formElement>
