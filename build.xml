@@ -7,7 +7,7 @@
     
 	<!-- plugin specific properties -->
 	<property name="pluginKey" value="EC-Gerrit" />
-	<property name="pluginVersion" value="1.0.0.0" />
+	<property name="pluginVersion" value="1.0.1.0" />
 	<property name="gwtModules" value="ecplugins.gerrit.ConfigurationManagement" />
     <property name="package.export.src" value="gerrit.srcs"/>
 

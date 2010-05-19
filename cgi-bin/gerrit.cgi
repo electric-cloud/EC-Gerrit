@@ -54,15 +54,9 @@ sub main() {
         retError("error: cmd is required parameter");
     }
 
-    # load EC-Gerrit object
-    my $proj_prop = "/plugins/EC-Gerrit/projectName";
-    $::proj = $::ec->getProperty("$proj_prop")->findvalue('//value')->string_value;
-    if (!defined $::proj || "$::proj" eq "" ) {
-            retError("Could not find promoted EC-Gerrit plugin");
-    }
 
     if (!ElectricCommander::PropMod::loadPerlCodeFromProperty($::ec,
-        "/projects/$::proj/scm_driver/ECGerrit")) {
+        "/projects/@PLUGIN_NAME@/scm_driver/ECGerrit")) {
         retError("Could not load $::proj driver");
     }
 
@@ -87,7 +81,7 @@ sub main() {
 #############################################
 sub getCfgList {
 
-    my $gcfg = new ElectricCommander::PropDB($::ec,"/projects/$::proj/gerrit_cfgs");
+    my $gcfg = new ElectricCommander::PropDB($::ec,"/projects/@PLUGIN_NAME@/gerrit_cfgs");
 
     my %cfgs = $gcfg->getRows();
     # print results as XML block

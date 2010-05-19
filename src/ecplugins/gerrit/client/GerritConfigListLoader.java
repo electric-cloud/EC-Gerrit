@@ -34,6 +34,7 @@ import com.electriccloud.commander.gwt.client.requests.GetPropertyRequest;
 
 import static com.electriccloud.commander.gwt.client.XmlUtil.getNodeByName;
 import static com.electriccloud.commander.gwt.client.XmlUtil.getNodeValueByName;
+import static com.electriccloud.commander.gwt.client.ComponentBaseFactory.getPluginName;
 
 public class GerritConfigListLoader
     extends Loader
@@ -63,7 +64,7 @@ public class GerritConfigListLoader
         super(queryObject, callback);
         m_configList        = configList;
         m_implementedMethod = implementedMethod;
-        m_cgiRequestProxy   = new CgiRequestProxy("EC-Gerrit", "gerrit.cgi");
+        m_cgiRequestProxy   = new CgiRequestProxy(getPluginName(), "gerrit.cgi");
     }
 
     //~ Methods ----------------------------------------------------------------
@@ -86,15 +87,9 @@ public class GerritConfigListLoader
                                 Throwable exception)
                         {
 
-                            if (m_queryObject instanceof HasErrorPanel) {
-                                ((HasErrorPanel) m_queryObject).addErrorMessage(
-                                    "Error loading Gerrit configuration list: ",
-                                    exception);
-                            }
-                            else {
-                                m_queryObject.getLog()
-                                             .error(exception);
-                            }
+                            ((HasErrorPanel) m_queryObject).addErrorMessage(
+                                "Error loading Gerrit configuration list: ",
+                                exception);
                         }
 
                         @Override public void onResponseReceived(
@@ -103,29 +98,35 @@ public class GerritConfigListLoader
                         {
                             String responseString = response.getText();
 
+                            // if HTML returned we never made it to the CGI
+                            Boolean isHtml = (responseString.indexOf("DOCTYPE HTML") != -1);
+
+                            String error;
+                            
+                            if (!isHtml) {
+                                error = m_configList.parseResponse(
+                                    responseString);
+                            } else {
+                                error = responseString;
+                            }
+
                             if (m_queryObject.getLog()
                                              .isDebugEnabled()) {
                                 m_queryObject.getLog()
                                              .debug(
                                                  "Recieved CGI response: "
-                                                 + responseString);
+                                                 + responseString 
+                                                 + " isHTML:" + isHtml
+                                                 + " error:" + error
+                                                 );
                             }
 
-                            String error = m_configList.parseResponse(
-                                    responseString);
 
-                            if (error != null) {
+                            if (error != null ) {
 
-                                if (m_queryObject instanceof HasErrorPanel) {
-                                    ((HasErrorPanel) m_queryObject)
+                                ((HasErrorPanel) m_queryObject)
                                         .addErrorMessage(error);
-                                }
-                                else {
-                                    m_queryObject.getLog()
-                                                 .error(error);
-                                }
-                            }
-                            else {
+                            } else {
 
                                 if (StringUtil.isEmpty(m_editorName)
                                         || m_configList.isEmpty()) {
@@ -134,8 +135,7 @@ public class GerritConfigListLoader
                                     if (m_callback != null) {
                                         m_callback.onComplete();
                                     }
-                                }
-                                else {
+                                } else {
                                     loadEditors();
                                 }
                             }

@@ -53,14 +53,12 @@ verifier, and so on. While you can use any user for this purpose, creating a spe
 user makes it clear which activities were done by the integration and which were done by a person. After 
 choosing a user, setup security so the specified user can login (using ssh keys) from the ElectricCommander 
 server and that user has "Read Access" to "--All Projects--" or to the projects you want to monitor with 
-ElectricCommander. Test the login with this command: 
-Test login with this command: </p>
+ElectricCommander. Test login with this command: </p>
 <p class="help">      shell> echo "\d" | ssh -p 29418 user@host gerrit gsql</p>
 <p class="help">Next, decide which Gerrit categories you want ElectricCommander to use to record build 
 successes or failures. You can use an existing category (Verified, Code Review) or create a new category. 
 To create a special "ElectricCommander" category, follow the instructions in Gerrit documentation. See the 
-sample script below (assumes user "commander"):
-A sample script is shown below (assumes user commander)</p>
+sample script below (assumes user "commander")</p>
 <pre class="help">
 echo "INSERT INTO APPROVAL_CATEGORIES 
   \(NAME,ABBREVIATED_NAME,POSITION,FUNCTION_NAME,COPY_MIN_SCORE,CATEGORY_ID\) 
