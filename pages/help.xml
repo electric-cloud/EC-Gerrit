@@ -4,7 +4,9 @@
 <link href="/commander/styles/help.css" rel="stylesheet" type="text/css" />
 <table class="help" width="75%">
 <tr><td width="75%">
-<h1 class="help">ElectricCommander Gerrit Integration</h1>
+<h1 class="help">
+<img height="50" width="50" src="/commander/plugins/EC-Gerrit-1.0.1.0/gerritIcon.jpg" alt="*"/>
+ElectricCommander Gerrit Integration</h1>
 <h1 class="help">Overview</h1>
 <h2 class="help">What is Gerrit?</h2>
 <p class="help">The <a href="http://gerrit.googlecode.com/svn/documentation/2.1.2/index.html">Gerrit Code Review system</a>
@@ -42,7 +44,7 @@ times, each reset and sync will run much faster than a full init and sync. Chang
 <h2 class="help">Prerequisites</h2>
 <ul class="help">
 <li>Gerrit v2.1.2.3 - Previous versions are not supported.</li>
-<li>ElectricCommaner v3.6.0 or greater.</li>
+<li>ElectricCommander v3.6.0 or greater.</li>
 <li>Familiarity with Gerrit server administration</li>
 <li>Familiarity with ElectricCommander server administration</li>
 </ul>
@@ -109,7 +111,7 @@ there is a repository and only syncs changes. If the directory is not found, the
 and does a full init and sync of the repository.</p>
 <h1 class="help">Configurations</h1>
 <p class="help">You can create one or more Gerrit Integration configurations to specify how you want the 
-integration to work. To manage your Gerrit Integration Configurations, go to the Adminstration | Plugins page 
+integration to work. To manage your Gerrit Integration Configurations, go to the Administration | Plugins page 
 and select the "<a href="/commander/pages/@PLUGIN_NAME@/configurations">Configure</a>"
 link to the right of the EC-Gerrit plugin. This link provides a list of configurations with menu options 
 to edit/delete existing configurations.</p>
@@ -157,7 +159,7 @@ ACTION SUCCESS VRIF +1
 ACTION ERROR VRIF -1
 Which is translated as: include 
 When you complete the build, set the Verification
-to +1 if the build succeded and -1 if the build failed.
+to +1 if the build succeeded and -1 if the build failed.
 </pre></td></tr>
 <tr>
 <td>Branch</td>
@@ -173,7 +175,7 @@ to +1 if the build succeded and -1 if the build failed.
 </tr>
 <tr>
 <td>Team Build Rules</td>
-<td>The list of filters that determine which changes are included in a team build (mulitple changes) and 
+<td>The list of filters that determine which changes are included in a team build (multiple changes) and 
 what action to values to set when the build finishes
 <pre class="help">
 Example
@@ -187,7 +189,7 @@ ACTION ERROR VRIF -1
 Which is translated as: include 
 all changes with at least a +2 Code Review, no -2 Code Reviews, no Verifications by anyone other than the commander
 user, no Verifications greater than 0 from the commander user. When you complete the build, set the Verification
-to +1 if the build succeded and -1 if the build failed.
+to +1 if the build succeeded and -1 if the build failed.
 </pre></td></tr>
 <tr>
 <td>Debug</td>
@@ -196,7 +198,7 @@ to +1 if the build succeded and -1 if the build failed.
 </table>
 <h1 class="help">Developer Builds - Processing Single Patchsets</h1>
 <p class="help">
-Developer builds are used to build a single patcheset submitted by a developer. ElectricCommander scans 
+Developer builds are used to build a single patchset submitted by a developer. ElectricCommander scans 
 Gerrit on a regular basis to find new patchsets to process. What the integration does depends on the value 
 you set for "Developer Build Mode" in your integration configuration. </p>
 <table border="1" valign="top" class="help" width="60%">
@@ -212,10 +214,10 @@ A link to start a build (manual mode), a build has been started, A build complet
 <p class="help">This integration provides a framework for getting the proper source code in a working directory. You supply
 the actual build/test logic. An example developer build procedure, 
 <a href="/commander/link/projectDetails/projects/@PLUGIN_NAME@/procedures/DevBuild Example">"DevBuild Example"</a>
-is provided in the EC-Gerrit plugin project. The stucture of your build procedure should be:
+is provided in the EC-Gerrit plugin project. The structure of your build procedure should be:
 <pre class="help">
 1) Subprocedure call to EC-Gerrit plugin "DevBuildPrepare"
-   * Add a comment to Gerrit patchest that this patch is being built by ElectricCommander
+   * Add a comment to Gerrit patchset that this patch is being built by ElectricCommander
    * Initialize the working directory
    * Get the tip of the branch
    * Overlay the changes for this patchset
@@ -226,7 +228,7 @@ is provided in the EC-Gerrit plugin project. The stucture of your build procedur
 </pre></p>
 <h1 class="help">Team Builds - Processing Multiple Patchsets</h1>
 <p class="help">
-Team Builds are designed for the build and release team. These builds combine changes of one or more patchesets 
+Team Builds are designed for the build and release team. These builds combine changes of one or more patchsets 
 to test how multiple changes will work together. The integration finds patchsets based on rules provided in 
 the configuration "Team Build Rules" property. The integration does not automatically run team builds. 
 You must run team build procedures from ElectricCommander. </p>
@@ -237,7 +239,7 @@ directory. You supply the actual build/test logic. An example team build procedu
  is provided in the EC-Gerrit plugin project. Your build procedure structure should be similar to:
 <pre class="help">
 1) Subprocedure call to EC-Gerrit plugin "TeamBuildPrepare"
-   * Adds a comment to each Gerrit patchest that this patch is being built by ElectricCommander
+   * Adds a comment to each Gerrit patchset that this patch is being built by ElectricCommander
    * Initialize the working directory
    * Get the tip of the branch
    * Overlay the changes for each patchset
@@ -274,7 +276,7 @@ my ($exit,$out) = $gt->runCmd("{repo_cmd} sync 2>&amp;1");
 <tr valign="top">
 <td>cmd_revert</td>
 <td> <pre class="help">chdir "{gerrit_working_dir}";
-print "Setting tree back to commited changes only\n";
+print "Setting tree back to committed changes only\n";
 my ($exit,$out) = $gt->runCmd("{repo_cmd} forall "
   . " -c \"git reset"
   . " --hard m/{gerrit_branch}\"");
