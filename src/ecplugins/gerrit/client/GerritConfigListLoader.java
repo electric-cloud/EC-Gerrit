@@ -1,7 +1,7 @@
 
 // GerritConfigListLoader.java --
 //
-// GerritConfigListLoader.java is part of the ElectricCommander server.
+// GerritConfigListLoader.java is part of ElectricCommander.
 //
 // Copyright (c) 2005-2010 Electric Cloud, Inc.
 // All rights reserved.
@@ -10,9 +10,7 @@
 package ecplugins.gerrit.client;
 
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
-import java.util.Set;
 
 import com.google.gwt.http.client.Request;
 import com.google.gwt.http.client.RequestCallback;
@@ -32,9 +30,9 @@ import com.electriccloud.commander.gwt.client.MultiRequestLoaderCallback;
 import com.electriccloud.commander.gwt.client.StringUtil;
 import com.electriccloud.commander.gwt.client.requests.GetPropertyRequest;
 
+import static com.electriccloud.commander.gwt.client.ComponentBaseFactory.getPluginName;
 import static com.electriccloud.commander.gwt.client.XmlUtil.getNodeByName;
 import static com.electriccloud.commander.gwt.client.XmlUtil.getNodeValueByName;
-import static com.electriccloud.commander.gwt.client.ComponentBaseFactory.getPluginName;
 
 public class GerritConfigListLoader
     extends Loader
@@ -42,29 +40,32 @@ public class GerritConfigListLoader
 
     //~ Instance fields --------------------------------------------------------
 
-    private GerritConfigList  m_configList;
-    private CgiRequestProxy   m_cgiRequestProxy;
-    private String            m_implementedMethod;
-    private String            m_editorName;
+    private final GerritConfigList m_configList;
+    private final CgiRequestProxy  m_cgiRequestProxy;
+    private final String           m_implementedMethod;
+    private String                 m_editorName;
 
     //~ Constructors -----------------------------------------------------------
 
-    public GerritConfigListLoader(GerritConfigList configList,
-            ComponentBase queryObject,
-            ChainedCallback callback)
+    public GerritConfigListLoader(
+            GerritConfigList configList,
+            ComponentBase    queryObject,
+            ChainedCallback  callback)
     {
         this(configList, null, queryObject, callback);
     }
 
-    public GerritConfigListLoader(GerritConfigList configList,
-            String implementedMethod,
-            ComponentBase queryObject,
-            ChainedCallback callback)
+    public GerritConfigListLoader(
+            GerritConfigList configList,
+            String           implementedMethod,
+            ComponentBase    queryObject,
+            ChainedCallback  callback)
     {
         super(queryObject, callback);
         m_configList        = configList;
         m_implementedMethod = implementedMethod;
-        m_cgiRequestProxy   = new CgiRequestProxy(getPluginName(), "gerrit.cgi");
+        m_cgiRequestProxy   = new CgiRequestProxy(getPluginName(),
+                "gerrit.cgi");
     }
 
     //~ Methods ----------------------------------------------------------------
@@ -83,10 +84,10 @@ public class GerritConfigListLoader
         try {
             String request = m_cgiRequestProxy.issueGetRequest(cgiParams,
                     new RequestCallback() {
-                        @Override public void onError(Request request,
+                        @Override public void onError(
+                                Request   request,
                                 Throwable exception)
                         {
-
                             ((HasErrorPanel) m_queryObject).addErrorMessage(
                                 "Error loading Gerrit configuration list: ",
                                 exception);
@@ -99,14 +100,15 @@ public class GerritConfigListLoader
                             String responseString = response.getText();
 
                             // if HTML returned we never made it to the CGI
-                            Boolean isHtml = (responseString.indexOf("DOCTYPE HTML") != -1);
+                            Boolean isHtml = (responseString.indexOf(
+                                        "DOCTYPE HTML") != -1);
+                            String  error;
 
-                            String error;
-                            
                             if (!isHtml) {
                                 error = m_configList.parseResponse(
-                                    responseString);
-                            } else {
+                                        responseString);
+                            }
+                            else {
                                 error = responseString;
                             }
 
@@ -115,18 +117,16 @@ public class GerritConfigListLoader
                                 m_queryObject.getLog()
                                              .debug(
                                                  "Recieved CGI response: "
-                                                 + responseString 
+                                                 + responseString
                                                  + " isHTML:" + isHtml
-                                                 + " error:" + error
-                                                 );
+                                                 + " error:" + error);
                             }
 
-
-                            if (error != null ) {
-
-                                ((HasErrorPanel) m_queryObject)
-                                        .addErrorMessage(error);
-                            } else {
+                            if (error != null) {
+                                ((HasErrorPanel) m_queryObject).addErrorMessage(
+                                    error);
+                            }
+                            else {
 
                                 if (StringUtil.isEmpty(m_editorName)
                                         || m_configList.isEmpty()) {
@@ -135,7 +135,8 @@ public class GerritConfigListLoader
                                     if (m_callback != null) {
                                         m_callback.onComplete();
                                     }
-                                } else {
+                                }
+                                else {
                                     loadEditors();
                                 }
                             }
@@ -163,7 +164,7 @@ public class GerritConfigListLoader
 
     private void loadEditors()
     {
-        MultiRequestLoader loader = new MultiRequestLoader(m_queryObject,
+        MultiRequestLoader loader  = new MultiRequestLoader(m_queryObject,
                 new MultiRequestLoaderCallback() {
                     @Override public void onComplete()
                     {
@@ -174,9 +175,8 @@ public class GerritConfigListLoader
                         }
                     }
                 });
-
         GetPropertyRequest request = new GetPropertyRequest(
-                    "/plugins/EC-Gerrit/project/ui_forms/" + m_editorName);
+                "/plugins/EC-Gerrit/project/ui_forms/" + m_editorName);
 
         request.setExpand("0");
         loader.addRequest(request, new EditorLoaderCallback("gerritcfg"));
@@ -196,7 +196,7 @@ public class GerritConfigListLoader
 
         //~ Instance fields ----------------------------------------------------
 
-        private String m_configPlugin;
+        private final String m_configPlugin;
 
         //~ Constructors -------------------------------------------------------
 

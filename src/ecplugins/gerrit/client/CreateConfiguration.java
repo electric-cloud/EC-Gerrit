@@ -9,15 +9,9 @@
 
 package ecplugins.gerrit.client;
 
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
-import com.google.gwt.event.logical.shared.ValueChangeEvent;
-import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.http.client.Request;
 import com.google.gwt.http.client.RequestCallback;
 import com.google.gwt.http.client.RequestException;
@@ -31,14 +25,10 @@ import com.electriccloud.commander.gwt.client.CommanderRequestCallback;
 import com.electriccloud.commander.gwt.client.CommanderUrlBuilder;
 import com.electriccloud.commander.gwt.client.FormBase;
 import com.electriccloud.commander.gwt.client.FormBuilderLoader;
-import com.electriccloud.commander.gwt.client.requests.CommanderRequest;
-import com.electriccloud.commander.gwt.client.requests.GetPropertiesRequest;
 import com.electriccloud.commander.gwt.client.requests.RunProcedureRequest;
-import com.electriccloud.commander.gwt.client.ui.CredentialEditor;
 import com.electriccloud.commander.gwt.client.ui.FormBuilder;
 import com.electriccloud.commander.gwt.client.ui.FormTable;
 import com.electriccloud.commander.gwt.client.ui.SimpleErrorBox;
-import com.electriccloud.commander.gwt.client.ui.ValuedListBox;
 
 import static com.electriccloud.commander.gwt.client.CommanderUrlBuilder.createPageUrl;
 import static com.electriccloud.commander.gwt.client.CommanderUrlBuilder.createUrl;
@@ -51,17 +41,11 @@ public class CreateConfiguration
     extends FormBase
 {
 
-    //~ Static fields/initializers ---------------------------------------------
-
-
-    //~ Instance fields --------------------------------------------------------
-
-
     //~ Constructors -----------------------------------------------------------
 
     public CreateConfiguration()
     {
-        super("New Gerrit Configuration","Gerrit Configurations");
+        super("New Gerrit Configuration", "Gerrit Configurations");
 
         CommanderUrlBuilder urlBuilder = createPageUrl(getPluginName(),
                 "configurations");
@@ -74,15 +58,18 @@ public class CreateConfiguration
     @Override protected FormTable initializeFormTable()
     {
         FormBuilder fb = new FormBuilder();
-        return fb;
 
+        return fb;
     }
 
     @Override protected void load()
     {
-        FormBuilder        fb       = (FormBuilder) getFormTable();
+        FormBuilder fb = (FormBuilder) getFormTable();
+
         setStatus("Loading...");
+
         FormBuilderLoader loader = new FormBuilderLoader(fb, this);
+
         loader.setCustomEditorPath("/plugins/EC-Gerrit"
             + "/project/ui_forms/GerritCreateConfigForm");
         loader.load();
@@ -98,13 +85,14 @@ public class CreateConfiguration
 
         if (!fb.validate()) {
             clearStatus();
+
             return;
         }
 
         // Build runProcedure request
-        RunProcedureRequest request          = new RunProcedureRequest(
+        RunProcedureRequest request = new RunProcedureRequest(
                 "/plugins/EC-Gerrit/project", "CreateConfiguration");
-        Map<String, String> params           = fb.getValues();
+        Map<String, String> params  = fb.getValues();
 
         for (String paramName : params.keySet()) {
             request.addActualParameter(paramName, params.get(paramName));
@@ -154,13 +142,15 @@ public class CreateConfiguration
 
         try {
             cgiRequestProxy.issueGetRequest(cgiParams, new RequestCallback() {
-                    @Override public void onError(Request request,
+                    @Override public void onError(
+                            Request   request,
                             Throwable exception)
                     {
                         addErrorMessage("CGI request failed: ", exception);
                     }
 
-                    @Override public void onResponseReceived(Request request,
+                    @Override public void onResponseReceived(
+                            Request  request,
                             Response response)
                     {
                         String responseString = response.getText();
@@ -195,5 +185,4 @@ public class CreateConfiguration
             addErrorMessage("CGI request failed: ", e);
         }
     }
-
 }
