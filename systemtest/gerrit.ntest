@@ -198,8 +198,7 @@ ntest "gerrit_db_query error results", {}, sub {
     my $gd = new ECGerrit();
     my @list = $gd->gerrit_db_query("SELECT * FROM ACOUNTS;");
     my ($out,$err) = retrieveOutErr();
-    assertEq(
-        "Error: error running command ssh -p 29418 commander\@localhost gerrit gsql --format JSON 2>1& (1)\n", 
+    assertEq("Error: error running command gerrit gsql --format JSON (1)\n",
         $err,"error output");
     assertEq("\n", $out,"no output");
 };

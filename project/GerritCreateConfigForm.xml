@@ -17,8 +17,40 @@
         <type>entry</type>
         <label>Gerrit Server:</label>
         <property>gerrit_server</property>
-        <value>ssh://user@host:29418</value>
-        <documentation>The manifest file to use.</documentation>
+        <value>localhost</value>
+        <documentation>The gerrit server</documentation>
+        <required>1</required>
+    </formElement>
+    <formElement>
+        <type>entry</type>
+        <label>Gerrit User:</label>
+        <property>gerrit_user</property>
+        <value>user</value>
+        <documentation>The gerrit user</documentation>
+        <required>1</required>
+    </formElement>
+    <formElement>
+        <type>entry</type>
+        <label>Gerrit Port:</label>
+        <property>gerrit_port</property>
+        <value>29418</value>
+        <documentation>The gerrit ssh port</documentation>
+        <required>1</required>
+    </formElement>
+    <formElement>
+        <type>entry</type>
+        <label>Gerrit Public Key File:</label>
+        <property>gerrit_public_key</property>
+        <value>~/.ssh/id_rsa.pub</value>
+        <documentation>The public key for ssh connection to gerrit</documentation>
+        <required>1</required>
+    </formElement>
+    <formElement>
+        <type>entry</type>
+        <label>Gerrit Private Key File:</label>
+        <property>gerrit_private_key</property>
+        <value>~/.ssh/id_rsa</value>
+        <documentation>The private key for ssh connection to gerrit</documentation>
         <required>1</required>
     </formElement>
     <formElement>

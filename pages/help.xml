@@ -4,9 +4,7 @@
 <link href="/commander/styles/help.css" rel="stylesheet" type="text/css" />
 <table class="help" width="75%">
 <tr><td width="75%">
-<h1 class="help">
-<img height="50" width="50" src="/commander/plugins/EC-Gerrit-1.0.1.0/gerritIcon.jpg" alt="*"/>
-ElectricCommander Gerrit Integration</h1>
+<h1 class="help">ElectricCommander Gerrit Integration</h1>
 <h1 class="help">Overview</h1>
 <h2 class="help">What is Gerrit?</h2>
 <p class="help">The <a href="http://gerrit.googlecode.com/svn/documentation/2.1.2/index.html">Gerrit Code Review system</a>
@@ -127,7 +125,23 @@ to edit/delete existing configurations.</p>
 </tr>
 <tr>
 <td>Gerrit Server</td>
-<td>The connection information for the Gerrit server. For example: ssh://user@host:29418</td>
+<td>The hostname or IP address of the Gerrit server.</td>
+</tr>
+<tr>
+<td>Gerrit User</td>
+<td>The user name for the Gerrit server.</td>
+</tr>
+<tr>
+<td>Gerrit Port</td>
+<td>The port number for the Gerrit server. (29418 by default)</td>
+</tr>
+<tr>
+<td>Gerrit Public Key File</td>
+<td>Full path to a file containing the public key for the SSH connection to the Gerrit server. (i.e. id_rsa.pub)</td>
+</tr>
+<tr>
+<td>Gerrit Private Key File</td>
+<td>Full path to a file containing the private key for the SSH connection to the Gerrit server. (i.e. id_rsa)</td>
 </tr>
 <tr>
 <td>ElectricCommander Server</td>
@@ -304,6 +318,14 @@ my ($exit,$out) = $gt->runCmd("git pull "
 <p class="help">The integration scans your Gerrit server for changes every 15 minutes-this is an 
 ElectricCommander schedule. If you would like to change the frequency, modify the 
 "<a href="/commander/link/editSchedule/projects/@PLUGIN_NAME@/schedules/Gerrit New Change Scanner">Gerrit New Change Scanner</a>" schedule.</p>
+<h1 class="help">Release Notes</h1>
+<h2 class="help">EC-Gerrit-1.1.0.0</h2>
+<p class="help">-support Gerrit v2.1.3
+<br>-use the command line "review" command instead of "approve"</br>
+<br>-uses perl Net:SSH2 library for ssh commands instead of shelling to SSH command</br>
+<br>-break up configuration of Gerrit server into 3 parts (server/user/port)</br>
+<br>-add configuration for ssh key locations (will not search ~/.ssh)</br>
+</p>
 </td><td width="25%"></td></tr></table>
 </componentContainer>
 </helpDefinition>

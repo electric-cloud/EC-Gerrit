@@ -7,6 +7,8 @@
 ####################################################################
 package ECGerrit;
 
+$::gApproveCmd = "review";
+
 $|=1;
 
 # get JSON from the plugin directory
@@ -16,11 +18,14 @@ if ("$ENV{COMMANDER_PLUGIN_PERL}" ne "") {
 } else {
     # during production
     push @INC, "$ENV{COMMANDER_PLUGINS}/@PLUGIN_NAME@/agent/perl";
+    #push @INC, "$ENV{COMMANDER_PLUGINS}/EC-Gerrit-1.0.1.0/agent/perl";
 }
 require JSON;
 
 use URI::Escape;
-use IPC::Open2;
+use Net::SSH2;
+use File::Basename;
+use IO::Socket;
 use MIME::Base64;
 use ElectricCommander;
 use ElectricCommander::PropDB;
@@ -36,17 +41,14 @@ sub new {
     my $class = shift;
 
     my $self = {
-        _cmdr   => shift,
-        _sshurl => shift,
-        _dbg    => shift,
+        _cmdr    => shift,
+        _user    => shift,
+        _server  => shift,
+        _port    => shift,
+        _ssh_pub => shift,
+        _ssh_pvt => shift,
+        _dbg     => shift,
     };
-    
-    my $ssh = $self->{_sshurl};
-    # sshurl form:  shh://user@server:port
-    $ssh =~ /ssh:\/\/(.*)@(.*):(.*)/;
-    $self->{_user}   = $1;
-    $self->{_server} = $2;
-    $self->{_port}   = $3;
 
     bless ($self, $class);
     return $self;
@@ -60,17 +62,6 @@ sub new {
 sub getCmdr {
     my $self = shift;
     return $self->{_cmdr};
-}
-
-
-######################################
-# getSSHUrl
-#
-# Get the SSHUrl
-######################################
-sub getSSHUrl {
-    my $self = shift;
-    return $self->{_sshurl};
 }
 
 ######################################
@@ -104,6 +95,7 @@ sub getUser {
         return $self->{_user};
     }
 }
+
 ######################################
 # getPort
 #
@@ -121,6 +113,26 @@ sub getPort {
 }
 
 ######################################
+# getSSHPvt
+#
+# Get the Port
+######################################
+sub getSSHPvt {
+    my $self = shift;
+    return $self->{_ssh_pvt};
+}
+
+######################################
+# getSSHPub
+#
+# Get the Port
+######################################
+sub getSSHPub {
+    my $self = shift;
+    return $self->{_ssh_pub};
+}
+
+######################################
 # getDbg
 #
 # Get the Dbg level
@@ -134,7 +146,6 @@ sub getDbg {
         return $self->{_dbg};
     }
 }
-
 
 ######################################
 # gerrit_db_query
@@ -166,15 +177,14 @@ sub gerrit_db_query {
 
     my @sqlout = ();
 
-    my $gcmd = "ssh -p " . $self->getPort()
-        . " " .  $self->getUser() . "\@" . $self->getServer()
-        . " gerrit gsql --format JSON 2>1&";
+    my $gcmd = "gerrit gsql --format JSON";
 
     my $input = "$operation\n\\q\n";
+    #my $input = "$operation";
     $self->debugMsg(3,"========command =========");
     $self->debugMsg(3, $operation);
     $self->debugMsg(3,"========raw output ======");
-    my ($exit,$out) = $self->runCmd($gcmd,$input);
+    my ($exit,$out) = $self->runCmd("$gcmd","$input");
     if ($exit != 0 ) {
         # if command did not succeed we should exit
         # this is drastic, but if query command is not working 
@@ -549,12 +559,10 @@ sub approve {
     my ($self,$project, $changeid, $patchid, $msg, $category,$value) = @_;
 
 
-    my $gcmd = "ssh -p " . $self->getPort() . " " . $self->getUser() . "\@" . $self->getServer()
-        . " gerrit approve $changeid,$patchid"
-        . " '--message=\"$msg\"'";
+    my $gcmd = "gerrit $::gApproveCmd $changeid,$patchid '--message=$msg'";
 
     if ($project && "$project" ne "") {
-        $gcmd .= " '--project=\"$project\"'";
+        $gcmd .= " '--project=$project'";
     }
 
     if ($category && "$category" ne "") {
@@ -569,7 +577,7 @@ sub approve {
     $self->debugMsg(2,"approve cmd:$gcmd");
 
     # run the approve command
-    my ($exit,$out) = $self->runCmd($gcmd);
+    my ($exit,$out) = $self->runCmd($gcmd,"");
     $self->showMsg($out);
     return $exit;
 }
@@ -1020,7 +1028,6 @@ sub getChanges {
 #############################################################
 # runCmd: run a command
 #                                                           
-# opts  - hashref of options
 # cmdin - the command to run
 # input - the text to pipe into cmd (optional)
 #
@@ -1051,16 +1058,17 @@ sub runCmd {
         return ($exitstatus,$out);
     }   
 
-    my $pid = open2 (\*CMD_OUT, \*CMD_IN, $cmd);
-    if (defined $input && "$input" ne "") {
-        print CMD_IN "$input\n";
-    }   
-    close CMD_IN;
-    my $out = do { local $/; <CMD_OUT> };
-    close CMD_OUT;
-    waitpid $pid, 0;
-    my $exitstatus = $? >> 8;
-    return ($exitstatus,$out);
+    my $c = $self->ssh_connect(
+        $self->getServer(),
+        $self->getUser(),
+        $self->getPort(),
+        $self->getSSHPub,
+        $self->getSSHPvt,
+        );
+        
+    $self->debugMsg(4,"runCmd:$cmd\ninput:$input\n");
+    my ($exit,$out) = $self->ssh_runCommand($c,$cmd,$input);
+    return ($exit,$out);
 
 }
 
@@ -1656,6 +1664,139 @@ sub print_idmap {
         print "$changeid:$idmap->{$changeid}{patchid}:$idmap->{$changeid}{project}\n";
     }
 }
+
+####################### SSH Operation Implementations #########################
+
+# ------------------------------------------------------------------------
+# ssh_getDefaultTargetPort
+#
+#      Returns the default target port for this protocol.
+#
+# Arguments:
+#      None
+# ------------------------------------------------------------------------
+
+sub ssh_getDefaultTargetPort() {
+    return 29418;
+}
+
+# ------------------------------------------------------------------------
+# ssh_connect
+#
+#      Opens a connection to the proxy target via ssh.
+#
+# Arguments:
+#      host   - Name or IP address of the proxy target.
+#      port   - (optional) Port to connect to.  Defaults to 22.
+# ------------------------------------------------------------------------
+
+sub ssh_connect {
+    my ($self,$host, $userName, $port, $pubKeyFile, $privKeyFile) = @_;
+
+    # Be sure that pubKeyFile, and privKeyFile are defined and that the two
+    # files actually exist.  Error out otherwise.
+
+    $pubKeyFile || die "ssh_connect: Public key file must be specified; use " .
+            "setSSHKeyFiles\n";
+
+    if (! -r $pubKeyFile) {
+        die "ssh_connect: Public key file '$pubKeyFile' does not exist or " .
+            "is not readable\n";
+    }
+
+    $privKeyFile || die "ssh_connect: Private key file must be specified; " .
+        "use setSSHKeyFiles\n";
+
+    if (! -r $privKeyFile) {
+        die "ssh_connect: Private key file '$privKeyFile' does not exist " .
+            "or is not readable\n";
+    }
+
+    # Ok, try and connect...
+
+    my $ssh2 = Net::SSH2->new();
+    my $result = eval {
+        $ssh2->connect($host, $port);
+    };
+
+    if (!$result) {
+        die "ssh_connect: Error connecting to $host:$port: $!\n";
+    }
+
+    if ($self->getDbg > 4) {
+        $ssh2->debug(1);
+    }
+    $self->debugMsg(5,"ssh_connect: Creating session : Connecting to " .
+         "$host:$port with userName=$userName pubKeyFile=$pubKeyFile " .
+         "privKeyFile=$privKeyFile");
+
+    # libssh2 has a bug where sometimes key-authentication fails even
+    # though the keyfiles are perfectly valid.  Retry upto three more times
+    # with a little sleep in between before giving up.
+
+    my $attemptCount = 1;
+    my $maxAttempts = 4;
+    my $errorString;
+    for (; $attemptCount <= $maxAttempts && 
+         !$ssh2->auth_publickey($userName, $pubKeyFile, $privKeyFile);
+         $attemptCount++) {
+        $errorString = ($ssh2->error())[2];
+        $self->debugMsg(5,"Authentication attempt $attemptCount failed with error: " .
+             "$errorString");
+        sleep 2;
+    }
+    
+    if ($attemptCount == $maxAttempts+1) {
+        my $msg =
+            "ssh_connect: Key authentication failed for $userName using " .
+            "the following key files:\n" .
+            "public key file: $pubKeyFile\n" .
+            "private key file: $privKeyFile\n" .
+            "error detail: $errorString";
+        
+        $self->errorMsg(4,$msg);
+    }
+
+    # Success! Save off the session handle.
+    my $context =  $ssh2;
+    $self->debugMsg(5,"ssh_connect: Connection succeeded!");
+
+    return $context;
+}
+
+# ------------------------------------------------------------------------
+# ssh_runCommand
+#
+#      Runs the given command-line on the proxy target and streams the
+#      result to stdout.
+#
+# Arguments:
+#      context       - Context object that contains connection info.
+#      cmdLine       - command-line to execute.
+# ------------------------------------------------------------------------
+
+sub ssh_runCommand {
+    my ($self,$context, $cmdLine,$input) = @_;
+
+    my $channel = $context->channel();
+    $channel->blocking(0);
+    $channel->ext_data('merge');
+    $channel->exec($cmdLine);
+    $channel->write($input);
+
+    my $out = "";
+    my $buf;
+    while (!$channel->eof()) {
+        if (defined($channel->read($buf, 4096))) {
+            $out .= $buf;
+        } else {
+            # We got no data; try again in a second.
+            sleep 1;
+        }
+    }
+    return ($channel->exit_status(),$out);
+}
+
 
 
 1;

@@ -38,5 +38,11 @@ if (!ElectricCommander::PropMod::loadPerlCodeFromProperty(
     print "Could not load ECGerrit.pm\n";
 }
 
-my $gt = new ECGerrit( $ec, "$opts->{gerrit_server}", $opts->{debug});
+my $gt = new ECGerrit( $ec, 
+    "$opts->{gerrit_user}", 
+    "$opts->{gerrit_server}", 
+    "$opts->{gerrit_port}", 
+    "$opts->{gerrit_public_key}", 
+    "$opts->{gerrit_private_key}", 
+    $opts->{debug});
 

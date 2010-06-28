@@ -42,7 +42,13 @@ foreach my $cfgName (keys %cfgs) {
     ## add other parms and values to opts
     $opts->{gerrit_cfg} = "$cfgName";
 
-    my $gt = new ECGerrit( $ec, "$opts->{gerrit_server}", $opts->{debug});
+    my $gt = new ECGerrit( $ec, 
+        "$opts->{gerrit_user}", 
+        "$opts->{gerrit_server}", 
+        "$opts->{gerrit_port}", 
+        "$opts->{gerrit_public_key}", 
+        "$opts->{gerrit_private_key}", 
+        $opts->{debug});
 
     #  process new gerrit changes
     $gt->processNewChanges($opts);
