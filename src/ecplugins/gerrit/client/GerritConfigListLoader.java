@@ -178,7 +178,7 @@ public class GerritConfigListLoader
         GetPropertyRequest request = new GetPropertyRequest(
                 "/plugins/EC-Gerrit/project/ui_forms/" + m_editorName);
 
-        request.setExpand("0");
+        request.setExpand(false);
         loader.addRequest(request, new EditorLoaderCallback("gerritcfg"));
         loader.load();
     }
