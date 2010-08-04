@@ -18,21 +18,21 @@ import com.google.gwt.http.client.RequestException;
 import com.google.gwt.http.client.Response;
 import com.google.gwt.xml.client.Node;
 
-import com.electriccloud.commander.gwt.client.CgiRequestProxy;
 import com.electriccloud.commander.gwt.client.ChainedCallback;
-import com.electriccloud.commander.gwt.client.CommanderError;
-import com.electriccloud.commander.gwt.client.CommanderRequestCallback;
 import com.electriccloud.commander.gwt.client.ComponentBase;
 import com.electriccloud.commander.gwt.client.HasErrorPanel;
-import com.electriccloud.commander.gwt.client.Loader;
 import com.electriccloud.commander.gwt.client.MultiRequestLoader;
 import com.electriccloud.commander.gwt.client.MultiRequestLoaderCallback;
-import com.electriccloud.commander.gwt.client.StringUtil;
-import com.electriccloud.commander.gwt.client.requests.GetPropertyRequest;
+import com.electriccloud.commander.gwt.client.legacyrequests.CommanderRequestCallback;
+import com.electriccloud.commander.gwt.client.legacyrequests.GetPropertyRequest;
+import com.electriccloud.commander.gwt.client.requests.CgiRequestProxy;
+import com.electriccloud.commander.gwt.client.requests.Loader;
+import com.electriccloud.commander.gwt.client.responses.CommanderError;
+import com.electriccloud.commander.gwt.client.util.StringUtil;
 
 import static com.electriccloud.commander.gwt.client.ComponentBaseFactory.getPluginName;
-import static com.electriccloud.commander.gwt.client.XmlUtil.getNodeByName;
-import static com.electriccloud.commander.gwt.client.XmlUtil.getNodeValueByName;
+import static com.electriccloud.commander.gwt.client.util.XmlUtil.getNodeByName;
+import static com.electriccloud.commander.gwt.client.util.XmlUtil.getNodeValueByName;
 
 public class GerritConfigListLoader
     extends Loader
@@ -42,7 +42,6 @@ public class GerritConfigListLoader
 
     private final GerritConfigList m_configList;
     private final CgiRequestProxy  m_cgiRequestProxy;
-    private final String           m_implementedMethod;
     private String                 m_editorName;
 
     //~ Constructors -----------------------------------------------------------
@@ -62,10 +61,8 @@ public class GerritConfigListLoader
             ChainedCallback  callback)
     {
         super(queryObject, callback);
-        m_configList        = configList;
-        m_implementedMethod = implementedMethod;
-        m_cgiRequestProxy   = new CgiRequestProxy(getPluginName(),
-                "gerrit.cgi");
+        m_configList      = configList;
+        m_cgiRequestProxy = new CgiRequestProxy(getPluginName(), "gerrit.cgi");
     }
 
     //~ Methods ----------------------------------------------------------------

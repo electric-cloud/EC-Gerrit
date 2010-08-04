@@ -17,7 +17,8 @@ import com.electriccloud.commander.gwt.client.ComponentBaseFactory;
 import com.electriccloud.commander.gwt.client.FormBase;
 import com.electriccloud.commander.gwt.client.PropertySheetEditor;
 
-import static com.electriccloud.commander.gwt.client.CommanderUrlBuilder.createPageUrl;
+import static com.electriccloud.commander.gwt.client.util.CommanderUrlBuilder.createPageUrl;
+
 
 public class ConfigurationManagementFactory
     extends ComponentBaseFactory
@@ -35,7 +36,7 @@ public class ConfigurationManagementFactory
             component = new CreateConfiguration();
         }
         else if ("edit".equals(panel)) {
-            String configName    = getGetParameter(jso, "configName");
+            String configName    = getGetParameter("configName");
             String propSheetPath = "/plugins/" + getPluginName()
                 + "/project/gerrit_cfgs/" + configName;
             String formXmlPath   = "/plugins/" + getPluginName()

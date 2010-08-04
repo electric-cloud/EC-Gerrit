@@ -21,18 +21,19 @@ import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.Widget;
 import com.google.gwt.xml.client.Node;
 
-import com.electriccloud.commander.gwt.client.CgiRequestProxy;
 import com.electriccloud.commander.gwt.client.ChainedCallback;
-import com.electriccloud.commander.gwt.client.CommanderError;
-import com.electriccloud.commander.gwt.client.CommanderRequestCallback;
-import com.electriccloud.commander.gwt.client.CommanderUrlBuilder;
 import com.electriccloud.commander.gwt.client.ListBase;
-import com.electriccloud.commander.gwt.client.requests.RunProcedureRequest;
+import com.electriccloud.commander.gwt.client.legacyrequests.CommanderRequestCallback;
+import com.electriccloud.commander.gwt.client.legacyrequests.RunProcedureRequest;
+import com.electriccloud.commander.gwt.client.requests.CgiRequestProxy;
+import com.electriccloud.commander.gwt.client.responses.CommanderError;
 import com.electriccloud.commander.gwt.client.ui.ListTable;
 import com.electriccloud.commander.gwt.client.ui.SimpleErrorBox;
+import com.electriccloud.commander.gwt.client.util.CommanderUrlBuilder;
 
-import static com.electriccloud.commander.gwt.client.CommanderUrlBuilder.createPageUrl;
-import static com.electriccloud.commander.gwt.client.CommanderUrlBuilder.createRedirectUrl;
+import static com.electriccloud.commander.gwt.client.util.CommanderUrlBuilder.createPageUrl;
+import static com.electriccloud.commander.gwt.client.util.CommanderUrlBuilder.createRedirectUrl;
+
 import static com.electriccloud.commander.gwt.client.ComponentBaseFactory.getPluginName;
 import static com.electriccloud.commander.gwt.client.ui.ListTable.constructActionList;
 

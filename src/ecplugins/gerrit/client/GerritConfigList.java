@@ -9,7 +9,6 @@
 
 package ecplugins.gerrit.client;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -20,26 +19,25 @@ import com.google.gwt.xml.client.Document;
 import com.google.gwt.xml.client.Node;
 import com.google.gwt.xml.client.XMLParser;
 
-import static com.electriccloud.commander.gwt.client.XmlUtil.getNodeByName;
-import static com.electriccloud.commander.gwt.client.XmlUtil.getNodeValueByName;
-import static com.electriccloud.commander.gwt.client.XmlUtil.getNodesByName;
+import static com.electriccloud.commander.gwt.client.util.XmlUtil.getNodeByName;
+import static com.electriccloud.commander.gwt.client.util.XmlUtil.getNodeValueByName;
+import static com.electriccloud.commander.gwt.client.util.XmlUtil.getNodesByName;
 
 public class GerritConfigList
 {
 
     //~ Instance fields --------------------------------------------------------
 
-    private final Map<String, GerritConfigInfo> m_configInfo        =
+    private final Map<String, GerritConfigInfo> m_configInfo =
         new TreeMap<String, GerritConfigInfo>();
-    private final Map<String, String>        m_editorDefinitions =
-        new HashMap<String, String>();
 
     //~ Methods ----------------------------------------------------------------
 
-    public void addConfig(String configName, String configServer)
+    public void addConfig(
+            String configName,
+            String configServer)
     {
-        m_configInfo.put(configName,
-            new GerritConfigInfo(configServer));
+        m_configInfo.put(configName, new GerritConfigInfo(configServer));
     }
 
     public String parseResponse(String cgiResponse)
@@ -93,7 +91,9 @@ public class GerritConfigList
         return m_configInfo.isEmpty();
     }
 
-    public void setEditorDefinition(String configServer, String editorDefiniton)
+    public void setEditorDefinition(
+            String configServer,
+            String editorDefiniton)
     {
     }
 
@@ -110,7 +110,7 @@ public class GerritConfigList
 
         public GerritConfigInfo(String server)
         {
-            m_server      = server;
+            m_server = server;
         }
     }
 }
