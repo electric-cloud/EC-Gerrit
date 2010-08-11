@@ -12,6 +12,7 @@ package ecplugins.gerrit.client;
 import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.core.client.JavaScriptObject;
 
+import com.electriccloud.commander.gwt.client.BrowserContext;
 import com.electriccloud.commander.gwt.client.ComponentBase;
 import com.electriccloud.commander.gwt.client.ComponentBaseFactory;
 import com.electriccloud.commander.gwt.client.FormBase;
@@ -36,7 +37,7 @@ public class ConfigurationManagementFactory
             component = new CreateConfiguration();
         }
         else if ("edit".equals(panel)) {
-            String configName    = getGetParameter("configName");
+            String configName    = BrowserContext.getInstance().getGetParameter("configName");
             String propSheetPath = "/plugins/" + getPluginName()
                 + "/project/gerrit_cfgs/" + configName;
             String formXmlPath   = "/plugins/" + getPluginName()

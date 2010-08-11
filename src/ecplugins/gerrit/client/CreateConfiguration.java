@@ -29,6 +29,7 @@ import com.electriccloud.commander.gwt.client.ui.FormBuilder;
 import com.electriccloud.commander.gwt.client.ui.FormTable;
 import com.electriccloud.commander.gwt.client.ui.SimpleErrorBox;
 import com.electriccloud.commander.gwt.client.util.CommanderUrlBuilder;
+import com.electriccloud.commander.gwt.client.util.XmlUtil;
 
 import static com.electriccloud.commander.gwt.client.util.CommanderUrlBuilder.createPageUrl;
 import static com.electriccloud.commander.gwt.client.util.CommanderUrlBuilder.createUrl;
@@ -116,7 +117,7 @@ public class CreateConfiguration
                             + responseNode);
                     }
 
-                    waitForJob(getNodeValueByName(responseNode, "jobId"));
+                    waitForJob(XmlUtil.getNodeValueByName(responseNode, "jobId"));
                 }
             });
 

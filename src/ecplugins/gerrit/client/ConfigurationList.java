@@ -30,6 +30,7 @@ import com.electriccloud.commander.gwt.client.responses.CommanderError;
 import com.electriccloud.commander.gwt.client.ui.ListTable;
 import com.electriccloud.commander.gwt.client.ui.SimpleErrorBox;
 import com.electriccloud.commander.gwt.client.util.CommanderUrlBuilder;
+import com.electriccloud.commander.gwt.client.util.XmlUtil;
 
 import static com.electriccloud.commander.gwt.client.util.CommanderUrlBuilder.createPageUrl;
 import static com.electriccloud.commander.gwt.client.util.CommanderUrlBuilder.createRedirectUrl;
@@ -112,7 +113,7 @@ public class ConfigurationList
                             + responseNode);
                     }
 
-                    waitForJob(getNodeValueByName(responseNode, "jobId"));
+                    waitForJob(XmlUtil.getNodeValueByName(responseNode, "jobId"));
                 }
             });
 
