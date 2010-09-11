@@ -411,9 +411,11 @@ sub testECState {
     foreach my $row (@changes) {
         my $msg = $row->{columns}{message};
         if ($msg =~ m/ec\:$changeid\:$patchid\:$state/) {
+            $self->debugMsg(2, "testECState found state set");
             return $row->{columns}{uuid};
         }
     }
+    $self->debugMsg(2, "testECState found state not set");
     return 0;
 }
   
@@ -1126,11 +1128,17 @@ sub processNewChanges {
         $self->showMsg( "Found change $changeid:$patchid");
         
         # see if any of them need processing
-        my $state = "jobAvailable";
+        my $uuid = 0;
+        my $state = "jobRunning";
         if ($opts->{devbuild_mode} eq "auto") {
+            $state = "jobCompleted";
+            $uuid += $self->testECState($changeid,$patchid,$state);
             $state = "jobRunning";
+            $uuid += $self->testECState($changeid,$patchid,$state);
+        } else {
+            $state = "jobAvailable";
+            $uuid += $self->testECState($changeid,$patchid,$state);
         }
-        my $uuid = $self->testECState($changeid,$patchid,$state);
         if ($uuid) {
             $self->debugMsg(1, "Already processed change=$changeid patchset=$patchid");
             next;
@@ -1161,7 +1169,8 @@ sub processNewChanges {
                 . "&parameters4_name=patchid"
                 . "&parameters4_value=$patchid";
         }
-        $self->setECState($project,$changeid, $patchid, $state, $msg, "","");
+        # DevBuildPrepare::annotate should do this...
+        #$self->setECState($project,$changeid, $patchid, $state, $msg, "","");
     }
 }
 
@@ -1307,7 +1316,7 @@ sub processFinishedJobs {
         # get rules from config
         my $cfg = new ElectricCommander::PropDB($self->getCmdr(),"/myProject/gerrit_cfgs");
         my $rules = $cfg->getCol($props->{gerrit_cfg},"dev_build_rules");
-        my ($filters, $actions) = parseRules("$rules");
+        my ($filters, $actions) = $self->parseRules("$rules");
         my $cat   = "";
         my $value = "";
         if ($outcome eq "success") {
