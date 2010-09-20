@@ -1,119 +1,123 @@
 <helpDefinition>
-<title>Gerrit Integration Help</title>
+<title>Gerrit Help</title>
 <componentContainer>
-<link href="/commander/styles/help.css" rel="stylesheet" type="text/css" />
+	<LINK REL="StyleSheet" HREF="../../plugins/EC-CppNcss/pluginhelp.css" TYPE="text/css" MEDIA="screen"/>
+	<div class="help" >
 <table class="help" width="75%">
 <tr><td width="75%">
-<h1 class="help">ElectricCommander Gerrit Integration</h1>
-<h1 class="help">Overview</h1>
-<h2 class="help">What is Gerrit?</h2>
-<p class="help">The <a href="http://gerrit.googlecode.com/svn/documentation/2.1.2/index.html">Gerrit Code Review system</a>
-is used by the Android Open Source Project and commercial vendors to manage 
-contributions to Android source code repositories. 
-Gerrit is used for non-Android projects also and provides a systematic process for evaluating and approving source code changes before they are committed. Gerrit provides facilities to park changes until they are approved by appropriate engineers. Engineers are notified of a change (or they sign into the Gerrit server to find new changes) and must decide if the change should be accepted into the code base. This process is typically implemented by manual code review and/or pulling changes into a local workspace, building the changes, and running some tests.
-</p>
-<h2 class="help">What is the integration?</h2>
+<h1 class="help">Gerrit</h1>
+
+<h2 class="help">Overview</h2>
+
+<h3 class="help">What is Gerrit?</h3>
 <p class="help">
-The ElectricCommander Gerrit integration simplifies the build/test approval process. The goal is to run tests automatically before the reviewer looks at the change, although a setting is available to run builds on demand only. 
-The Android team published  a <a href="http://source.android.com/submit-patches/workflow">diagram</a>
-that describes the workflow for submitting changes 
-(see link). Note the step after "A" titled "Verifier patches the commit to their local client, then builds and tests 
-the change".  
-This is the step ElectricCommander automates for you. The integration works closely with Gerrit by adding 
-links to run builds and to finished builds directly in Gerrit change comments. Also, ElectricCommander can 
-act as a reviewer by automatically setting a Gerrit category to a value based on the build 
-success or failure.</p>
-<h2 class="help">How does it work?</h2>
-<p class="help">The integration communicates with the Gerrit server to retrieve information about the 
-change, including the commands used to pull down files in a patch set. First, a full repository is 
-initialized to the head of a specified branch. Second, changes submitted to Gerrit (adds/deletes/modifies)
-are overlaid. Third, a build you create is run. This build can do whatever you need from running a simple 
-"make" to running complicated automatic test suites involving physical hardware. You decide what determines 
-test success or failure and ElectricCommander annotates Gerrit with your build results.  </p>
-<h2 class="help">Work directories</h2>
-<p class="help">Each build is conducted in one or more "work directories". If the directory does not exist,
- a complete init and sync is completed to get the head of the current branch. Because this process can be 
-time consuming, the integration also supports using cached directories. You can setup one or more locations 
-where builds can be run. Directory contents are not deleted after a build so the integration only needs to 
-reset and sync to the head of the branch at the start of each build. Assuming you build the same branch many 
-times, each reset and sync will run much faster than a full init and sync. Changes are applied as before.
+The <a href="http://gerrit.googlecode.com/svn/documentation/2.1.2/index.html">Gerrit Code Review system</a> is used by the Android Open Source Project and commercial vendors to manage 
+contributions to Android source code repositories. Gerrit is used for non-Android projects also and provides a systematic process for evaluating and approving source code changes before they are committed. Gerrit provides facilities to park changes until they are approved by appropriate engineers. Engineers are notified of a change (or they sign into the Gerrit server to find new changes) and must decide if the change should be accepted into the code base. This process is typically implemented by manual code review and/or pulling changes into a local workspace, building the changes, and running some tests.
 </p>
-<h1 class="help">Configuring Gerrit for use with ElectricCommander</h1>
-<h2 class="help">Prerequisites</h2>
-<ul class="help">
+
+<h3 class="help">What is the plugin?</h3>
+<p class="help">
+The ElectricCommander Gerrit plugin simplifies the build/test approval process. The goal is to run tests automatically before the reviewer looks at the change, although a setting is available to run builds on demand only. The Android team published a <a href="http://source.android.com/submit-patches/workflow">diagram</a> that describes the workflow for submitting changes (see link). Note the step after "A" titled "Verifier patches the commit to their local client, then builds and tests the change". This is the step ElectricCommander automates for you. The plugin works closely with Gerrit by adding links to run builds and to finished builds directly in Gerrit change comments. Also, ElectricCommander can act as a reviewer by automatically setting a Gerrit category to a value based on the build success or failure.
+</p>
+
+<h3 class="help">How does it work?</h3>
+<p class="help">The plugin communicates with the Gerrit server to retrieve information about the 
+change, including the commands used to pull down files in a patch set. First, a full repository is 
+initialized to the head of a specified branch. Second, changes submitted to Gerrit (adds/deletes/modifies) are overlaid. Third, a build you create is run. This build can do whatever you need from running a simple "make" to running complicated automatic test suites involving physical hardware. You decide what determines test success or failure and ElectricCommander annotates Gerrit with your build results.
+</p>
+
+<h3 class="help">Work directories</h3>
+<p class="help">
+Each build is conducted in one or more "work directories". If the directory does not exist, a complete init and sync is completed to get the head of the current branch. Because this process can be time consuming, the plugin also supports using cached directories. You can setup one or more locations where builds can be run. Directory contents are not deleted after a build so the plugin only needs to reset and sync to the head of the branch at the start of each build. Assuming you build the same branch many times, each reset and sync will run much faster than a full init and sync. Changes are applied as before.
+</p>
+
+<h2 class="help">Configuring Gerrit for use with ElectricCommander</h2>
+<h3 class="help">Prerequisites</h3>
+<ul>
 <li>Gerrit v2.1.2.3 - Previous versions are not supported.</li>
 <li>ElectricCommander v3.6.0 or greater.</li>
 <li>Familiarity with Gerrit server administration</li>
 <li>Familiarity with ElectricCommander server administration</li>
 </ul>
-<h2 class="help">Setting up the Gerrit server</h2>
+
+<h3 class="help">Setting up the Gerrit server</h3>
 <p class="help">
-The integration logs into Gerrit as a user and performs tasks, including setting values for the reviewer, 
-verifier, and so on. While you can use any user for this purpose, creating a special "ElectricCommander" 
-user makes it clear which activities were done by the integration and which were done by a person. After 
-choosing a user, setup security so the specified user can login (using ssh keys) from the ElectricCommander 
-server and that user has "Read Access" to "--All Projects--" or to the projects you want to monitor with 
-ElectricCommander. Test login with this command: </p>
-<p class="help">      shell> echo "\d" | ssh -p 29418 user@host gerrit gsql</p>
-<p class="help">Next, decide which Gerrit categories you want ElectricCommander to use to record build 
-successes or failures. You can use an existing category (Verified, Code Review) or create a new category. 
-To create a special "ElectricCommander" category, follow the instructions in Gerrit documentation. See the 
-sample script below (assumes user "commander")</p>
+The plugin logs into Gerrit as a user and performs tasks, including setting values for the reviewer, 
+verifier, and so on. While you can use any user for this purpose, creating a special "ElectricCommander" user makes it clear which activities were done by the plugin and which were done by a person. After choosing a user, setup security so the specified user can log in (using ssh keys) from the ElectricCommander server and that user has "Read Access" to "--All Projects--" or to the projects you want to monitor with ElectricCommander. Test login with this command:
+</p>
+
+<pre class="help">
+shell> echo "\d" | ssh -p 29418 user@host gerrit gsql
+</pre>
+
+<p class="help">
+Next, decide which Gerrit categories you want ElectricCommander to use to record build 
+successes or failures. You can use an existing category (Verified, Code Review) or create a new category. To create a special "ElectricCommander" category, follow the instructions in Gerrit documentation. See the sample script below (assumes user "commander")
+</p>
+
 <pre class="help">
 echo "INSERT INTO APPROVAL_CATEGORIES 
   \(NAME,ABBREVIATED_NAME,POSITION,FUNCTION_NAME,COPY_MIN_SCORE,CATEGORY_ID\) 
   VALUES\('ElectricCommander',NULL,3,'NoOp','N','CMDR'\);" 
   | ssh -p 29418 commander@localhost gerrit gsql
 </pre>
+
 <pre class="help">
 echo "INSERT INTO APPROVAL_CATEGORY_VALUES 
   \(NAME,CATEGORY_ID, VALUE\) 
   VALUES\(build succeeded','CMDR','1'\);" 
   | ssh -p 29418 commander@localhost gerrit gsql
 </pre>
+
 <pre class="help">
 echo "INSERT INTO APPROVAL_CATEGORY_VALUES 
   \(NAME,CATEGORY_ID, VALUE\) 
   VALUES\('No score','CMDR','0'\);" 
   | ssh -p 29418 commander@localhost gerrit gsql
 </pre>
+
 <pre class="help">
 echo "INSERT INTO APPROVAL_CATEGORY_VALUES 
   \(NAME,CATEGORY_ID, VALUE\) 
   VALUES\('build failed','CMDR','-1'\);" 
   | ssh -p 29418 commander@localhost gerrit gsql
 </pre>
+
 <pre class="help">
 echo "INSERT INTO REF_RIGHTS 
   \(MIN_VALUE,MAX_VALUE,PROJECT_NAME,REF_PATTERN,CATEGORY_ID,GROUP_ID\) 
   VALUES \(-1,1,'-- All Projects --','refs/heads/*','CMDR',3\);" 
   | ssh -p 29418 commander@localhost gerrit gsql
 </pre>
+
 <pre class="help">
 echo "INSERT INTO PROJECT_RIGHTS 
   \(MIN_VALUE,MAX_VALUE,PROJECT_NAME,CATEGORY_ID,GROUP_ID\) 
   VALUES \(-1,1,'-- All Projects --','CMDR',3\);" 
   | ssh -p 29418 commander@localhost gerrit gsql
 </pre>
-<p class="help">You will need to restart your Gerrit server after making this change. Always backup your Gerrit server before making changes
-directly to the database.</p>
-<h2 class="help">Resources</h2>
+
 <p class="help">
-Create one or more ElectricCommander resources where your builds will run. Group these resources in one or 
-more pools. Later, when you create a Gerrit Integration Configuration you can specify a pool name for the 
-resources to use. Also, set the special property " gerrit_working_dir" on each resource. The value of this 
-property is the directory where you want to put build sources. This directory can be relative to the current 
-directory (which is the normal ElectricCommander workspace created for the build) or absolute. When the 
-integration runs, it checks if the directory exists. If the directory is found, ElectricCommander assumes 
-there is a repository and only syncs changes. If the directory is not found, the integration creates one 
-and does a full init and sync of the repository.</p>
-<h1 class="help">Configurations</h1>
-<p class="help">You can create one or more Gerrit Integration configurations to specify how you want the 
-integration to work. To manage your Gerrit Integration Configurations, go to the Administration | Plugins page 
+You must restart your Gerrit server after making this change. Always backup your Gerrit server before making changes directly to the database.
+</p>
+
+<h3 class="help">Resources</h3>
+<p class="help">
+Create one or more ElectricCommander resources where your builds will run. Group these resources in one or more pools. Later, when you create a Gerrit plugin configuration, you can specify a pool name for the resources to use. Also, set the special property "gerrit_working_dir" on each resource. The value of this property is the directory where you want to put build sources. This directory can be relative to the current directory (which is the normal ElectricCommander workspace created for the build) or absolute. When the plugin runs, it checks if the directory exists. If the directory is found, ElectricCommander assumes there is a repository and only syncs changes. If the directory is not found, the plugin creates one and does a full init and sync of the repository.
+</p>
+
+<h2 class="help">Configurations</h2>
+<p class="help">
+You can create one or more Gerrit plugin configurations to specify how you want the 
+plugin to work. To manage your Gerrit plugin configurations, go to the Administration | Plugins page 
 and select the "<a href="/commander/pages/@PLUGIN_NAME@/configurations">Configure</a>"
-link to the right of the EC-Gerrit plugin. This link provides a list of configurations with menu options 
-to edit/delete existing configurations.</p>
-<p class="help">Each configuration has the following properties:</p>
+link to the right of the EC-Gerrit plugin. This link provides a list of configurations with menu options to edit/delete existing configurations.
+</p>
+
+<p class="help">
+Each configuration has the following properties:
+</p>
+
 <table class="help" border="1" width="60%">
 <tr>
 <th width="25%">Property</th>
@@ -137,11 +141,11 @@ to edit/delete existing configurations.</p>
 </tr>
 <tr>
 <td>Gerrit Public Key File</td>
-<td>Full path to a file containing the public key for the SSH connection to the Gerrit server. (i.e. id_rsa.pub)</td>
+<td>Full path to a file containing the public key for the SSH connection to the Gerrit server. (For example, id_rsa.pub)</td>
 </tr>
 <tr>
 <td>Gerrit Private Key File</td>
-<td>Full path to a file containing the private key for the SSH connection to the Gerrit server. (i.e. id_rsa)</td>
+<td>Full path to a file containing the private key for the SSH connection to the Gerrit server. (For example, id_rsa)</td>
 </tr>
 <tr>
 <td>ElectricCommander Server</td>
@@ -200,9 +204,7 @@ FILTER COUNT VRIF eq 0 USER ne commander
 FILTER MAX VRIF le 0 USER eq commander
 ACTION SUCCESS VRIF +1 
 ACTION ERROR VRIF -1
-Which is translated as: include 
-all changes with at least a +2 Code Review, no -2 Code Reviews, no Verifications by anyone other than the commander
-user, no Verifications greater than 0 from the commander user. When you complete the build, set the Verification
+Which is translated as: include all changes with at least a +2 Code Review, no -2 Code Reviews, no Verifications by anyone other than the Commander user, no Verifications greater than 0 from the Commander user. When you complete the build, set the Verification
 to +1 if the build succeeded and -1 if the build failed.
 </pre></td></tr>
 <tr>
@@ -210,25 +212,30 @@ to +1 if the build succeeded and -1 if the build failed.
 <td>The debug level for output [0 | 1 | 2 | 3]</td>
 </tr>
 </table>
-<h1 class="help">Developer Builds - Processing Single Patchsets</h1>
+
+<h2 class="help">Developer Builds - Processing Single Patchsets</h2>
 <p class="help">
-Developer builds are used to build a single patchset submitted by a developer. ElectricCommander scans 
-Gerrit on a regular basis to find new patchsets to process. What the integration does depends on the value 
-you set for "Developer Build Mode" in your integration configuration. </p>
+Developer builds are used to build a single patchset submitted by a developer. ElectricCommander scans Gerrit on a regular basis to find new patchsets to process. What the plugin does depends on the value you set for "Developer Build Mode" in your plugin configuration.
+</p>
+
 <table border="1" valign="top" class="help" width="60%">
 <tr valign="top"><td>Off</td><td>No processing will occur.</td></tr>
-<tr valign="top"><td>Manual</td><td>The integration adds a comment to Gerrit with a link
-to an ElectricCommander job that can build the change. To use this mode your 
-users will need access to ElectricCommander.</td></tr>
-<tr valign="top"><td>Auto</td><td>The integration automatically starts a build. </td></tr>
+<tr valign="top"><td>Manual</td><td>The plugin adds a comment to Gerrit with a link
+to an ElectricCommander job that can build the change. To use this mode, 
+users must have access to ElectricCommander.</td></tr>
+<tr valign="top"><td>Auto</td><td>The plugin automatically starts a build. </td></tr>
 </table>
-<p class="help">The integration adds the following comments and approvals to Gerrit:
-A link to start a build (manual mode), a build has been started, A build completed</p>
-<h2 class="help">Creating a build procedure</h2>
-<p class="help">This integration provides a framework for getting the proper source code in a working directory. You supply
-the actual build/test logic. An example developer build procedure, 
-<a href="/commander/link/projectDetails/projects/@PLUGIN_NAME@/procedures/DevBuild Example">"DevBuild Example"</a>
-is provided in the EC-Gerrit plugin project. The structure of your build procedure should be:
+
+<p class="help">
+The plugin adds the following comments and approvals to Gerrit:
+A link to start a build (manual mode), a build has been started, a build completed
+</p>
+
+<h3 class="help">Creating a build procedure</h3>
+<p class="help">
+This plugin provides a framework for getting the proper source code in a working directory. You supply the actual build/test logic. An example developer build procedure, 
+<a href="/commander/link/projectDetails/projects/@PLUGIN_NAME@/procedures/DevBuild Example">"DevBuild Example"</a> is provided in the EC-Gerrit plugin project. The structure of your build procedure should be:
+
 <pre class="help">
 1) Subprocedure call to EC-Gerrit plugin "DevBuildPrepare"
    * Add a comment to Gerrit patchset that this patch is being built by ElectricCommander
@@ -239,21 +246,21 @@ is provided in the EC-Gerrit plugin project. The structure of your build procedu
 3) Subprocedure call to EC-Gerrit plugin "DevBuildCleanup"
    * Add a comment to Gerrit patchset that this build is complete
    * Add an approval if rules specified in "Developer Build Rules"
-</pre></p>
-<h1 class="help">Team Builds - Processing Multiple Patchsets</h1>
+</pre>
+</p>
+
+<h2 class="help">Team Builds - Processing Multiple Patchsets</h2>
 <p class="help">
-Team Builds are designed for the build and release team. These builds combine changes of one or more patchsets 
-to test how multiple changes will work together. The integration finds patchsets based on rules provided in 
-the configuration "Team Build Rules" property. The integration does not automatically run team builds. 
-You must run team build procedures from ElectricCommander. </p>
-<h2 class="help">Creating a team procedure</h2>
-<p class="help">This integration provides a framework to get the proper source code in a working 
-directory. You supply the actual build/test logic. An example team build procedure, 
-"<a href="/commander/link/projectDetails/projects/@PLUGIN_NAME@/procedures/TeamBuildExample">TeamBuildExample</a>"
- is provided in the EC-Gerrit plugin project. Your build procedure structure should be similar to:
+Team builds are designed for the build and release team. These builds combine changes of one or more patchsets to test how multiple changes will work together. The plugin finds patchsets based on rules provided in the configuration "Team Build Rules" property. The plugin does not run team builds automatically. You must run team build procedures from ElectricCommander.
+</p>
+
+<h3 class="help">Creating a team procedure</h3>
+<p class="help">
+This plugin provides a framework to get the proper source code in a working directory. You supply the actual build/test logic. An example team build procedure, "<a href="/commander/link/projectDetails/projects/@PLUGIN_NAME@/procedures/TeamBuildExample">TeamBuildExample</a>" is provided in the EC-Gerrit plugin project. Your build procedure structure should be similar to:
+
 <pre class="help">
 1) Subprocedure call to EC-Gerrit plugin "TeamBuildPrepare"
-   * Adds a comment to each Gerrit patchset that this patch is being built by ElectricCommander
+   * Add a comment to each Gerrit patchset that this patch is being built by ElectricCommander
    * Initialize the working directory
    * Get the tip of the branch
    * Overlay the changes for each patchset
@@ -261,15 +268,33 @@ directory. You supply the actual build/test logic. An example team build procedu
 3) Subprocedure call to EC-Gerrit plugin "TeamBuildCleanup"
    * Adds a comment to each Gerrit patchset that this build is complete
    * Add an approval if rules specified in "Team Build Rules"
-</pre></p>
-<h1 class="help">Customizing repository commands</h1>
-<p class="help">The logic to get code from the repository can be customized.  You can modify perl code 
-snippets stored in properties on the integration project "pseudo_code" property sheet that can be modified.</p>
+</pre>
+</p>
+
+<h2 class="help">Customizing Repository Commands</h2>
+<p class="help">
+The logic to get code from the repository can be customized.  You can modify perl code 
+snippets stored in properties on the plugin project "pseudo_code" property sheet that can be modified.
+</p>
+
 <table class="help" border="1" width="50%">
-<tr valign="top" ><th width="25%">Property</th><th width="25%">Default</th><th width="25%">Notes</th></tr>
-<tr valign="top" ><td>repo_cmd</td><td>repo</td><td>The repo command to use. Allows easily switching to git instead of repo</td></tr>
-<tr valign="top"><td>cmd_magic_dir</td><td>.repo</td><td>The directory where the repo clone exists. Set to .git if using git instead of repo</td></tr>
-<tr valign="top"><td>cmd_clone</td>
+<tr valign="top" >
+<th width="25%">Property</th>
+<th width="25%">Default</th>
+<th width="25%">Notes</th>
+</tr>
+<tr valign="top">
+<td>repo_cmd</td>
+<td>repo</td>
+<td>The repo command to use. Allows easily switching to git instead of repo</td>
+</tr>
+<tr valign="top">
+<td>cmd_magic_dir</td>
+<td>.repo</td>
+<td>The directory where the repo clone exists. Set to .git if using git instead of repo</td>
+</tr>
+<tr valign="top">
+<td>cmd_clone</td>
 <td><pre class="help">if (!-d "{gerrit_working_dir}") {
     mkdir "{gerrit_working_dir}";
 }
@@ -280,27 +305,30 @@ my ($exit,$out) = $gt->runCmd("{repo_cmd} init -u "
    . qw({gerrit_branch}) 
    . " -m " 
    . qw({gerrit_manifest}) 
-   . " 2>&amp;1");
-</pre></td><td>Only called if {gerrit_working_dir} does not exist. Otherwise assumes it is a cached working dir</td></tr>
+   . " 2>&amp;1");</pre></td>
+<td>Only called if {gerrit_working_dir} does not exist. Otherwise assumes it is a cached working dir</td>
+</tr>
 <tr valign="top">
-<td>cmd_update</td><td>
-<pre class="help">chdir "{gerrit_working_dir}";
+<td>cmd_update</td>
+<td><pre class="help">chdir "{gerrit_working_dir}";
 my ($exit,$out) = $gt->runCmd("{repo_cmd} sync 2>&amp;1");
-</pre></td><td>Update the clones repo to the latest code base.</td></tr>
+</pre></td><td>Update the clones repo to the latest code base.</td>
+</tr>
 <tr valign="top">
 <td>cmd_revert</td>
-<td> <pre class="help">chdir "{gerrit_working_dir}";
+<td><pre class="help">chdir "{gerrit_working_dir}";
 print "Setting tree back to committed changes only\n";
 my ($exit,$out) = $gt->runCmd("{repo_cmd} forall "
   . " -c \"git reset"
   . " --hard m/{gerrit_branch}\"");
 ($exit,$out) = $gt->runCmd("{repo_cmd} forall "
   . " -c \"git clean"
-  . " -xfd\"");
-</pre></td><td>Reset working directory to match repo</td></tr>
+  . " -xfd\"");</pre></td>
+<td>Reset working directory to match repo</td>
+</tr>
 <tr valign="top">
-<td>cmd_overlay</td><td>
-<pre class="help">chdir "{gerrit_working_dir}";
+<td>cmd_overlay</td>
+<td><pre class="help">chdir "{gerrit_working_dir}";
 print "Pulling proposed changes into tree\n";
 my ($exit,$out) = $gt->runCmd("git pull " 
    . qw({gerrit_server}) 
@@ -311,21 +339,29 @@ my ($exit,$out) = $gt->runCmd("git pull "
    . "/" 
    . qw({changeid}) 
    ."/" 
-   . qw({patchid}));
-</pre></td><td>Pull changes from Gerrit. Called once for Developer build, multiple times for Team Build.</td></tr>
+   . qw({patchid}));</pre></td>
+<td>Pull changes from Gerrit. Called once for Developer build, multiple times for Team Build.</td></tr>
 </table>
-<h1 class="help">Customizations to Schedule</h1>
-<p class="help">The integration scans your Gerrit server for changes every 15 minutes-this is an 
-ElectricCommander schedule. If you would like to change the frequency, modify the 
-"<a href="/commander/link/editSchedule/projects/@PLUGIN_NAME@/schedules/Gerrit New Change Scanner">Gerrit New Change Scanner</a>" schedule.</p>
-<h1 class="help">Release Notes</h1>
-<h2 class="help">EC-Gerrit-1.1.0.0</h2>
+
+<h2 class="help">Customizations to Schedule</h2>
+<p class="help">
+The plugin scans your Gerrit server for changes every 15 minutes--this is an 
+ElectricCommander schedule. If you want to change the frequency, modify the 
+"<a href="/commander/link/editSchedule/projects/@PLUGIN_NAME@/schedules/Gerrit New Change Scanner">Gerrit New Change Scanner</a>" schedule.
+</p>
+
+<h2 class="help">Release Notes</h2>
+<h3 class="help">EC-Gerrit-1.1.0.0</h3>
 <p class="help">-support Gerrit v2.1.3
 <br>-use the command line "review" command instead of "approve"</br>
 <br>-uses perl Net:SSH2 library for ssh commands instead of shelling to SSH command</br>
-<br>-break up configuration of Gerrit server into 3 parts (server/user/port)</br>
+<br>-break up configuration of Gerrit server into three parts (server/user/port)</br>
 <br>-add configuration for ssh key locations (will not search ~/.ssh)</br>
 </p>
-</td><td width="25%"></td></tr></table>
+
+</td>
+<td width="25%"></td>
+</tr>
+</table>
 </componentContainer>
 </helpDefinition>
