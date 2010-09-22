@@ -352,12 +352,13 @@ ElectricCommander schedule. If you want to change the frequency, modify the
 
 <h2 class="help">Release Notes</h2>
 <h3 class="help">EC-Gerrit-1.1.0.0</h3>
-<p class="help">-support Gerrit v2.1.3
-<br>-use the command line "review" command instead of "approve"</br>
-<br>-uses perl Net:SSH2 library for ssh commands instead of shelling to SSH command</br>
-<br>-break up configuration of Gerrit server into three parts (server/user/port)</br>
-<br>-add configuration for ssh key locations (will not search ~/.ssh)</br>
-</p>
+<ul>
+<li>Support Gerrit v2.1.3</li>
+<li>Use the command line "review" command instead of "approve"</li>
+<li>Use perl Net:SSH2 library for SSH commands instead of shelling to SSH command</li>
+<li>Break up configuration of the Gerrit server into three parts (server/user/port)</li>
+<li>Add configuration for SSH key locations (will not search ~/.ssh)</li>
+</ul>
 
 </td>
 <td width="25%"></td>
