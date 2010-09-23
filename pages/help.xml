@@ -1,7 +1,7 @@
 <helpDefinition>
 <title>Gerrit Help</title>
 <componentContainer>
-	<LINK REL="StyleSheet" HREF="../../plugins/EC-CppNcss/pluginhelp.css" TYPE="text/css" MEDIA="screen"/>
+	<LINK REL="StyleSheet" HREF="../../plugins/EC-Gerrit/pluginhelp.css" TYPE="text/css" MEDIA="screen"/>
 	<div class="help" >
 <table class="help" width="75%">
 <tr><td width="75%">
