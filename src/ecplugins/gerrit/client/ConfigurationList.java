@@ -23,8 +23,8 @@ import com.google.gwt.xml.client.Node;
 
 import com.electriccloud.commander.gwt.client.ChainedCallback;
 import com.electriccloud.commander.gwt.client.ListBase;
-import com.electriccloud.commander.gwt.client.legacyrequests.CommanderRequestCallback;
 import com.electriccloud.commander.gwt.client.legacyrequests.RunProcedureRequest;
+import com.electriccloud.commander.gwt.client.protocol.xml.CommanderRequestCallback;
 import com.electriccloud.commander.gwt.client.requests.CgiRequestProxy;
 import com.electriccloud.commander.gwt.client.responses.CommanderError;
 import com.electriccloud.commander.gwt.client.ui.ListTable;
