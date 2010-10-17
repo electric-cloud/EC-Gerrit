@@ -21,13 +21,13 @@ import com.google.gwt.xml.client.Node;
 import com.electriccloud.commander.gwt.client.ChainedCallback;
 import com.electriccloud.commander.gwt.client.ComponentBase;
 import com.electriccloud.commander.gwt.client.HasErrorPanel;
+import com.electriccloud.commander.gwt.client.legacyrequests.CommanderError;
 import com.electriccloud.commander.gwt.client.legacyrequests.GetPropertyRequest;
 import com.electriccloud.commander.gwt.client.legacyrequests.MultiRequestLoader;
 import com.electriccloud.commander.gwt.client.legacyrequests.MultiRequestLoaderCallback;
 import com.electriccloud.commander.gwt.client.protocol.xml.CommanderRequestCallback;
 import com.electriccloud.commander.gwt.client.requests.CgiRequestProxy;
 import com.electriccloud.commander.gwt.client.requests.Loader;
-import com.electriccloud.commander.gwt.client.responses.CommanderError;
 import com.electriccloud.commander.gwt.client.util.StringUtil;
 
 import static com.electriccloud.commander.gwt.client.ComponentBaseFactory.getPluginName;
@@ -241,7 +241,7 @@ public class GerritConfigListLoader
 
             // There was no property value found in the response
             String errorMsg = "Editor '" + m_editorName
-                + "' not found for Gerrit plugin '" + m_configPlugin + "'";
+                    + "' not found for Gerrit plugin '" + m_configPlugin + "'";
 
             if (m_queryObject instanceof HasErrorPanel) {
                 ((HasErrorPanel) m_queryObject).addErrorMessage(errorMsg);

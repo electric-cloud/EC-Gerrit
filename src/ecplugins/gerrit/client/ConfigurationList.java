@@ -1,3 +1,4 @@
+
 // ConfigurationList.java --
 //
 // ConfigurationList.java is part of ElectricCommander.
@@ -23,20 +24,19 @@ import com.google.gwt.xml.client.Node;
 
 import com.electriccloud.commander.gwt.client.ChainedCallback;
 import com.electriccloud.commander.gwt.client.ListBase;
+import com.electriccloud.commander.gwt.client.legacyrequests.CommanderError;
 import com.electriccloud.commander.gwt.client.legacyrequests.RunProcedureRequest;
 import com.electriccloud.commander.gwt.client.protocol.xml.CommanderRequestCallback;
 import com.electriccloud.commander.gwt.client.requests.CgiRequestProxy;
-import com.electriccloud.commander.gwt.client.responses.CommanderError;
 import com.electriccloud.commander.gwt.client.ui.ListTable;
 import com.electriccloud.commander.gwt.client.ui.SimpleErrorBox;
 import com.electriccloud.commander.gwt.client.util.CommanderUrlBuilder;
 import com.electriccloud.commander.gwt.client.util.XmlUtil;
 
-import static com.electriccloud.commander.gwt.client.util.CommanderUrlBuilder.createPageUrl;
-import static com.electriccloud.commander.gwt.client.util.CommanderUrlBuilder.createRedirectUrl;
-
 import static com.electriccloud.commander.gwt.client.ComponentBaseFactory.getPluginName;
 import static com.electriccloud.commander.gwt.client.ui.ListTable.constructActionList;
+import static com.electriccloud.commander.gwt.client.util.CommanderUrlBuilder.createPageUrl;
+import static com.electriccloud.commander.gwt.client.util.CommanderUrlBuilder.createRedirectUrl;
 
 /**
  * EC-Gerrit Configuration List.
@@ -53,7 +53,7 @@ public class ConfigurationList
 
     public ConfigurationList()
     {
-        super("ecgc","Gerrit Configurations", "All Configurations");
+        super("ecgc", "Gerrit Configurations", "All Configurations");
         m_configList = new GerritConfigList();
     }
 
@@ -74,8 +74,8 @@ public class ConfigurationList
     {
         setStatus("Loading...");
 
-        GerritConfigListLoader loader = new GerritConfigListLoader(m_configList, this,
-                new ChainedCallback() {
+        GerritConfigListLoader loader = new GerritConfigListLoader(m_configList,
+                this, new ChainedCallback() {
                     @Override public void onComplete()
                     {
                         loadList();
@@ -110,10 +110,11 @@ public class ConfigurationList
                     if (getLog().isDebugEnabled()) {
                         getLog().debug(
                             "Commander runProcedure request returned: "
-                            + responseNode);
+                                + responseNode);
                     }
 
-                    waitForJob(XmlUtil.getNodeValueByName(responseNode, "jobId"));
+                    waitForJob(
+                        XmlUtil.getNodeValueByName(responseNode, "jobId"));
                 }
             });
 
@@ -146,7 +147,8 @@ public class ConfigurationList
                     "editConfiguration");
 
             urlBuilder.setParameter("configName", configName);
-            urlBuilder.setParameter("redirectTo", createRedirectUrl().buildString());
+            urlBuilder.setParameter("redirectTo",
+                createRedirectUrl().buildString());
 
             Anchor editConfigLink = new Anchor("Edit",
                     urlBuilder.buildString());
@@ -156,7 +158,7 @@ public class ConfigurationList
             DeleteClickHandler dch              = new DeleteClickHandler(
                     new DeleteConfirmationDialog(configName,
                         "Are you sure you want to delete the Gerrit configuration '"
-                        + configName + "'?") {
+                            + configName + "'?") {
                         @Override protected void doDelete()
                         {
                             deleteConfiguration(m_objectId);
@@ -191,13 +193,15 @@ public class ConfigurationList
 
         try {
             cgiRequestProxy.issueGetRequest(cgiParams, new RequestCallback() {
-                    @Override public void onError(Request request,
+                    @Override public void onError(
+                            Request   request,
                             Throwable exception)
                     {
                         addErrorMessage("CGI request failed:: ", exception);
                     }
 
-                    @Override public void onResponseReceived(Request request,
+                    @Override public void onResponseReceived(
+                            Request  request,
                             Response response)
                     {
                         String responseString = response.getText();
@@ -215,7 +219,7 @@ public class ConfigurationList
                         else {
                             SimpleErrorBox      error      = new SimpleErrorBox(
                                     "Error occurred during configuration deletion: "
-                                    + responseString);
+                                        + responseString);
                             CommanderUrlBuilder urlBuilder = CommanderUrlBuilder
                                     .createUrl("jobDetails.php")
                                     .setParameter("jobId", jobId);
