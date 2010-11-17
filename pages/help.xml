@@ -42,17 +42,14 @@ Each build is conducted in one or more "work directories". If the directory does
 
 <h3 class="help">Setting up the Gerrit server (Alternative method)</h3>
 <p class="help">
- The easier way to setup the Gerrit server to be used with the commander is by running the GerritSetup procedure in the project.
- This will set the Commander user in gerrit and also the approval bits needed for the integration.
- Please notice that this is the default method, if you want further customization please refer to the next
- section "Setting up the Gerrit server (Alternative method).
+ The easiest way to set up the Gerrit server to be used with Commander is by running the GerritSetup procedure in the project. This sets the Commander user in Gerrit and also the approval bits needed for the integration. Note that this is the default method. If you want further customization, refer to the next section "Setting up the Gerrit server (Alternative method).
  
 </p>
 
 <h3 class="help">Setting up the Gerrit server (Alternative method)</h3>
 <p class="help">
-The plugin logs into Gerrit as a user and performs tasks, including setting values for the reviewer, 
-verifier, and so on. While you can use any user for this purpose, creating a special "ElectricCommander" user makes it clear which activities were done by the plugin and which were done by a person. After choosing a user, setup security so the specified user can log in (using ssh keys) from the ElectricCommander server and that user has "Read Access" to "--All Projects--" or to the projects you want to monitor with ElectricCommander. Test login with this command:
+The plugin logs in to Gerrit as a user and performs tasks, including setting values for the reviewer, 
+verifier, and so on. Though you can use any user for this purpose, creating a special "ElectricCommander" user makes it clear which activities were done by the plugin and which were done by a person. After choosing a user, set up security so the specified user can log in (using ssh keys) from the ElectricCommander server and that user has "Read Access" to "--All Projects--" or to the projects you want to monitor with ElectricCommander. Test the log in with this command:
 </p>
 
 <pre class="help">
@@ -285,18 +282,17 @@ This plugin provides a framework to get the proper source code in a working dire
    * Initialize the working directory
    * Get the tip of the branch
    * Overlay the changes for each patchset
-2) Your build and test procedure. In this step you will compile and run tests
+2) Your build and test procedure. In this step you will compile and run tests.
 3) Subprocedure call to EC-Gerrit plugin "TeamBuildCleanup"
-   * Adds a comment to each Gerrit patchset that this build is complete
+   * Add a comment to each Gerrit patchset that this build is complete
    * Add an approval if rules specified in "Team Build Rules"
 </pre>
 </p>
 
-<h2 class="help">Custom builds - Processing multiple Patchsets using custom helper methods</h2>
-<p>All the previous methods are just references of how you can use the plugin, the custom builds
+<h2 class="help">Custom Builds - Processing Multiple Patchsets Using Custom Helper Methods</h2>
+<p>All previous methods are references for how to use the plugin. Custom builds
 use several helper methods located in a property called API.
-With this helper methods you will be able to access some of the gerrit functions or even create new ones
-by querying the gerrit database directly if you want, wich provides you with flexibiliby and hides the sub. 
+With these helper methods, you can access some Gerrit functions and create new ones by querying the Gerrit database directly, which provides additional flexibility. 
 </p>
 
 <pre class="help">
@@ -305,9 +301,9 @@ by querying the gerrit database directly if you want, wich provides you with fle
    * Initialize the working directory
    * Get the tip of the branch
    * Overlay the changes for each patchset
-2) Your build and test procedure. In this step you will compile and run tests
+2) Your build and test procedure. In this step you will compile and run tests.
 3) Subprocedure call to EC-Gerrit plugin "TeamBuildCleanup"
-   * Adds a comment to each Gerrit patchset that this build is complete
+   * Add a comment to each Gerrit patchset that this build is complete
    * Add an approval if rules specified in "Team Build Rules"
 </pre>
 
@@ -315,25 +311,25 @@ by querying the gerrit database directly if you want, wich provides you with fle
 <table class="help" border="1" width="60%">
 <tr>
 <th width="25%">Helper </th>
-<th witch="25%">Meaning</th>
+<th witch="25%">Description</th>
 <th witch="25%">Args</th>
 <th witch="25%">Returns</th>
 </tr>
 
 <tr>
 <td>gr_scanChanges</td>
-<td>Aplies the filter for the selected project/branches and sets the changes to be verified</td>
+<td>Applies the filter for the selected project/branches and sets the changes to be verified</td>
 <td>
 <pre class="help">-Manifest(optional)
 -Filter(optional)
-NOTE: if no args specified we use the default config
+Note: If no args are specified, the default config is used
  </td>
-<td> A string containing the changes, a property called gerrit_changes is set to be used by other steps </td>
+<td>A string containing the changes, a property called gerrit_changes is set to be used by other steps </td>
 </tr>
 
 <tr>
 <td>gr_getChanges</td>
-<td>Get the list of changes cached in a property gerrit_changes</td>
+<td>Gets the list of changes cached in a property gerrit_changes</td>
 <td>
  -none
  </td>
@@ -342,38 +338,38 @@ NOTE: if no args specified we use the default config
 
 <tr>
 <td>gr_getChangeMessages</td>
-<td>Get the list of changes cached in a property gerrit_changes</td>
+<td>Gets the list of changes cached in the gerrit_changes property</td>
 <td>
  -change_id
  </td>
-<td>array with the commit message and all the comments for a given change </td>
+<td>Array with the commit message and all comments for a given change </td>
 </tr>
 
 <tr>
 <td>gr_getChangeStatus</td>
-<td>Get the list of changes cached in a property gerrit_changes</td>
+<td>Gets the list of changes cached in the gerrit_changes property</td>
 <td>
  <pre class="help">-id of the change
  -short_mode</pre>
  </td>
 <td>The status of the change  
- NOTE: if short mode is false, it will show the complete word, if not
- the routine will show the short version of the status  </td>
+ Note: If short mode is false, it displays the complete word, if not
+ the routine displays the short version of the status  </td>
 </tr>
 
 <tr>
 <td>gr_isIncludedInThisVerificationSet</td>
-<td>Determine whether a change is included in the current verification set</td>
+<td>Determines whether a change is included in the current verification set</td>
 <td>
  <pre class="help">-id of the change
                    </pre>
  </td>
-<td>True if the change is present in the verification set. </td>
+<td>True if the change is present in the verification set </td>
 </tr>
 
 <tr>
 <td>gr_insertApprovalCategory</td>
-<td>Add a new aproval category to gerrit, and set the rights, this can be used to specify new categories for custom approval bits</td>
+<td>Adds a new aproval category to Gerrit, and sets the rights. Can be used to specify new categories for custom approval bits</td>
 <td>
  <pre class="help">-name
  -abb_name
@@ -387,7 +383,7 @@ NOTE: if no args specified we use the default config
 
 <tr>
 <td>gr_insertRefRights</td>
-<td>Adds the category id into the REF_RIGHTS table</td>
+<td>Adds the category ID to the REF_RIGHTS table</td>
 <td>
  <pre class="help">-category_id</pre>
  </td>
@@ -396,7 +392,7 @@ NOTE: if no args specified we use the default config
 
 <tr>
 <td>gr_insertProjectRights</td>
-<td>Adds the category id into the PROJECT_RIGHTS table</td>
+<td>Adds the category ID to the PROJECT_RIGHTS table</td>
 <td>
  <pre class="help">-category_id</pre>
  </td>
@@ -405,7 +401,7 @@ NOTE: if no args specified we use the default config
 
 <tr>
 <td>gr_insertApprovalCategoryValue</td>
-<td>Insert a new category value to be used like a new approval bit</td>
+<td>Inserts a new category value to be used like a new approval bit</td>
 <td>
  <pre class="help">-name
  -category_id
@@ -416,12 +412,12 @@ NOTE: if no args specified we use the default config
 
 <tr>
 <td>gr_loadPerlCodeFromFile</td>
-<td>Load and executes the perl code from a file. This is useful to if you don t want to have the code stored 
-in properties, or if you want to use some Source Control Management system.</td>
+<td>Loads and executes the Perl code from a file. Useful if you do not want to store the code 
+in properties, or if you want to use a Source Control Management system</td>
 <td>
  <pre class="help">-filename</pre>
  </td>
-<td>true if the execution of the code is succesful</td>
+<td>True if the execution of the code is succesful</td>
 </tr>
 
 <tr>
@@ -430,22 +426,22 @@ in properties, or if you want to use some Source Control Management system.</td>
 <td>
  <pre class="help">-filename</pre>
  </td>
-<td>a string with the text</td>
+<td>A string with the text</td>
 </tr>
 
 <tr>
 <td>gr_loadManifest </td>
-<td>LoadProject/branches manifest from file and store it on a property</td>
+<td>Loads project/branches manifest from file and stores it in a property</td>
 <td>
  <pre class="help">-property
  -filePath</pre>
  </td>
-<td>a string with the text</td>
+<td>A string with the text</td>
 </tr>
 
 <tr>
 <td>gr_getProperty </td>
-<td>Read the content of a property, it only works for properties created using this API</td>
+<td>Reads the content of a property. Works only for properties created using this API</td>
 <td>
  <pre class="help">-property</pre>
  </td>
@@ -454,7 +450,7 @@ in properties, or if you want to use some Source Control Management system.</td>
 
 <tr>
 <td>gr_setProperty </td>
-<td>Read the content of a property, it only works for properties created using this API</td>
+<td>Reads the content of a property. Works only for properties created using this API</td>
 <td>
  <pre class="help">-property
  -value</pre>
@@ -468,7 +464,7 @@ in properties, or if you want to use some Source Control Management system.</td>
 <td>
  <pre class="help">-Array of data</pre>
  </td>
-<td>data string formated in JSON</td>
+<td>Data string formated in JSON</td>
 </tr>
 
 <tr>
@@ -482,7 +478,7 @@ in properties, or if you want to use some Source Control Management system.</td>
 
 <tr>
 <td>gr_dbQuery </td>
-<td>Perfroms a query in SQL against the configured gerrit server</td>
+<td>Performs a query in SQL against the configured Gerrit server</td>
 <td>
  <pre class="help">-SQL query</pre>
  </td>
@@ -491,11 +487,11 @@ in properties, or if you want to use some Source Control Management system.</td>
 
 <tr>
 <td>gr_jobStatus </td>
-<td>Get the status of a given job</td>
+<td>Gets the status of a given job</td>
 <td>
  <pre class="help">-Job id</pre>
  </td>
-<td>true if the job was succesful</td>
+<td>True if the job was succesful</td>
 </tr>
 
 </table>
@@ -590,7 +586,7 @@ ElectricCommander schedule. If you want to change the frequency, modify the
 <li>Use perl Net:SSH2 library for SSH commands instead of shelling to SSH command</li>
 <li>Break up configuration of the Gerrit server into three parts (server/user/port)</li>
 <li>Add configuration for SSH key locations (will not search ~/.ssh)</li>
-<li>New helper methods added</li>
+<li>Add new helper methods</li>
 <li>Project/branches manifest file can be used to filter the changes</li>
 </ul>
 
