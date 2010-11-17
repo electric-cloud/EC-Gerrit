@@ -44,7 +44,7 @@
         <type>entry</type>
         <label>ElectricCommander Server:</label>
         <property>cmdr_webserver</property>
-    </formElement>
+    </formElement>  
     <formElement>
         <type>entry</type>
         <label>Project for Developer Builds:</label>
@@ -56,6 +56,12 @@
         <label>Procedure for Developer Builds:</label>
         <property>devbuild_cmdr_procedure</property>
         <documentation>The Commander procedure that will be called for developer builds.</documentation>
+    </formElement>
+    <formElement>
+        <type>entry</type>
+        <label>Project/branches manifest file:</label>
+        <property>teambuild_project_branches</property>
+        <documentation>The list of projects to be scanned.</documentation>       
     </formElement>
     <formElement>
         <type>entry</type>

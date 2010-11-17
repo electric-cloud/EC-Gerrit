@@ -772,7 +772,7 @@
       </propertySheet>
       <formalParameter>
         <formalParameterName>gerrit_cfg</formalParameterName>
-        <defaultValue>default</defaultValue>
+        <defaultValue></defaultValue>
         <description></description>
         <required>1</required>
         <type>entry</type>

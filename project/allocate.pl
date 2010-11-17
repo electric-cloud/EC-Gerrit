@@ -1,5 +1,5 @@
 ##########################
-# aquire.pl
+# allocate.pl
 ##########################
 use ElectricCommander;
 use File::Basename;

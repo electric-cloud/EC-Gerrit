@@ -4,7 +4,8 @@
 $[/myProject/procedure_helpers/preamble]
 
 # get all eligible change/patch combinations from Gerrit
-my @changes = $gt->team_build("$[project]", $opts->{gerrit_branch},$opts->{team_build_rules});
+#my @changes = $gt->team_build("$[project]", $opts->{gerrit_branch},$opts->{team_build_rules},$opts->{teambuild_project_branches});
+my @changes = $gt->team_build($opts->{team_build_rules},$opts->{teambuild_project_branches});
 
 if (scalar @changes == 0) {
     print "No changes meet the filter criteria.\n";

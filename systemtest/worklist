@@ -4,9 +4,11 @@
 # getTime
 # computeUUID
 # getOpenChanges
+# getOpenChangesForTeamBuild
 # testECState
 # setECState
 # team_build
+# custom_build
 # team_approve
 # team_disapprove
 # team_approve_base
@@ -20,10 +22,13 @@
 # get_user
 # get_category_name
 # parse_config
+# parseManifest
+# parseManifestStr
 # replace_strings
 # getChanges
 # makeReplacementMap
 # processNewChanges
+# processSingleProject
 # launchECJob
 # processFinishedJobs
 # cleanup

@@ -1,7 +1,7 @@
 ####################################################################
 #
 # ECGerrit
-#   A perl package to encapsulate interaction with the
+#   A perl package to encapsulatei interaction with the
 #   gerrit code review tool
 #
 ####################################################################
@@ -358,6 +358,52 @@ sub getOpenChanges {
     return ($self->gerrit_db_query($query));
 }
 
+###################################################
+# getOpenChangesForTeamBuild
+#
+# Get a list of open changes for a list of
+# projects/branches
+#
+# args
+#   array of project:branches strings (separated by colon)
+#   
+# 
+# returns
+#   result - array from query results
+###################################################
+sub getOpenChangesForTeamBuild {
+    my ($self,@projects_branches) = @_;
+    my @result;    
+    my $query = "SELECT * from CHANGES WHERE (";    
+    my $i = 0;
+    my $size = scalar @projects_branches;
+    
+    foreach my $manifest_project (@projects_branches) {
+        @info = split /:/, $manifest_project;
+        my $proj = @info[0];
+        my $branch = @info[1];       
+      
+        chomp $proj, $branch;
+        my $destbranch = "refs/heads/$branch";
+        
+        if (($i > 0) && ($i < $size)) {
+           $query .= "\n OR \n";
+           }      
+        $i++;
+       
+        $query .= "(";
+        $query .= "DEST_BRANCH_NAME = '$destbranch'"
+             .  " AND OPEN = 'Y'";
+        if ("$proj" ne "") {
+            $query .= " AND DEST_PROJECT_NAME = '$proj'";
+        }
+    
+        $query .= ')';         
+    }  
+    $query .= ');';
+    return ($self->gerrit_db_query($query));
+}
+
 ################################################
 # testECState
 #
@@ -467,15 +513,17 @@ sub setECState {
 # team_build
 #################################################
 #################################################
-sub team_build {
-    my ($self, $project,$branch,$rules) = @_;
-
+sub team_build {    
+    my ($self, $rules, $filename) = @_;
+     
     $rules =~ s/^'//g;
     $rules =~ s/'$//g;
     $self->debugMsg(2,"rules:$rules");
 
     my ($filters,$actions) = $self->parseRules($rules);
-    my @changes  = $self->getOpenChanges($project,$branch);
+    @project_branches = $self->parseManifest($filename);
+    #my @changes  = $self->getOpenChanges($project,$branch);
+    my @changes  = $self->getOpenChangesForTeamBuild(@project_branches);
     my ($metrics,$idmap) = $self->get_team_build_metrics(@changes);
     my @eligible = $self->get_eligible_changes($filters,$metrics,$idmap);
 
@@ -487,6 +535,38 @@ sub team_build {
         $self->print_idmap($idmap);
         $self->print_eligible(@eligible);
     }
+        
+    return @eligible;
+}
+
+#################################################
+#################################################
+# custom_build
+#################################################
+#################################################
+sub custom_build {
+    my ($self, $rules, $manifest) = @_;
+     
+    $rules =~ s/^'//g;
+    $rules =~ s/'$//g;
+    $self->debugMsg(2,"rules:$rules");
+
+    my ($filters,$actions) = $self->parseRules($rules);
+    @project_branches = $self->parseManifestStr($manifest);    
+    my @changes  = $self->getOpenChangesForTeamBuild(@project_branches);
+    
+    my ($metrics,$idmap) = $self->get_team_build_metrics(@changes);
+    my @eligible = $self->get_eligible_changes($filters,$metrics,$idmap);
+
+    if ($self->getDbg()) {
+        $self->print_filters($filters);
+        $self->print_actions($actions);
+        $self->print_metrics($metrics);
+        $self->print_changes(@changes);
+        $self->print_idmap($idmap);
+        $self->print_eligible(@eligible);
+    }
+        
     return @eligible;
 }
 
@@ -984,6 +1064,101 @@ sub parseRules {
     return ($filters,$actions);
 }
 
+############################################################
+# parseManifest
+#
+# read projects and branches from file to be used by the scan 
+# function
+#
+# Args:
+#   filename
+#
+# Returns
+#   hash with the pairs project branch name
+############################################################
+sub parseManifest{
+    my ($self,$fileName) = @_;
+    
+    if ($::gRunCmdUseFakeOutput){
+      my @fakeOutput = ("platform/cts:master");
+      return @fakeOutput;
+    }    
+    $self->debugMsg(3,"Parsing manifest file:$filename");
+    open FILE, $fileName or die "Could not open the manifest file, check the path in the configuration settings";
+    my @lines = <FILE>;   
+    my @output;
+    my $size = scalar @lines;    
+    my $c = 0; 
+    foreach $line (@lines){
+        chomp($line);
+        if ($line ne ""){
+            @info = split /:/, $line;
+                  
+            if (!defined @info[1])  {                
+                @output[$c] = @info[0] . ":master";                
+                $c++;                
+            } 
+            else{                
+                @output[$c] = @info[0] . ":" . @info[1];              
+                $c++;
+            }    
+       }
+    }
+    #the file is empty we send the default values
+    if ($size <= 0){
+        @output[0] =":master";
+    }
+    close (FILE);   
+    return @output;
+    
+}
+
+############################################################
+# parseManifestStr
+#
+# read projects and branches from file to be used by the scan 
+# function
+#
+# Args:
+#   manifest str
+#
+# Returns
+#   hash with the pairs project branch name
+############################################################
+sub parseManifestStr{
+    my ($self,$manifest_str) = @_;
+    
+    if ($manifest_str ne ""){
+       $self->debugMsg(3,"Parsing manifest: $manifest_str");
+    }    
+
+    my @lines = split(/\n/, $manifest_str);  
+    my @output;
+    my $size = scalar @lines;       
+    my $c = 0; 
+    foreach $line (@lines){
+        chomp($line);
+        if ($line ne ""){
+            @info = split /:/, $line;
+                  
+            if (!defined @info[1])  {                
+                @output[$c] = @info[0] . ":master";                
+                $c++;                
+            } 
+            else{                
+                @output[$c] = @info[0] . ":" . @info[1];              
+                $c++;
+            }    
+       }
+    }
+    #the file is empty we send the default values
+    if ($size <= 0){
+        @output[0] =":master";
+        $self->debugMsg(3,"No manifest string supplied, we assumed master branch by default.\n");
+    }
+     
+    return @output;
+}
 
 ############################################################
 # replace_strings
@@ -1111,10 +1286,40 @@ sub makeReplacementMap {
 sub processNewChanges {
     my $self = shift;
     my $opts = shift;
+    my @project_branches = $self->parseManifest($opts->{"teambuild_project_branches"});
+    
+    #foreach my $manifest_project (keys % {$projects_branches}) {
+    foreach $line (@project_branches){
+        @info = split /:/, $line;
+        my $proj = @info[0];
+        my $branch = @info[1];      
+      
+        chomp $proj, $branch;
+        $opts->{"gerrit_project"} = $proj;
+        $opts->{"gerrit_branch"} =  $branch;
+        $self->processSingleProject($opts);
+    }
+}
 
+###################################################
+# processSingleProject
+#
+# find new gerrit changes that this integration has not 
+# previously processed and process them
+#
+# args
+#   opts - configuration options
+# 
+# returns
+#   nothing
+###################################################
+sub processSingleProject{
+    my $self = shift;
+    my $opts = shift;
     $self->showMsg("Processing new gerrit changes for project $opts->{gerrit_project}"
         . " and branch $opts->{gerrit_branch}...");
-    # Get list of all open changes
+    
+    # Get list of all open changes    
     my @ch = $self->getOpenChanges("$opts->{gerrit_project}", "$opts->{gerrit_branch}");
     if (!@ch) {
         $self->showMsg( "No changes found.");
@@ -1124,7 +1329,7 @@ sub processNewChanges {
         my $changeid = $row->{columns}{change_id};
         my $patchid = $row->{columns}{current_patch_set_id};
         my $project = $row->{columns}{dest_project_name};
-
+               
         $self->showMsg( "Found change $changeid:$patchid");
         
         # see if any of them need processing
@@ -1806,6 +2011,17 @@ sub ssh_runCommand {
     return ($channel->exit_status(),$out);
 }
 
-
+####################################################################
+# dumpOpts
+#
+####################################################################
+sub dumpOpts{
+   my ($self, $opts) = @_;
+   print "\n-------------start opts------------\n";
+   foreach my $e (keys % {$opts}) {
+       print "  key=$e, val=$opts->{$e}\n";
+   }
+   print "\n-------------end opts------------\n";
+}
 
 1;

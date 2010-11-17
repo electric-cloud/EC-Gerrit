@@ -78,6 +78,14 @@
     </formElement>
     <formElement>
         <type>entry</type>
+        <label>Project/branches manifest file:</label>
+        <property>teambuild_project_branches</property>
+        <documentation>The list of projects to be scanned.</documentation>
+        <value></value>
+        <required>1</required>
+    </formElement>
+    <formElement>
+        <type>entry</type>
         <label>Resource Pool:</label>
         <property>ResourcePool</property>
         <value></value>

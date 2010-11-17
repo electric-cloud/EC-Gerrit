@@ -146,6 +146,38 @@ ntest "test fake data", {}, sub {
     assertEq("", $err,"no output");
 };
 
+# test parse_manifest
+ntest "test parse_manifest", {}, sub {
+    # fake command output
+    $::gFakeCmdOutput  = "3::hello world";
+   
+    my $gd = new ECGerrit();
+    my @out = $gd->parseManifest("c:/projectbranches.txt");
+                
+    assertEq("platform/cts:master", $out[0],"output");    
+};
+
+# test parse_manifest_str
+ntest "test parse_manifest_str", {}, sub {
+
+    my $manifest = q(
+platform/cts:master
+);
+
+    # fake command output
+    $::gFakeCmdOutput  = "3::hello world";
+    saveOutErr();
+    my $gd = new ECGerrit();
+    my @out = $gd->parseManifestStr($manifest);
+    my ($sout,$err) = retrieveOutErr();
+                
+    assertEq("platform/cts:master", $out[0],"output");  
+    assertEq("", $sout,"no output");
+    assertEq("", $err,"no output");    
+};
+
+
+
 ntest "test fake data errors", {}, sub {
     # fake command output
     $::gFakeCmdOutput  = "";
@@ -268,6 +300,8 @@ ntest "getOpenChanges normal", {}, sub {
 
 };
 
+# getOpenChanges
+
 ntest "getOpenChanges no match", {}, sub {
 
     # fake command output
@@ -293,6 +327,75 @@ ntest "getOpenChanges no project", {}, sub {
     my @list = $gd->getOpenChanges("master");
     my ($out,$err) = retrieveOutErr();
     assertEq(1, scalar(@list), "records returned");
+    assertEq("", $err,"error output");
+    assertEq("", $out,"no output");
+
+};
+
+#getOpenChangesForTeamBuild
+
+ntest "getOpenChangesForTeamBuild normal", {}, sub {
+
+    # fake command output
+    $::gFakeCmdOutput  = `cat $::gTestFileDir/getOpenChanges_1.log`;
+    
+    my @project_branches = ("platform/cts:master");
+    
+    saveOutErr();
+    my $gd = new ECGerrit();
+    my @list = $gd->getOpenChangesForTeamBuild(@project_branches);
+    my ($out,$err) = retrieveOutErr();
+    assertEq(2, scalar(@list), "records returned");
+    assertEq("I221d6d5dff32c13f8c2fe0944ae0e8c252c375d8", $list[0]->{columns}{change_key}, "records returned");
+    assertEq("", $err,"error output");
+    assertEq("", $out,"no output");
+
+};
+
+ntest "getOpenChangesForTeamBuild no match", {}, sub {
+
+    # fake command output
+    $::gFakeCmdOutput  = q(0::);
+
+    my @project_branches = ("platform/cts:master");
+    
+    saveOutErr();
+    my $gd = new ECGerrit();
+    my @list = $gd->getOpenChangesForTeamBuild(@project_branches);
+    my ($out,$err) = retrieveOutErr();
+    assertEq(0, scalar(@list), "records returned");
+    assertEq("", $err,"error output");
+    assertEq("", $out,"no output");
+};
+
+ntest "getOpenChangesForTeamBuild no project", {}, sub {
+
+    # fake command output
+    $::gFakeCmdOutput  = `cat $::gTestFileDir/getOpenChanges_2.log`;
+    
+    my @project_branches = (":master");
+    
+    saveOutErr();
+    my $gd = new ECGerrit();
+    my @list = $gd->getOpenChangesForTeamBuild(@project_branches);
+    my ($out,$err) = retrieveOutErr();
+    assertEq(1, scalar(@list), "records returned");
+    assertEq("", $err,"error output");
+    assertEq("", $out,"no output");
+
+};
+
+ntest "getOpenChangesForTeamBuild no match", {}, sub {
+
+    # fake command output
+    $::gFakeCmdOutput  = q(0::);
+   
+    my @project_branches = ("platform/cts:master");   
+    saveOutErr();
+    my $gd = new ECGerrit();
+    my @list = $gd->getOpenChangesForTeamBuild(@project_branches);
+    my ($out,$err) = retrieveOutErr();
+    assertEq(0, scalar(@list), "records returned");
     assertEq("", $err,"error output");
     assertEq("", $out,"no output");
 
@@ -453,7 +556,6 @@ ntest "get_category_name normal", {}, sub {
     assertEq("", $out,"no output");
 
 };
-
 
 
 # parseRules
@@ -643,14 +745,58 @@ ACTION SUCCESS VRIF +1
     $::gFakeCmdOutput  .= "||" . `cat $::gTestFileDir/get_user_1.log`;
     $::gFakeCmdOutput  .= "||" . `cat $::gTestFileDir/get_user_1.log`;
     $::gFakeCmdOutput  .= "||" . `cat $::gTestFileDir/get_user_1.log`;
-
+        
     saveOutErr();
     my $gd = new ECGerrit();
-    my @eligible = $gd->team_build("platform/cts","master",$rules);
+    my @eligible = $gd->team_build($rules,"c:/projectbranches.txt");
+     
     my ($out,$err) = retrieveOutErr();
     assertEq(2, scalar(@eligible), "success");
     assertEq("", $out,"no output");
     assertEq("", $err,"error output");
+};
+
+# custom_build
+ntest "custom_build", {}, sub {
+
+    my $rules = q(
+FILTER MAX CRVW ge +2
+FILTER MIN CRVW gt -2
+FILTER COUNT VRIF eq 0 USER ne commander
+FILTER MAX VRIF le 0 USER eq commander
+ACTION SUCCESS VRIF +1
+);
+
+    my $manifest = q(
+:master
+);
+    
+    # fake command output
+    $::gFakeCmdOutput  = `cat $::gTestFileDir/getOpenChanges_1.log`;
+    $::gFakeCmdOutput  .= "||" . `cat $::gTestFileDir/get_team_build_metrics_1.log`;
+    $::gFakeCmdOutput  .= "||" . `cat $::gTestFileDir/get_team_build_metrics_2.log`;
+    $::gFakeCmdOutput  .= "||" . `cat $::gTestFileDir/get_user_1.log`;
+    $::gFakeCmdOutput  .= "||" . `cat $::gTestFileDir/get_user_1.log`;
+    $::gFakeCmdOutput  .= "||" . `cat $::gTestFileDir/get_user_1.log`;
+    $::gFakeCmdOutput  .= "||" . `cat $::gTestFileDir/get_user_1.log`;
+    $::gFakeCmdOutput  .= "||" . `cat $::gTestFileDir/get_user_1.log`;
+    $::gFakeCmdOutput  .= "||" . `cat $::gTestFileDir/get_user_1.log`;
+    $::gFakeCmdOutput  .= "||" . `cat $::gTestFileDir/get_team_build_metrics_1.log`;
+    $::gFakeCmdOutput  .= "||" . `cat $::gTestFileDir/get_team_build_metrics_2.log`;
+    $::gFakeCmdOutput  .= "||" . `cat $::gTestFileDir/get_user_1.log`;
+    $::gFakeCmdOutput  .= "||" . `cat $::gTestFileDir/get_user_1.log`;
+    $::gFakeCmdOutput  .= "||" . `cat $::gTestFileDir/get_user_1.log`;
+    $::gFakeCmdOutput  .= "||" . `cat $::gTestFileDir/get_user_1.log`;
+    $::gFakeCmdOutput  .= "||" . `cat $::gTestFileDir/get_user_1.log`;
+    $::gFakeCmdOutput  .= "||" . `cat $::gTestFileDir/get_user_1.log`;
+
+    saveOutErr();
+    my $gd = new ECGerrit();
+    my @eligible = $gd->custom_build($rules, $manifest);
+    my ($out,$err) = retrieveOutErr();
+    assertEq(4, scalar(@eligible), "success");   
+    assertEq("", $err,"error output");
+    assertEq("", $out,"no output");    
 };
 
 
@@ -691,5 +837,7 @@ ACTION SUCCESS VRIF +1
 
 # processFinishedJobs
 # processNewChanges
+# processSingleProject
+
 
 

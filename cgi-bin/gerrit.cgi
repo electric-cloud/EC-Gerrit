@@ -54,10 +54,10 @@ sub main() {
         retError("error: cmd is required parameter");
     }
 
-
+    $test = "/projects/@PLUGIN_NAME@/scm_driver/ECGerrit";
     if (!ElectricCommander::PropMod::loadPerlCodeFromProperty($::ec,
         "/projects/@PLUGIN_NAME@/scm_driver/ECGerrit")) {
-        retError("Could not load $::proj driver");
+        retError("Could not load $::proj driver $test ");
     }
 
     # ---------------------------------------------------------------
