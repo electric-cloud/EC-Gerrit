@@ -27,7 +27,7 @@ public class ConfigurationManagementFactory
 
     //~ Methods ----------------------------------------------------------------
 
-    @Override public Component getComponent(JavaScriptObject jso)
+    @Override public Component createComponent(JavaScriptObject jso)
     {
         String    panel     = getParameter(jso, "panel");
         Component component;
