@@ -15,8 +15,9 @@ import com.google.gwt.core.client.JavaScriptObject;
 import com.electriccloud.commander.gwt.client.BrowserContext;
 import com.electriccloud.commander.gwt.client.Component;
 import com.electriccloud.commander.gwt.client.ComponentBaseFactory;
-import com.electriccloud.commander.gwt.client.FormBase;
-import com.electriccloud.commander.gwt.client.PropertySheetEditor;
+
+import ecinternal.client.InternalFormBase;
+import ecinternal.client.PropertySheetEditor;
 
 import static com.electriccloud.commander.gwt.client.util.CommanderUrlBuilder.createPageUrl;
 
@@ -47,7 +48,7 @@ public class ConfigurationManagementFactory
                     "Edit Gerrit Configuration", configName, propSheetPath,
                     formXmlPath, getPluginName());
 
-            ((FormBase) component).setDefaultRedirectToUrl(createPageUrl(
+            ((InternalFormBase) component).setDefaultRedirectToUrl(createPageUrl(
                     getPluginName(), "configurations").buildString());
         }
         else {
