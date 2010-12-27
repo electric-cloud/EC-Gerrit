@@ -19,6 +19,10 @@ import com.google.gwt.http.client.Response;
 import com.google.gwt.user.client.ui.Anchor;
 import com.google.gwt.xml.client.Node;
 
+import ecinternal.client.InternalFormBase;
+
+import ecinternal.client.ui.FormBuilderLoader;
+
 import com.electriccloud.commander.gwt.client.legacyrequests.CommanderError;
 import com.electriccloud.commander.gwt.client.legacyrequests.RunProcedureRequest;
 import com.electriccloud.commander.gwt.client.protocol.xml.CommanderRequestCallback;
@@ -28,9 +32,6 @@ import com.electriccloud.commander.gwt.client.ui.FormTable;
 import com.electriccloud.commander.gwt.client.ui.SimpleErrorBox;
 import com.electriccloud.commander.gwt.client.util.CommanderUrlBuilder;
 import com.electriccloud.commander.gwt.client.util.XmlUtil;
-
-import ecinternal.client.InternalFormBase;
-import ecinternal.client.ui.FormBuilderLoader;
 
 import static com.electriccloud.commander.gwt.client.ComponentBaseFactory.getPluginName;
 import static com.electriccloud.commander.gwt.client.util.CommanderUrlBuilder.createPageUrl;
@@ -59,7 +60,7 @@ public class CreateConfiguration
 
     @Override protected FormTable initializeFormTable()
     {
-        FormBuilder fb = new FormBuilder();
+        FormBuilder fb = getUIFactory().createFormBuilder();
 
         return fb;
     }
@@ -169,8 +170,9 @@ public class CreateConfiguration
                             cancel();
                         }
                         else {
-                            SimpleErrorBox      error      = new SimpleErrorBox(
-                                    "Error occurred during configuration creation: "
+                            SimpleErrorBox      error      = getUIFactory()
+                                    .createSimpleErrorBox(
+                                        "Error occurred during configuration creation: "
                                         + responseString);
                             CommanderUrlBuilder urlBuilder = createUrl(
                                     "jobDetails.php").setParameter("jobId",

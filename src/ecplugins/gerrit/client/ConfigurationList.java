@@ -22,6 +22,11 @@ import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.Widget;
 import com.google.gwt.xml.client.Node;
 
+import ecinternal.client.DialogClickHandler;
+import ecinternal.client.ListBase;
+
+import ecinternal.client.ui.ListTable;
+
 import com.electriccloud.commander.gwt.client.ChainedCallback;
 import com.electriccloud.commander.gwt.client.legacyrequests.CommanderError;
 import com.electriccloud.commander.gwt.client.legacyrequests.RunProcedureRequest;
@@ -32,10 +37,6 @@ import com.electriccloud.commander.gwt.client.util.CommanderUrlBuilder;
 import com.electriccloud.commander.gwt.client.util.XmlUtil;
 
 import static ecinternal.client.ui.ListTable.constructActionList;
-
-import ecinternal.client.DialogClickHandler;
-import ecinternal.client.ListBase;
-import ecinternal.client.ui.ListTable;
 
 import static com.electriccloud.commander.gwt.client.ComponentBaseFactory.getPluginName;
 import static com.electriccloud.commander.gwt.client.util.CommanderUrlBuilder.createPageUrl;
@@ -220,8 +221,9 @@ public class ConfigurationList
                             Location.reload();
                         }
                         else {
-                            SimpleErrorBox      error      = new SimpleErrorBox(
-                                    "Error occurred during configuration deletion: "
+                            SimpleErrorBox      error      = getUIFactory()
+                                    .createSimpleErrorBox(
+                                        "Error occurred during configuration deletion: "
                                         + responseString);
                             CommanderUrlBuilder urlBuilder = CommanderUrlBuilder
                                     .createUrl("jobDetails.php")
