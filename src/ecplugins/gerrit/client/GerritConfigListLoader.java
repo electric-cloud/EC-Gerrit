@@ -16,23 +16,19 @@ import com.google.gwt.http.client.Request;
 import com.google.gwt.http.client.RequestCallback;
 import com.google.gwt.http.client.RequestException;
 import com.google.gwt.http.client.Response;
-import com.google.gwt.xml.client.Node;
 
 import com.electriccloud.commander.gwt.client.ChainedCallback;
 import com.electriccloud.commander.gwt.client.ComponentBase;
 import com.electriccloud.commander.gwt.client.HasErrorPanel;
-import com.electriccloud.commander.gwt.client.legacyrequests.CommanderError;
-import com.electriccloud.commander.gwt.client.legacyrequests.GetPropertyRequest;
-import com.electriccloud.commander.gwt.client.legacyrequests.MultiRequestLoader;
-import com.electriccloud.commander.gwt.client.legacyrequests.MultiRequestLoaderCallback;
-import com.electriccloud.commander.gwt.client.protocol.xml.CommanderRequestCallback;
+import com.electriccloud.commander.gwt.client.domain.Property;
 import com.electriccloud.commander.gwt.client.requests.CgiRequestProxy;
+import com.electriccloud.commander.gwt.client.requests.GetPropertyRequest;
 import com.electriccloud.commander.gwt.client.requests.Loader;
+import com.electriccloud.commander.gwt.client.responses.CommanderError;
+import com.electriccloud.commander.gwt.client.responses.PropertyCallback;
 import com.electriccloud.commander.gwt.client.util.StringUtil;
 
 import static com.electriccloud.commander.gwt.client.ComponentBaseFactory.getPluginName;
-import static com.electriccloud.commander.gwt.client.util.XmlUtil.getNodeByName;
-import static com.electriccloud.commander.gwt.client.util.XmlUtil.getNodeValueByName;
 
 public class GerritConfigListLoader
     extends Loader
@@ -159,27 +155,28 @@ public class GerritConfigListLoader
         }
     }
 
+    
     private void loadEditors()
     {
-        MultiRequestLoader loader  = new MultiRequestLoader(m_queryObject,
-                new MultiRequestLoaderCallback() {
-                    @Override public void onComplete()
-                    {
-
-                        // We're done!
-                        if (m_callback != null) {
-                            m_callback.onComplete();
-                        }
-                    }
-                });
-        GetPropertyRequest request = new GetPropertyRequest(
-                "/plugins/EC-Gerrit/project/ui_forms/" + m_editorName);
-
+        GetPropertyRequest request = m_queryObject.getRequestFactory()
+                                                  .createGetPropertyRequest();
+        
+        request.setPropertyName("/plugins/EC-Gerrit/project/ui_forms/" 
+                + m_editorName);                
         request.setExpand(false);
-        loader.addRequest(request, new EditorLoaderCallback("gerritcfg"));
-        loader.load();
+        request.setCallback(new EditorLoaderCallback("gerritcfg"));
+        m_queryObject.doRequest(new ChainedCallback() {
+                @Override public void onComplete()
+                {
+                
+                    // We're done!
+                    if (m_callback != null) {
+                        m_callback.onComplete();
+                    }
+                }
+            }, request);        
     }
-
+    
     public void setEditorName(String editorName)
     {
         m_editorName = editorName;
@@ -188,7 +185,7 @@ public class GerritConfigListLoader
     //~ Inner Classes ----------------------------------------------------------
 
     public class EditorLoaderCallback
-        implements CommanderRequestCallback
+        implements PropertyCallback
     {
 
         //~ Instance fields ----------------------------------------------------
@@ -204,10 +201,9 @@ public class GerritConfigListLoader
 
         //~ Methods ------------------------------------------------------------
 
-        @Override public void handleError(Node responseNode)
+        @Override public void handleError(CommanderError error)
         {
-            CommanderError error = new CommanderError(responseNode);
-
+            
             if (m_queryObject instanceof HasErrorPanel) {
                 ((HasErrorPanel) m_queryObject).addErrorMessage(error);
             }
@@ -217,20 +213,18 @@ public class GerritConfigListLoader
             }
         }
 
-        @Override public void handleResponse(Node responseNode)
+        @Override public void handleResponse(Property response)
         {
 
             if (m_queryObject.getLog()
                              .isDebugEnabled()) {
                 m_queryObject.getLog()
                              .debug("Commander getProperty request returned: "
-                                 + responseNode);
+                                 + response);
             }
 
-            Node propertyNode = getNodeByName(responseNode, "property");
-
-            if (propertyNode != null) {
-                String value = getNodeValueByName(propertyNode, "value");
+            if (response != null) {
+                String value = response.getValue();
 
                 if (!StringUtil.isEmpty(value)) {
                     m_configList.setEditorDefinition(m_configPlugin, value);
@@ -241,7 +235,7 @@ public class GerritConfigListLoader
 
             // There was no property value found in the response
             String errorMsg = "Editor '" + m_editorName
-                    + "' not found for Gerrit plugin '" + m_configPlugin + "'";
+                + "' not found for Gerrit plugin '" + m_configPlugin + "'";
 
             if (m_queryObject instanceof HasErrorPanel) {
                 ((HasErrorPanel) m_queryObject).addErrorMessage(errorMsg);

@@ -28,33 +28,33 @@ public class ConfigurationManagementFactory
 
     @Override public Component createComponent(JavaScriptObject jso)
     {
-        String    panel     = getParameter(jso, "panel");
+        String        panel     = getParameter(jso, "panel");
         Component component;
 
         if ("create".equals(panel)) {
             component = new CreateConfiguration();
         }
         else if ("edit".equals(panel)) {
-            String configName    = BrowserContext.getInstance()
-                                                 .getGetParameter("configName");
+            String configName    = BrowserContext.getInstance().getGetParameter("configName");
             String propSheetPath = "/plugins/" + getPluginName()
-                    + "/project/gerrit_cfgs/" + configName;
+                + "/project/gerrit_cfgs/" + configName;
             String formXmlPath   = "/plugins/" + getPluginName()
-                    + "/project/ui_forms/GerritEditConfigForm";
+                + "/project/ui_forms/GerritEditConfigForm";
 
             component = new PropertySheetEditor("ecgc",
-                    "Edit Gerrit Configuration", configName, propSheetPath,
-                    formXmlPath, getPluginName());
+                    "Edit Gerrit Configuration", configName,
+                    propSheetPath, formXmlPath, getPluginName());
 
             ((InternalFormBase) component).setDefaultRedirectToUrl(createPageUrl(
-                    getPluginName(), "configurations").buildString());
+                    getPluginName(), "configurations")
+                    .buildString());
         }
         else {
 
             // Default panel is "list"
             component = new ConfigurationList();
         }
-
+      
         return component;
     }
 }

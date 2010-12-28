@@ -17,21 +17,19 @@ import com.google.gwt.http.client.RequestCallback;
 import com.google.gwt.http.client.RequestException;
 import com.google.gwt.http.client.Response;
 import com.google.gwt.user.client.ui.Anchor;
-import com.google.gwt.xml.client.Node;
 
 import ecinternal.client.InternalFormBase;
 
 import ecinternal.client.ui.FormBuilderLoader;
 
-import com.electriccloud.commander.gwt.client.legacyrequests.CommanderError;
-import com.electriccloud.commander.gwt.client.legacyrequests.RunProcedureRequest;
-import com.electriccloud.commander.gwt.client.protocol.xml.CommanderRequestCallback;
 import com.electriccloud.commander.gwt.client.requests.CgiRequestProxy;
+import com.electriccloud.commander.gwt.client.requests.RunProcedureRequest; 
+import com.electriccloud.commander.gwt.client.responses.DefaultRunProcedureResponseCallback;
+import com.electriccloud.commander.gwt.client.responses.RunProcedureResponse;
 import com.electriccloud.commander.gwt.client.ui.FormBuilder;
 import com.electriccloud.commander.gwt.client.ui.FormTable;
 import com.electriccloud.commander.gwt.client.ui.SimpleErrorBox;
 import com.electriccloud.commander.gwt.client.util.CommanderUrlBuilder;
-import com.electriccloud.commander.gwt.client.util.XmlUtil;
 
 import static com.electriccloud.commander.gwt.client.ComponentBaseFactory.getPluginName;
 import static com.electriccloud.commander.gwt.client.util.CommanderUrlBuilder.createPageUrl;
@@ -60,6 +58,7 @@ public class CreateConfiguration
 
     @Override protected FormTable initializeFormTable()
     {
+        
         FormBuilder fb = getUIFactory().createFormBuilder();
 
         return fb;
@@ -74,7 +73,7 @@ public class CreateConfiguration
         FormBuilderLoader loader = new FormBuilderLoader(fb, this);
 
         loader.setCustomEditorPath("/plugins/EC-Gerrit"
-                + "/project/ui_forms/GerritCreateConfigForm");
+            + "/project/ui_forms/GerritCreateConfigForm");
         loader.load();
         clearStatus();
     }
@@ -93,8 +92,12 @@ public class CreateConfiguration
         }
 
         // Build runProcedure request
-        RunProcedureRequest request = new RunProcedureRequest(
-                "/plugins/EC-Gerrit/project", "CreateConfiguration");
+        RunProcedureRequest request = getRequestFactory()
+                .createRunProcedureRequest();
+                
+        request.setProjectName("/plugins/EC-Gerrit/project");
+        request.setProcedureName("CreateConfiguration");
+        
         Map<String, String> params  = fb.getValues();
 
         for (String paramName : params.keySet()) {
@@ -102,27 +105,22 @@ public class CreateConfiguration
         }
 
         // Launch the procedure
-        registerCallback(request.getRequestId(),
-            new CommanderRequestCallback() {
-                @Override public void handleError(Node responseNode)
+        request.setCallback(new DefaultRunProcedureResponseCallback(this) {
+                @Override public void handleResponse(
+                        RunProcedureResponse response)
                 {
-                    addErrorMessage(new CommanderError(responseNode));
-                }
-
-                @Override public void handleResponse(Node responseNode)
-                {
-
+                     
                     if (getLog().isDebugEnabled()) {
                         getLog().debug(
-                            "Commander runProcedure request returned: "
-                                + responseNode);
+                            "Commander runProcedure request returned job id: "
+                                + response.getJobId());
                     }
 
-                    waitForJob(
-                        XmlUtil.getNodeValueByName(responseNode, "jobId"));
-                }
-            });
-
+                    waitForJob(response.getJobId());
+                }                     
+                
+        });
+     
         if (getLog().isDebugEnabled()) {
             getLog().debug("Issuing Commander request: " + request);
         }
@@ -169,11 +167,11 @@ public class CreateConfiguration
                             // We're done!
                             cancel();
                         }
-                        else {
+                        else {                         
                             SimpleErrorBox      error      = getUIFactory()
                                     .createSimpleErrorBox(
-                                        "Error occurred during configuration creation: "
-                                        + responseString);
+                                    "Error occurred during configuration creation: "
+                                    + responseString);
                             CommanderUrlBuilder urlBuilder = createUrl(
                                     "jobDetails.php").setParameter("jobId",
                                     jobId);
@@ -181,7 +179,7 @@ public class CreateConfiguration
                             error.add(
                                 new Anchor("(See job for details)",
                                     urlBuilder.buildString()));
-                            addErrorMessage(error);
+                                    addErrorMessage(error);
                         }
                     }
                 });

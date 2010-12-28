@@ -20,7 +20,6 @@ import com.google.gwt.user.client.Window.Location;
 import com.google.gwt.user.client.ui.Anchor;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.Widget;
-import com.google.gwt.xml.client.Node;
 
 import ecinternal.client.DialogClickHandler;
 import ecinternal.client.ListBase;
@@ -28,13 +27,12 @@ import ecinternal.client.ListBase;
 import ecinternal.client.ui.ListTable;
 
 import com.electriccloud.commander.gwt.client.ChainedCallback;
-import com.electriccloud.commander.gwt.client.legacyrequests.CommanderError;
-import com.electriccloud.commander.gwt.client.legacyrequests.RunProcedureRequest;
-import com.electriccloud.commander.gwt.client.protocol.xml.CommanderRequestCallback;
 import com.electriccloud.commander.gwt.client.requests.CgiRequestProxy;
+import com.electriccloud.commander.gwt.client.requests.RunProcedureRequest;
+import com.electriccloud.commander.gwt.client.responses.DefaultRunProcedureResponseCallback;
+import com.electriccloud.commander.gwt.client.responses.RunProcedureResponse;
 import com.electriccloud.commander.gwt.client.ui.SimpleErrorBox;
 import com.electriccloud.commander.gwt.client.util.CommanderUrlBuilder;
-import com.electriccloud.commander.gwt.client.util.XmlUtil;
 
 import static ecinternal.client.ui.ListTable.constructActionList;
 
@@ -57,7 +55,7 @@ public class ConfigurationList
 
     public ConfigurationList()
     {
-        super("ecgc", "Gerrit Configurations", "All Configurations");
+        super("ecgc","Gerrit Configurations", "All Configurations");
         m_configList = new GerritConfigList();
     }
 
@@ -78,8 +76,8 @@ public class ConfigurationList
     {
         setStatus("Loading...");
 
-        GerritConfigListLoader loader = new GerritConfigListLoader(m_configList,
-                this, new ChainedCallback() {
+        GerritConfigListLoader loader = new GerritConfigListLoader(m_configList, this,
+                new ChainedCallback() {
                     @Override public void onComplete()
                     {
                         loadList();
@@ -95,33 +93,28 @@ public class ConfigurationList
         clearErrorMessages();
 
         // Build runProcedure request
-        RunProcedureRequest request = new RunProcedureRequest(
-                "/plugins/EC-Gerrit/project", "DeleteConfiguration");
+        RunProcedureRequest request = getRequestFactory()
+                .createRunProcedureRequest();
 
-        request.addActualParameter("config", configName);
-
-        // Launch the procedure
-        registerCallback(request.getRequestId(),
-            new CommanderRequestCallback() {
-                @Override public void handleError(Node responseNode)
-                {
-                    addErrorMessage(new CommanderError(responseNode));
-                }
-
-                @Override public void handleResponse(Node responseNode)
+        request.setProjectName("/plugins/EC-Gerrit/project");
+        request.setProcedureName("DeleteConfiguration");
+        request.addActualParameter("config", configName);         
+        request.setCallback(new DefaultRunProcedureResponseCallback(this) {
+                @Override public void handleResponse(
+                        RunProcedureResponse response)
                 {
 
                     if (getLog().isDebugEnabled()) {
                         getLog().debug(
-                            "Commander runProcedure request returned: "
-                                + responseNode);
+                            "Commander runProcedure request returned job id: "
+                                + response.getJobId());
                     }
 
-                    waitForJob(
-                        XmlUtil.getNodeValueByName(responseNode, "jobId"));
-                }
+                    waitForJob(response.getJobId());
+                }               
             });
-
+        
+        // Launch the procedure
         if (getLog().isDebugEnabled()) {
             getLog().debug("Issuing Commander request: " + request);
         }
@@ -151,7 +144,7 @@ public class ConfigurationList
                     "editConfiguration");
 
             urlBuilder.setParameter("configName", configName);
-            urlBuilder.setParameter("redirectTo",
+            urlBuilder.setParameter("redirectTo", 
                 createRedirectUrl().buildString());
 
             Anchor editConfigLink = new Anchor("Edit",
@@ -220,19 +213,19 @@ public class ConfigurationList
                             // We're done!
                             Location.reload();
                         }
-                        else {
+                        else {                        
                             SimpleErrorBox      error      = getUIFactory()
-                                    .createSimpleErrorBox(
-                                        "Error occurred during configuration deletion: "
-                                        + responseString);
-                            CommanderUrlBuilder urlBuilder = CommanderUrlBuilder
-                                    .createUrl("jobDetails.php")
-                                    .setParameter("jobId", jobId);
+                                     .createSimpleErrorBox(
+                                     "Error occurred during configuration deletion: "
+                                     + responseString);
+                             CommanderUrlBuilder urlBuilder = CommanderUrlBuilder
+                                     .createUrl("jobDetails.php")
+                                     .setParameter("jobId", jobId);
 
-                            error.add(
-                                new Anchor("(See job for details)",
-                                    urlBuilder.buildString()));
-                            addErrorMessage(error);
+                             error.add(
+                                 new Anchor("(See job for details)",
+                                     urlBuilder.buildString()));
+                             addErrorMessage(error);
                         }
                     }
                 });
