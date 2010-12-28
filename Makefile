@@ -6,10 +6,6 @@ include $(SRCTOP)/build/vars.mak
 
 PLUGIN_VERSION=1.1.1.0
 
-# Don't show detailed "deprecated api" warnings until the plugin has been
-# migrated to the "new style".  After migration, this line should be removed.
-SHOW_DEPRECATED = "off"
-
 gwtmodules := gerrit/ConfigurationManagement
 
 build: buildJavaPlugin
