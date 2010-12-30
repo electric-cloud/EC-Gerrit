@@ -19,14 +19,15 @@ import com.google.gwt.http.client.Response;
 
 import com.electriccloud.commander.gwt.client.ChainedCallback;
 import com.electriccloud.commander.gwt.client.ComponentBase;
-import com.electriccloud.commander.gwt.client.HasErrorPanel;
 import com.electriccloud.commander.gwt.client.domain.Property;
 import com.electriccloud.commander.gwt.client.requests.CgiRequestProxy;
 import com.electriccloud.commander.gwt.client.requests.GetPropertyRequest;
-import com.electriccloud.commander.gwt.client.requests.Loader;
 import com.electriccloud.commander.gwt.client.responses.CommanderError;
 import com.electriccloud.commander.gwt.client.responses.PropertyCallback;
 import com.electriccloud.commander.gwt.client.util.StringUtil;
+
+import ecinternal.client.HasErrorPanel;
+import ecinternal.client.Loader;
 
 import static com.electriccloud.commander.gwt.client.ComponentBaseFactory.getPluginName;
 
