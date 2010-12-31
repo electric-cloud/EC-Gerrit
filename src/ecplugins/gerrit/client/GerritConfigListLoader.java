@@ -17,17 +17,17 @@ import com.google.gwt.http.client.RequestCallback;
 import com.google.gwt.http.client.RequestException;
 import com.google.gwt.http.client.Response;
 
+import ecinternal.client.HasErrorPanel;
+import ecinternal.client.Loader;
+
 import com.electriccloud.commander.gwt.client.ChainedCallback;
-import com.electriccloud.commander.gwt.client.ComponentBase;
+import com.electriccloud.commander.gwt.client.Component;
 import com.electriccloud.commander.gwt.client.domain.Property;
 import com.electriccloud.commander.gwt.client.requests.CgiRequestProxy;
 import com.electriccloud.commander.gwt.client.requests.GetPropertyRequest;
 import com.electriccloud.commander.gwt.client.responses.CommanderError;
 import com.electriccloud.commander.gwt.client.responses.PropertyCallback;
 import com.electriccloud.commander.gwt.client.util.StringUtil;
-
-import ecinternal.client.HasErrorPanel;
-import ecinternal.client.Loader;
 
 import static com.electriccloud.commander.gwt.client.ComponentBaseFactory.getPluginName;
 
@@ -45,19 +45,19 @@ public class GerritConfigListLoader
 
     public GerritConfigListLoader(
             GerritConfigList configList,
-            ComponentBase    queryObject,
+            Component        component,
             ChainedCallback  callback)
     {
-        this(configList, null, queryObject, callback);
+        this(configList, null, component, callback);
     }
 
     public GerritConfigListLoader(
             GerritConfigList configList,
             String           implementedMethod,
-            ComponentBase    queryObject,
+            Component        component,
             ChainedCallback  callback)
     {
-        super(queryObject, callback);
+        super(component, callback);
         m_configList      = configList;
         m_cgiRequestProxy = new CgiRequestProxy(getPluginName(), "gerrit.cgi");
     }
@@ -82,7 +82,7 @@ public class GerritConfigListLoader
                                 Request   request,
                                 Throwable exception)
                         {
-                            ((HasErrorPanel) m_queryObject).addErrorMessage(
+                            ((HasErrorPanel) m_component).addErrorMessage(
                                 "Error loading Gerrit configuration list: ",
                                 exception);
                         }
@@ -106,18 +106,18 @@ public class GerritConfigListLoader
                                 error = responseString;
                             }
 
-                            if (m_queryObject.getLog()
-                                             .isDebugEnabled()) {
-                                m_queryObject.getLog()
-                                             .debug(
-                                                 "Recieved CGI response: "
-                                                 + responseString
-                                                 + " isHTML:" + isHtml
-                                                 + " error:" + error);
+                            if (m_component.getLog()
+                                           .isDebugEnabled()) {
+                                m_component.getLog()
+                                           .debug(
+                                               "Recieved CGI response: "
+                                               + responseString
+                                               + " isHTML:" + isHtml
+                                               + " error:" + error);
                             }
 
                             if (error != null) {
-                                ((HasErrorPanel) m_queryObject).addErrorMessage(
+                                ((HasErrorPanel) m_component).addErrorMessage(
                                     error);
                             }
                             else {
@@ -137,47 +137,46 @@ public class GerritConfigListLoader
                         }
                     });
 
-            if (m_queryObject.getLog()
-                             .isDebugEnabled()) {
-                m_queryObject.getLog()
-                             .debug("Issued CGI request: " + request);
+            if (m_component.getLog()
+                           .isDebugEnabled()) {
+                m_component.getLog()
+                           .debug("Issued CGI request: " + request);
             }
         }
         catch (RequestException e) {
 
-            if (m_queryObject instanceof HasErrorPanel) {
-                ((HasErrorPanel) m_queryObject).addErrorMessage(
+            if (m_component instanceof HasErrorPanel) {
+                ((HasErrorPanel) m_component).addErrorMessage(
                     "Error loading SCM configuration list: ", e);
             }
             else {
-                m_queryObject.getLog()
-                             .error(e);
+                m_component.getLog()
+                           .error(e);
             }
         }
     }
 
-    
     private void loadEditors()
     {
-        GetPropertyRequest request = m_queryObject.getRequestFactory()
-                                                  .createGetPropertyRequest();
-        
-        request.setPropertyName("/plugins/EC-Gerrit/project/ui_forms/" 
-                + m_editorName);                
+        GetPropertyRequest request =
+            m_requestFactory.createGetPropertyRequest();
+
+        request.setPropertyName("/plugins/EC-Gerrit/project/ui_forms/"
+                + m_editorName);
         request.setExpand(false);
         request.setCallback(new EditorLoaderCallback("gerritcfg"));
-        m_queryObject.doRequest(new ChainedCallback() {
+        m_requestManager.doRequest(new ChainedCallback() {
                 @Override public void onComplete()
                 {
-                
+
                     // We're done!
                     if (m_callback != null) {
                         m_callback.onComplete();
                     }
                 }
-            }, request);        
+            }, request);
     }
-    
+
     public void setEditorName(String editorName)
     {
         m_editorName = editorName;
@@ -204,24 +203,24 @@ public class GerritConfigListLoader
 
         @Override public void handleError(CommanderError error)
         {
-            
-            if (m_queryObject instanceof HasErrorPanel) {
-                ((HasErrorPanel) m_queryObject).addErrorMessage(error);
+
+            if (m_component instanceof HasErrorPanel) {
+                ((HasErrorPanel) m_component).addErrorMessage(error);
             }
             else {
-                m_queryObject.getLog()
-                             .error(error);
+                m_component.getLog()
+                           .error(error);
             }
         }
 
         @Override public void handleResponse(Property response)
         {
 
-            if (m_queryObject.getLog()
-                             .isDebugEnabled()) {
-                m_queryObject.getLog()
-                             .debug("Commander getProperty request returned: "
-                                 + response);
+            if (m_component.getLog()
+                           .isDebugEnabled()) {
+                m_component.getLog()
+                           .debug("Commander getProperty request returned: "
+                               + response);
             }
 
             if (response != null) {
@@ -236,14 +235,14 @@ public class GerritConfigListLoader
 
             // There was no property value found in the response
             String errorMsg = "Editor '" + m_editorName
-                + "' not found for Gerrit plugin '" + m_configPlugin + "'";
+                    + "' not found for Gerrit plugin '" + m_configPlugin + "'";
 
-            if (m_queryObject instanceof HasErrorPanel) {
-                ((HasErrorPanel) m_queryObject).addErrorMessage(errorMsg);
+            if (m_component instanceof HasErrorPanel) {
+                ((HasErrorPanel) m_component).addErrorMessage(errorMsg);
             }
             else {
-                m_queryObject.getLog()
-                             .error(errorMsg);
+                m_component.getLog()
+                           .error(errorMsg);
             }
         }
     }
