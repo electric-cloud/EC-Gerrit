@@ -359,7 +359,7 @@ sub getOpenChanges {
 }
 
 ###################################################
-# getOpenChangesForTeamBuild
+# getOpenChangesFromManifest
 #
 # Get a list of open changes for a list of
 # projects/branches
@@ -370,20 +370,32 @@ sub getOpenChanges {
 # 
 # returns
 #   result - array from query results
+# change log: renamed from getOpenChangesForTeamBuild 
 ###################################################
-sub getOpenChangesForTeamBuild {
+sub getOpenChangesFromManifest {
     my ($self,@projects_branches) = @_;
     my @result;    
     my $query = "SELECT * from CHANGES WHERE (";    
     my $i = 0;
     my $size = scalar @projects_branches;
-    
-    foreach my $manifest_project (@projects_branches) {
+   	
+    foreach my $manifest_project (@projects_branches) {	
         @info = split /:/, $manifest_project;
-        my $proj = @info[0];
-        my $branch = @info[1];       
+		my $manifest_size = scalar @info;
+        my $proj = "";
+		my $branch = "";
+		my $change_id = "";
+				
+		if ($manifest_size == 3){
+			$change_id = @info[0];
+			$proj = @info[1];
+			$branch = @info[2];   
+		} else {
+			$proj = @info[0];
+			$branch = @info[1]; 
+		}		
       
-        chomp $proj, $branch;
+        chomp $proj, $branch, $change_id;
         my $destbranch = "refs/heads/$branch";
         
         if (($i > 0) && ($i < $size)) {
@@ -396,6 +408,9 @@ sub getOpenChangesForTeamBuild {
              .  " AND OPEN = 'Y'";
         if ("$proj" ne "") {
             $query .= " AND DEST_PROJECT_NAME = '$proj'";
+        }		
+		if ("$change_id" ne "") {
+            $query .= " AND CHANGE_ID = '$change_id'";
         }
     
         $query .= ')';         
@@ -403,6 +418,7 @@ sub getOpenChangesForTeamBuild {
     $query .= ');';
     return ($self->gerrit_db_query($query));
 }
+
 
 ################################################
 # testECState
@@ -523,7 +539,8 @@ sub team_build {
     my ($filters,$actions) = $self->parseRules($rules);
     @project_branches = $self->parseManifest($filename);
     #my @changes  = $self->getOpenChanges($project,$branch);
-    my @changes  = $self->getOpenChangesForTeamBuild(@project_branches);
+    #my @changes  = $self->getOpenChangesForTeamBuild(@project_branches);
+	my @changes  = $self->getOpenChangesFromManifest(@project_branches);
     my ($metrics,$idmap) = $self->get_team_build_metrics(@changes);
     my @eligible = $self->get_eligible_changes($filters,$metrics,$idmap);
 
@@ -553,7 +570,8 @@ sub custom_build {
 
     my ($filters,$actions) = $self->parseRules($rules);
     @project_branches = $self->parseManifestStr($manifest);    
-    my @changes  = $self->getOpenChangesForTeamBuild(@project_branches);
+    #my @changes  = $self->getOpenChangesForTeamBuild(@project_branches);
+	my @changes  = $self->getOpenChangesFromManifest(@project_branches);
     
     my ($metrics,$idmap) = $self->get_team_build_metrics(@changes);
     my @eligible = $self->get_eligible_changes($filters,$metrics,$idmap);
@@ -736,7 +754,7 @@ sub get_team_build_metrics {
             . " AND CHANGE_ID = '$changeid' AND PATCH_SET_ID = '$patchid';");
         foreach my $approval (@approvals) {
             my $cat      = $approval->{columns}{category_id};
-            my $user     = $self->get_user($approval->{columns}{account_id} );
+            my $user     = $approval->{columns}{account_id}; #= $self->get_user($approval->{columns}{account_id} );
             my $value    = $approval->{columns}{value};
 
             $metrics->{$changeid}{""}{$cat}{COUNT} += 1;
@@ -1083,7 +1101,7 @@ sub parseManifest{
       my @fakeOutput = ("platform/cts:master");
       return @fakeOutput;
     }    
-    $self->debugMsg(3,"Parsing manifest file:$filename");
+    $self->debugMsg(3,"Parsing manifest file:$fileName");
     open FILE, $fileName or die "Could not open the manifest file, check the path in the configuration settings";
     my @lines = <FILE>;   
     my @output;
@@ -1092,16 +1110,23 @@ sub parseManifest{
     foreach $line (@lines){
         chomp($line);
         if ($line ne ""){
-            @info = split /:/, $line;
-                  
-            if (!defined @info[1])  {                
-                @output[$c] = @info[0] . ":master";                
-                $c++;                
-            } 
-            else{                
-                @output[$c] = @info[0] . ":" . @info[1];              
-                $c++;
-            }    
+            @info = split ":", $line;
+			
+			my $info_size = scalar @info;
+
+            if ($info_size == 3) {			
+				@output[$c] = $line;
+				$c++;
+			}else {
+				if (!defined @info[1])  {                
+					@output[$c] = @info[0] . ":master";                
+					$c++;                
+				} 
+				else{                
+					@output[$c] = @info[0] . ":" . @info[1];              
+					$c++;
+				}
+			}
        }
     }
     #the file is empty we send the default values
@@ -1139,16 +1164,23 @@ sub parseManifestStr{
     foreach $line (@lines){
         chomp($line);
         if ($line ne ""){
-            @info = split /:/, $line;
-                  
-            if (!defined @info[1])  {                
-                @output[$c] = @info[0] . ":master";                
-                $c++;                
-            } 
-            else{                
-                @output[$c] = @info[0] . ":" . @info[1];              
-                $c++;
-            }    
+            @info = split ":", $line;
+            
+            my $info_size = scalar @info;
+
+            if ($info_size == 3) {			
+				@output[$c] = $line;
+				$c++;
+			} else {
+				if (!defined @info[1])  {                
+					@output[$c] = @info[0] . ":master";                
+					$c++;                
+				} 
+				else{                
+					@output[$c] = @info[0] . ":" . @info[1];              
+					$c++;
+				}				
+			}
        }
     }
     #the file is empty we send the default values
@@ -1286,20 +1318,48 @@ sub makeReplacementMap {
 sub processNewChanges {
     my $self = shift;
     my $opts = shift;
-    my @project_branches = $self->parseManifest($opts->{"teambuild_project_branches"});
-    
-    #foreach my $manifest_project (keys % {$projects_branches}) {
+	
+	my @project_branches;
+		
+	if ($opts->{'use_file_manifest'} == 1) {
+		@project_branches = $self->parseManifest($opts->{'changes_manifest_file'});
+    } else {
+		@project_branches = $self->parseManifestStr($opts->{'changes_manifest_str'});
+	}
+	    
     foreach $line (@project_branches){
         @info = split /:/, $line;
-        my $proj = @info[0];
-        my $branch = @info[1];      
-      
-        chomp $proj, $branch;
-        $opts->{"gerrit_project"} = $proj;
-        $opts->{"gerrit_branch"} =  $branch;
-        $self->processSingleProject($opts);
+        
+		my $size = scalar @info;
+		
+		my $proj = "";
+		my $branch = "";
+		my $change_id = "";
+		
+		if ($size == 2){
+		  $proj = @info[0];
+          $branch = @info[1];  
+          
+		  chomp $proj, $branch;
+          $opts->{"gerrit_project"} = $proj;
+          $opts->{"gerrit_branch"} =  $branch;
+          $self->processSingleProject($opts); 		  
+		} 
+        
+        if ($size == 3) {
+		  $change_id = @info[0];
+		  $proj = @info[1];
+          $branch = @info[2];  
+          
+		  chomp $proj, $branch, $change_id;
+          $opts->{"gerrit_project"} = $proj;
+          $opts->{"gerrit_branch"} =  $branch;
+		  $opts->{"gerrit_change_id"} = $change_id;
+          $self->processSingleChanges($opts);          	   
+		}      
     }
 }
+
 
 ###################################################
 # processSingleProject
@@ -1378,6 +1438,82 @@ sub processSingleProject{
         #$self->setECState($project,$changeid, $patchid, $state, $msg, "","");
     }
 }
+
+###################################################
+# processSingleChanges
+#
+# 
+# 
+#
+# args
+#   opts - configuration options
+# 
+# returns
+#   nothing
+###################################################
+sub processSingleChanges{
+    my $self = shift;	
+    my $opts = shift;
+    	
+	$self->showMsg("Processing change: $opts->{'gerrit_change_id'} from project :  $opts->{'gerrit_project'} branch: $opts->{'gerrit_branch'} ");
+ 	
+	my @ch;
+	my $query = "";	
+       $query = "SELECT * FROM CHANGES WHERE CHANGE_ID = '". $opts->{'gerrit_change_id'} ."';";
+       @ch = $self->gerrit_db_query($query);               
+    
+	my $row = @ch[0];  
+   
+    my $changeid = $row->{columns}{change_id};
+    my $patchid = $row->{columns}{current_patch_set_id};
+    my $project = $row->{columns}{dest_project_name};
+               
+    $self->showMsg( "Change $changeid:$patchid");
+        
+    # see if any of them need processing
+    my $uuid = 0;
+    my $state = "jobRunning";
+    if ($opts->{devbuild_mode} eq "auto") {
+        $state = "jobCompleted";
+        $uuid += $self->testECState($changeid,$patchid,$state);
+        $state = "jobRunning";
+        $uuid += $self->testECState($changeid,$patchid,$state);
+    } else {
+        $state = "jobAvailable";
+        $uuid += $self->testECState($changeid,$patchid,$state);
+    }
+    if ($uuid) {
+        $self->debugMsg(1, "Already processed change=$changeid patchset=$patchid");
+        next;
+    } 
+    $self->showMsg( "Processing change=$changeid patchset=$patchid");
+
+    # create a comment
+    my $msg = "";
+    if ($opts->{devbuild_mode} eq "auto") {
+        # run a job too
+        $self->showMsg ("Running job for $changeid:$patchid");
+        $msg = $self->launchECJob($opts,$changeid,$patchid,$project);
+    } else {
+        # just put a link in comment for building
+        $self->showMsg("Creating a link to run a job for $changeid:$patchid");
+        $msg = "This change can be built with ElectricCommander. "
+            . "https://$opts->{cmdr_webserver}/commander/link/runProcedure/projects/"
+            . uri_escape($opts->{devbuild_cmdr_project}) . "/procedures/"
+            . uri_escape($opts->{devbuild_cmdr_procedure}) . "?"
+            . "&numParameters=4"
+            . "&parameters1_name=gerrit_cfg"
+            . "&parameters1_value="
+            . uri_escape($opts->{gerrit_cfg})
+            . "&parameters2_name=changeid"
+            . "&parameters2_value=$changeid"
+            . "&parameters3_name=project"
+            . "&parameters3_value=$project"
+            . "&parameters4_name=patchid"
+            . "&parameters4_value=$patchid";
+    }       	
+}
+
 
 ###################################################
 # launchECJob

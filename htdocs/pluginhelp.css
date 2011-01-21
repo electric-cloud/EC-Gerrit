@@ -38,14 +38,14 @@
     color: #333333;
     text-decoration: none;
     padding: 1px;
-    background-image: url(../lib/images/dottedBorder1.gif);
+    background-image: url(../../lib/images/dottedBorder1.gif);
     background-position: bottom;
     background-repeat: repeat-x;
 }
 
 .help a:hover {
     color: #CC6600;
-    background-image: url(../lib/images/dottedBorder1Hover.gif);
+    background-image: url(../../lib/images/dottedBorder1Hover.gif);
 }
 
 .help ul li {
@@ -68,5 +68,3 @@
 .help pre {
     font-size: 100%;
 }
-
-

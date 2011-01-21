@@ -10,7 +10,7 @@ my $ec = new ElectricCommander();
 $ec->abortOnError(0);
 
 my $cfgName = "$[gerrit_cfg]";
-my $proj = 'EC-Gerrit-1.1.1.0';
+my $proj = 'EC-Gerrit-1.2.0.0';
 my $cfg = new ElectricCommander::PropDB($ec,"/projects/$proj/gerrit_cfgs");
 my %vals = $cfg->getRow($cfgName);
 my $opts = \%vals;
@@ -35,7 +35,7 @@ $opts->{patchid} =  $cfg->getProp("/myJob/patchid");
 $opts->{project} =  $cfg->getProp("/myJob/project");
 
 if (!ElectricCommander::PropMod::loadPerlCodeFromProperty(
-    $ec,"/projects/EC-Gerrit-1.1.1.0/scm_driver/ECGerrit") ) {
+    $ec,"/projects/EC-Gerrit-1.2.0.0/scm_driver/ECGerrit") ) {
     print "Could not load ECGerrit.pm\n";
 }
 
@@ -105,6 +105,50 @@ sub gr_scanChanges {
 sub gr_getChanges {
     return $gt->getChanges();
 }
+
+###############################################################################
+# gr_getChange
+#  get the information from a single change
+# 
+# Args:
+#   changeId
+# Returns:
+#   change record
+###############################################################################
+sub gr_getChange {
+	my $changeId = shift;
+	my $query = "";
+	if ($changeId ne "") {  
+       $query .= "SELECT * FROM CHANGES WHERE CHANGE_ID = '$changeId';";
+       @result = gr_dbQuery($query);               
+    }
+    else {
+       $gt->showError("The change id cannot be null");
+    }      
+}
+
+###############################################################################
+# gr_getChangeByKey
+#  get the information from a single change
+# 
+# Args:
+#   changeKey
+# Returns:
+#   change record
+###############################################################################
+sub gr_getChangeByKey {
+	my $changeKey = shift;
+	my $query = "";
+	
+	if ($changeKey ne "") {  
+       $query .= "SELECT * FROM CHANGES WHERE CHANGE_KEY = '$changeKey';";
+       @result = gr_dbQuery($query);               
+    }
+    else {
+       $gt->showError("The change key cannot be null");
+    }      
+}
+
 
 ###############################
 # Dependancy checking routines
@@ -493,4 +537,48 @@ sub gr_jobStatus{
         return 1;
     }    
     return 0;
+}
+
+###############################################################################
+# grouping
+###############################################################################
+
+###############################################################################
+# gr_createGroupFromFile
+#   Loads a manifest into a property
+#  Args:
+#    filename
+#    groupname
+#  
+###############################################################################
+sub gr_createGroupFromFile{
+	my $filename = shift;
+	my $groupName = shift;
+	gr_loadManifest($groupName, $filename);  	
+}
+
+###############################################################################
+# gr_scanGroup
+#   Scan a set of changes specified in a group
+#  Args:
+#    filename
+#    groupname
+#
+###############################################################################
+sub gr_scanGroup {
+	my $groupName = shift;
+	
+	my $changes = gr_getProperty($groupName);	
+			
+	$opts->{'use_file_manifest'} = 0;
+	$opts->{'changes_manifest_str'} = $changes;
+	
+	$gt->processNewChanges($opts);
+
+    #  process commander jobs
+	$opts->{'group_scanning'} = 1;
+    $gt->processFinishedJobs($opts);
+
+    #  cleanup old jobs
+    $gt->cleanup($opts);	
 }

@@ -45,7 +45,7 @@
               <property>
                 <propertyName>devbuild_cmdr_project</propertyName>
                 <expandable>1</expandable>
-                <value>EC-Gerrit-1.1.1.0</value>
+                <value>EC-Gerrit-1.2.0.0</value>
               </property>
               <property>
                 <propertyName>devbuild_mode</propertyName>
@@ -70,12 +70,12 @@
               <property>
                 <propertyName>gerrit_private_key</propertyName>
                 <expandable>1</expandable>
-                <value>c:/cygwin/home/commander/gerrit_pvt_key</value>
+                <!-- <value>c:/cygwin/home/commander/gerrit_pvt_key</value> -->
               </property>
               <property>
                 <propertyName>gerrit_public_key</propertyName>
                 <expandable>1</expandable>
-                <value>c:/cygwin/home/commander/gerrit_pub_key</value>
+                <!-- <value>c:/cygwin/home/commander/gerrit_pub_key</value> -->
               </property>
               <property>
                 <propertyName>gerrit_server</propertyName>
@@ -95,7 +95,7 @@
               <property>
                 <propertyName>teambuild_project_branches</propertyName>
                 <expandable>1</expandable>
-                <value>c:/test.txt</value>
+                <!-- <value>c:/test.txt</value> -->
               </property>
             </propertySheet>
           </property>
@@ -1736,17 +1736,44 @@
     <procedure>
       <procedureName>SetupGerritServer</procedureName>
       <description>Setup the default settings into Gerrit to be used with the Electric Commander</description>
-      <jobNameTemplate></jobNameTemplate>
+      <jobNameTemplate>gerrit-$[jobId]</jobNameTemplate>
       <resourceName>local</resourceName>
-      <workspaceName></workspaceName>
+      <workspaceName>default</workspaceName>
       <projectName>EC-Gerrit-1.1.1.0</projectName>
       <propertySheet>
+		<property>
+          <propertyName>ec_customEditorData</propertyName>
+          <propertySheet>
+            <property>
+              <propertyName>parameters</propertyName>
+              <propertySheet>
+			    <property>
+                  <propertyName>gerrit_cfg</propertyName>
+                  <propertySheet>
+                    <property>
+                      <propertyName>formType</propertyName>
+                      <expandable>1</expandable>
+                      <value>standard</value>
+                    </property>
+                  </propertySheet>
+                </property>
+			  </propertySheet>
+            </property>
+          </propertySheet>
+        </property>
       </propertySheet>
+	  <formalParameter>
+        <formalParameterName>gerrit_cfg</formalParameterName>
+        <defaultValue>default</defaultValue>
+        <description>The name of the config which holds all the connection information for Gerrit. </description>
+        <required>1</required>
+        <type>entry</type>
+      </formalParameter>
       <step>
         <stepName>Setup</stepName>
         <alwaysRun>0</alwaysRun>
         <broadcast>0</broadcast>
-        <command>##########################&#10;# setup.pl&#10;##########################&#10;$[/plugins/EC-Gerrit-1.1.1.0/project/procedure_helpers/api]&#10;&#10;gr_insertApprovalCategory('ElectricCommander','NULL',3,'NoOp','N','CMDR');&#10;&#10;gr_insertApprovalCategoryValue('Build succeeded','CMDR',1);&#10;gr_insertApprovalCategoryValue('No score','CMDR',0);&#10;gr_insertApprovalCategoryValue('Build failed','CMDR',-1);&#10;</command>
+        <command>##########################&#10;# setup.pl&#10;##########################&#10;$[/plugins/EC-Gerrit-1.2.0.0/project/procedure_helpers/api]&#10;&#10;gr_insertApprovalCategory('ElectricCommander','NULL',3,'NoOp','N','CMDR');&#10;&#10;gr_insertApprovalCategoryValue('Build succeeded','CMDR',1);&#10;gr_insertApprovalCategoryValue('No score','CMDR',0);&#10;gr_insertApprovalCategoryValue('Build failed','CMDR',-1);&#10;</command>
         <condition></condition>
         <description></description>
         <errorHandling>failProcedure</errorHandling>
@@ -1763,7 +1790,7 @@
         <workingDirectory></workingDirectory>
         <workspaceName></workspaceName>
         <procedureName>SetupGerritServer</procedureName>
-        <projectName>EC-Gerrit-1.1.1.0</projectName>
+        <projectName>EC-Gerrit-1.2.0.0</projectName>
         <propertySheet>
           <property>
             <propertyName>ec_customEditorData</propertyName>
@@ -1784,7 +1811,7 @@
       <jobNameTemplate>gerrit-$[jobId]</jobNameTemplate>
       <resourceName>local</resourceName>
       <workspaceName>default</workspaceName>
-      <projectName>EC-Gerrit-1.1.1.0</projectName>
+      <projectName>EC-Gerrit-1.2.0.0</projectName>
       <propertySheet>
         <property>
           <propertyName>ec_customEditorData</propertyName>
@@ -1892,7 +1919,7 @@
         <workingDirectory></workingDirectory>
         <workspaceName></workspaceName>
         <procedureName>TeamBuildCleanup</procedureName>
-        <projectName>EC-Gerrit-1.1.1.0</projectName>
+        <projectName>EC-Gerrit-1.2.0.0</projectName>
         <propertySheet>
           <property>
             <propertyName>ec_customEditorData</propertyName>
@@ -1927,7 +1954,7 @@
         <workingDirectory></workingDirectory>
         <workspaceName></workspaceName>
         <procedureName>TeamBuildCleanup</procedureName>
-        <projectName>EC-Gerrit-1.1.1.0</projectName>
+        <projectName>EC-Gerrit-1.2.0.0</projectName>
         <propertySheet>
           <property>
             <propertyName>ec_customEditorData</propertyName>
@@ -1948,7 +1975,7 @@
       <jobNameTemplate>gerrit-$[jobId]</jobNameTemplate>
       <resourceName>local</resourceName>
       <workspaceName>default</workspaceName>
-      <projectName>EC-Gerrit-1.1.1.0</projectName>
+      <projectName>EC-Gerrit-1.2.0.0</projectName>
       <propertySheet>
         <property>
           <propertyName>ec_customEditorData</propertyName>
@@ -2052,7 +2079,7 @@
           </property>
         </actualParameters>
         <procedureName>TeamBuildExample</procedureName>
-        <projectName>EC-Gerrit-1.1.1.0</projectName>
+        <projectName>EC-Gerrit-1.2.0.0</projectName>
         <propertySheet>
           <property>
             <propertyName>ec_customEditorData</propertyName>
@@ -2087,7 +2114,7 @@
         <workingDirectory></workingDirectory>
         <workspaceName></workspaceName>
         <procedureName>TeamBuildExample</procedureName>
-        <projectName>EC-Gerrit-1.1.1.0</projectName>
+        <projectName>EC-Gerrit-1.2.0.0</projectName>
         <propertySheet>
           <property>
             <propertyName>ec_customEditorData</propertyName>
@@ -2125,7 +2152,7 @@
           </property>
         </actualParameters>
         <procedureName>TeamBuildExample</procedureName>
-        <projectName>EC-Gerrit-1.1.1.0</projectName>
+        <projectName>EC-Gerrit-1.2.0.0</projectName>
         <propertySheet>
           <property>
             <propertyName>ec_customEditorData</propertyName>
@@ -2146,7 +2173,7 @@
       <jobNameTemplate>gerrit-$[jobId]</jobNameTemplate>
       <resourceName>local</resourceName>
       <workspaceName>default</workspaceName>
-      <projectName>EC-Gerrit-1.1.1.0</projectName>
+      <projectName>EC-Gerrit-1.2.0.0</projectName>
       <propertySheet>
         <property>
           <propertyName>ec_customEditorData</propertyName>
@@ -2254,7 +2281,7 @@
         <workingDirectory></workingDirectory>
         <workspaceName></workspaceName>
         <procedureName>TeamBuildPrepare</procedureName>
-        <projectName>EC-Gerrit-1.1.1.0</projectName>
+        <projectName>EC-Gerrit-1.2.0.0</projectName>
         <propertySheet>
           <property>
             <propertyName>ec_customEditorData</propertyName>
@@ -2289,7 +2316,7 @@
         <workingDirectory></workingDirectory>
         <workspaceName></workspaceName>
         <procedureName>TeamBuildPrepare</procedureName>
-        <projectName>EC-Gerrit-1.1.1.0</projectName>
+        <projectName>EC-Gerrit-1.2.0.0</projectName>
         <propertySheet>
           <property>
             <propertyName>ec_customEditorData</propertyName>
@@ -2324,7 +2351,7 @@
         <workingDirectory></workingDirectory>
         <workspaceName></workspaceName>
         <procedureName>TeamBuildPrepare</procedureName>
-        <projectName>EC-Gerrit-1.1.1.0</projectName>
+        <projectName>EC-Gerrit-1.2.0.0</projectName>
         <propertySheet>
           <property>
             <propertyName>ec_customEditorData</propertyName>
@@ -2359,7 +2386,7 @@
         <workingDirectory></workingDirectory>
         <workspaceName></workspaceName>
         <procedureName>TeamBuildPrepare</procedureName>
-        <projectName>EC-Gerrit-1.1.1.0</projectName>
+        <projectName>EC-Gerrit-1.2.0.0</projectName>
         <propertySheet>
           <property>
             <propertyName>ec_customEditorData</propertyName>
@@ -2394,7 +2421,7 @@
         <workingDirectory></workingDirectory>
         <workspaceName></workspaceName>
         <procedureName>TeamBuildPrepare</procedureName>
-        <projectName>EC-Gerrit-1.1.1.0</projectName>
+        <projectName>EC-Gerrit-1.2.0.0</projectName>
         <propertySheet>
           <property>
             <propertyName>ec_customEditorData</propertyName>
@@ -2425,7 +2452,7 @@
       <stopTime></stopTime>
       <timeZone>America/Los_Angeles</timeZone>
       <weekDays></weekDays>
-      <projectName>EC-Gerrit-1.1.1.0</projectName>
+      <projectName>EC-Gerrit-1.2.0.0</projectName>
       <propertySheet>
         <property>
           <propertyName>ec_customEditorData</propertyName>

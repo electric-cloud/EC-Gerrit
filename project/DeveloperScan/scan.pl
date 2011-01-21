@@ -50,6 +50,9 @@ foreach my $cfgName (keys %cfgs) {
         "$opts->{gerrit_private_key}", 
         $opts->{debug});
 
+    $opts->{'use_file_manifest'} = 1;
+	$opts->{'changes_manifest_file'} = $opts->{"teambuild_project_branches"};
+	
     #  process new gerrit changes
     $gt->processNewChanges($opts);
 
