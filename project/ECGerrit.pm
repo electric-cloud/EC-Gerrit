@@ -2102,9 +2102,9 @@ sub ssh_connect {
             "the following key files:\n" .
             "public key file: $pubKeyFile\n" .
             "private key file: $privKeyFile\n" .
-            "error detail: $errorString";
+            "error detail: $errorString";        
         
-        $self->errorMsg(4,$msg);
+		$self->showError(4,$msg);
     }
 
     # Success! Save off the session handle.

@@ -10,7 +10,8 @@ my $ec = new ElectricCommander();
 $ec->abortOnError(0);
 
 my $cfgName = "$[gerrit_cfg]";
-my $proj = 'EC-Gerrit-1.2.0.0';
+my $proj ="$[/plugins/EC-Gerrit]";
+
 my $cfg = new ElectricCommander::PropDB($ec,"/projects/$proj/gerrit_cfgs");
 my %vals = $cfg->getRow($cfgName);
 my $opts = \%vals;
@@ -35,7 +36,7 @@ $opts->{patchid} =  $cfg->getProp("/myJob/patchid");
 $opts->{project} =  $cfg->getProp("/myJob/project");
 
 if (!ElectricCommander::PropMod::loadPerlCodeFromProperty(
-    $ec,"/projects/EC-Gerrit-1.2.0.0/scm_driver/ECGerrit") ) {
+    $ec,"/projects/$proj/scm_driver/ECGerrit") ) {
     print "Could not load ECGerrit.pm\n";
 }
 
