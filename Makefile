@@ -4,7 +4,7 @@
 SRCTOP=..
 include $(SRCTOP)/build/vars.mak
 
-PLUGIN_PATCH_LEVEL=1.2.0
+PLUGIN_VERSION=1.2.0.0
 
 gwtmodules := gerrit/ConfigurationManagement
 
