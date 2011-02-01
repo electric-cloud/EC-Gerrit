@@ -34,6 +34,7 @@ $opts->{gerrit_working_dir} = "$[/myResource/gerrit_working_dir]";
 $opts->{changeid} = $cfg->getProp("/myJob/changeid");
 $opts->{patchid} =  $cfg->getProp("/myJob/patchid");
 $opts->{project} =  $cfg->getProp("/myJob/project");
+$opts->{group_build_changes} = $cfg->getProp("/myJob/group_build_changes");
 
 if (!ElectricCommander::PropMod::loadPerlCodeFromProperty(
     $ec,"/projects/$proj/scm_driver/ECGerrit") ) {
@@ -72,24 +73,18 @@ my $gt = new ECGerrit( $ec,
 sub gr_scanChanges {
     my $manifest = shift;
     my $filter = shift;
-
     # get all eligible change/patch combinations from Gerrit
     my @changes = $gt->custom_build($filter,$manifest);
-
     if (scalar @changes == 0) {
         print "No changes meet the filter criteria.\n";
         exit 0;
-    }
-    
-        
+    }            
     # save changes so that code extraction, build, and comments
     # all operate on this list regardeless of other changes
     # that appear in mid flight
     my $change_str = gr_encodeJSON(\@changes);
-
     print "===CHANGES===\n";
     print $change_str . "\n";
-
     gr_setProperty("changes", $change_str);
     return $change_str;
 } 
@@ -139,8 +134,7 @@ sub gr_getChange {
 ###############################################################################
 sub gr_getChangeByKey {
 	my $changeKey = shift;
-	my $query = "";
-	
+	my $query = "";	
 	if ($changeKey ne "") {  
        $query .= "SELECT * FROM CHANGES WHERE CHANGE_KEY = '$changeKey';";
        @result = gr_dbQuery($query);               
@@ -168,8 +162,7 @@ sub gr_getChangeByKey {
 ############################################################################### 
 sub gr_getChangeMessages {
     my $id = shift;
-    my @commit_msg = $gt->gerrit_db_query("SELECT SUBJECT FROM CHANGES WHERE CHANGE_ID = '$id';");
-    
+    my @commit_msg = $gt->gerrit_db_query("SELECT SUBJECT FROM CHANGES WHERE CHANGE_ID = '$id';");    
     if (scalar(@commit_msg) == 0 || "$commit_msg[0]->{columns}{subject}" eq "") {
         $gt->showError("No category name for id $id.");
         return "";
@@ -189,8 +182,7 @@ sub gr_getChangeMessages {
         my %comment;
         $comment->{comment} = $_->{columns}{message}; 
         push @output, $comment;      
-    }       
-       
+    }              
     $gt->debugMsg(3,"id=$id commit_msg=$msg");        
     return @output;
 }
@@ -210,8 +202,7 @@ sub gr_getChangeMessages {
 sub gr_getChangeStatus {
     my $id = shift;
     my $short_mode = shift;
-    my @status = $gt->gerrit_db_query("SELECT STATUS FROM CHANGES WHERE CHANGE_ID = '$id';");
-    
+    my @status = $gt->gerrit_db_query("SELECT STATUS FROM CHANGES WHERE CHANGE_ID = '$id';");    
     if (scalar(@status) == 0 || "$status[0]->{columns}{status}" eq "") {
         $gt->showError("No category name for id $id.");
         return "";
@@ -241,11 +232,9 @@ sub gr_getChangeStatus {
 #    false if the change is not present in the set
 ###############################################################################
 sub gr_isIncludedInThisVerificationSet {
-    my $change_id = shift;
-    
+    my $change_id = shift;    
     my $str_changes = gr_getProperty("changes");
-    my @changes = gr_decodeJSON($str_changes);
-    
+    my @changes = gr_decodeJSON($str_changes);    
     if (scalar @changes != 0) {
       
         foreach (@changes) {
@@ -271,15 +260,12 @@ sub gr_isIncludedInThisVerificationSet {
 ###############################################################################
 sub gr_insertApprovalCategory {
     my ($name, $abb_name, $position, $function_name, 
-    $copy_min_score,$category_id) = @_;
-    
+    $copy_min_score,$category_id) = @_;    
     my $query = 'INSERT INTO APPROVAL_CATEGORIES '
-       .'(NAME,ABBREVIATED_NAME,POSITION,FUNCTION_NAME,COPY_MIN_SCORE,CATEGORY_ID) ';
-  
+       .'(NAME,ABBREVIATED_NAME,POSITION,FUNCTION_NAME,COPY_MIN_SCORE,CATEGORY_ID) ';  
     if ($abb_name eq ""){
         $abb = 'NULL';
-    }
-  
+    }  
     if ($name ne "") {  
        $query .= "VALUES ('$name',$abb_name,$position,'$function_name','$copy_min_score','$category_id');";
        @result = gr_dbQuery($query);   
@@ -299,12 +285,10 @@ sub gr_insertApprovalCategory {
 ###############################################################################
 
 sub gr_insertRefRights {
-    my $category_id = shift;
-    
+    my $category_id = shift;    
     my $query = 'INSERT INTO REF_RIGHTS '
        . '(MIN_VALUE,MAX_VALUE,PROJECT_NAME,REF_PATTERN,CATEGORY_ID,GROUP_ID) ';
-    my @result;
-    
+    my @result;    
     if ($category_id ne "") {
         $query .= "VALUES (-1,1,'-- All Projects --','refs/heads/*','$category_id',3);";
         @result = gr_dbQuery($query); 
@@ -319,12 +303,10 @@ sub gr_insertRefRights {
 ###############################################################################
 
 sub gr_insertProjectRights {
-    my $category_id = shift;
-    
+    my $category_id = shift;    
     my $query = 'INSERT INTO PROJECT_RIGHTS '
     . '(MIN_VALUE,MAX_VALUE,PROJECT_NAME,CATEGORY_ID,GROUP_ID) ';
-    my @result;
-    
+    my @result;    
     if ($category_id ne "") {
         $query .= "VALUES (-1,1,'-- All Projects --','$category_id',3);";
         @result = gr_dbQuery($query); 
@@ -343,8 +325,7 @@ sub gr_insertProjectRights {
 sub gr_insertApprovalCategoryValue {
     my ($name,$category_id, $value ) = @_;
     my $query = "INSERT INTO APPROVAL_CATEGORY_VALUES "
-       . "(NAME,CATEGORY_ID, VALUE) ";
-    
+       . "(NAME,CATEGORY_ID, VALUE) ";    
     if ($name ne "") {  
        $query .= "VALUES ('$name','$category_id','$value');";
        @result = gr_dbQuery($query);          
@@ -360,8 +341,7 @@ sub gr_insertApprovalCategoryValue {
 #     change_id
 ###############################################################################
 sub gr_setCustomReviewComment{
-    my $msg = shift;
-    
+    my $msg = shift;    
     gr_setProperty("custom_review_msg", $msg);
 }
 
@@ -422,8 +402,7 @@ sub gr_loadTextFile {
     if ("$text" eq "") {
         print "Error: could not load text from $file\n";
         return 0;
-    }   
- 
+    }    
     return $text;
 }
 
@@ -438,10 +417,8 @@ sub gr_loadTextFile {
 ###############################################################################
 sub gr_loadManifest {
    my $property = shift;
-   my $filePath = shift;
-   
-   my $manifest_str = gr_loadTextFile($filePath);
-   
+   my $filePath = shift;   
+   my $manifest_str = gr_loadTextFile($filePath);   
    gr_setProperty($property, $manifest_str);   
 }
 
@@ -471,8 +448,7 @@ sub gr_getProperty {
 ###############################################################################
 sub gr_setProperty {
     my $name = shift;
-    my $property_value = shift;
-    
+    my $property_value = shift;    
     $gt->getCmdr()->setProperty("/myJob/gerrit_$name", $property_value);
 }
 
@@ -559,6 +535,20 @@ sub gr_createGroupFromFile{
 }
 
 ###############################################################################
+# gr_createGroupFromFile
+#   Loads a manifest into a property
+#  Args:
+#    filename
+#    groupname
+#  
+###############################################################################
+sub gr_createGroupFromStr{
+	my $string = shift;
+	my $groupName = shift;
+	gr_setProperty($groupName, $string); 	
+}
+
+###############################################################################
 # gr_scanGroup
 #   Scan a set of changes specified in a group
 #  Args:
@@ -568,18 +558,41 @@ sub gr_createGroupFromFile{
 ###############################################################################
 sub gr_scanGroup {
 	my $groupName = shift;
+	my $procedure = shift;	
+	my $multiGroup = shift;
 	
-	my $changes = gr_getProperty($groupName);	
+	my $changes = "";
+	
+	if ($multiGroup ne 1){
+		$changes = gr_getProperty($groupName);        		
+	} else {		
+		my @groups = split(/\n/, gr_getProperty($groupName));	
 			
-	$opts->{'use_file_manifest'} = 0;
-	$opts->{'changes_manifest_str'} = $changes;
-	
-	$gt->processNewChanges($opts);
-
-    #  process commander jobs
-	$opts->{'group_scanning'} = 1;
-    $gt->processFinishedJobs($opts);
-
-    #  cleanup old jobs
-    $gt->cleanup($opts);	
+		foreach $group (@groups) {		
+			$changes .=  gr_getProperty($group) . "\n";            			
+		}			
+	}
+			
+	if ($procedure ne "") {
+		my $xPath = $gt->getCmdr()->runProcedure($opts->{devbuild_cmdr_project} ,
+			{ procedureName => $procedure, 
+			  actualParameter => [
+				{actualParameterName => 'group_build_changes', value => "$changes" },				
+				{actualParameterName => 'gerrit_cfg', value => "$opts->{gerrit_cfg}" },
+			  ]
+			});	
+		my $errcode = $xPath->findvalue('//responses/error/code')->string_value;
+		if (defined $errcode && "$errcode" ne "") {
+			my $errmsg = $xPath->findvalue('//responses/error/message')->string_value;
+			$msg = "ElectricCommander tried but could not run a job for this group. [$errcode]";
+		} else {
+			my $jobId = $xPath->findvalue('//responses/response/jobId')->string_value;
+			# Mark the change as processed
+			$msg = "The scan is running. "
+				. "https://$opts->{cmdr_webserver}/commander/link/jobDetails/jobs/$jobId";
+		}		
+		return $msg;
+	} else {
+		$gt->showError("The procedure cannot be null.");
+	}	
 }

@@ -560,7 +560,7 @@
           <property>
             <propertyName>gerrit_cfg</propertyName>
             <expandable>1</expandable>
-            <value>default</value>
+            <value>$[gerrit_cfg]</value>
           </property>
         </actualParameters>
         <procedureName>CustomBuildExample</procedureName>
@@ -1644,6 +1644,171 @@
         </propertySheet>
       </step>
     </procedure>
+	<procedure>
+      <procedureName>GroupBuildExample</procedureName>
+      <description>Scan the specified changes in a group of changes, or a group of groups.</description>
+      <jobNameTemplate></jobNameTemplate>
+      <resourceName></resourceName>
+      <workspaceName></workspaceName>
+      <projectName>EC-Gerrit-1.2.0.0</projectName>
+      <propertySheet>
+        <property>
+          <propertyName>ec_customEditorData</propertyName>
+          <propertySheet>
+            <property>
+              <propertyName>parameters</propertyName>
+              <propertySheet>
+                <property>
+                  <propertyName>gerrit_cfg</propertyName>
+                  <propertySheet>
+                    <property>
+                      <propertyName>formType</propertyName>
+                      <expandable>1</expandable>
+                      <value>standard</value>
+                    </property>
+                  </propertySheet>
+                </property>
+				<property>
+                  <propertyName>group_build_changes</propertyName>
+                  <propertySheet>
+                    <property>
+                      <propertyName>formType</propertyName>
+                      <expandable>1</expandable>
+                      <value>standard</value>
+                    </property>
+                  </propertySheet>
+                </property>
+              </propertySheet>
+            </property>
+          </propertySheet>
+        </property>
+      </propertySheet>
+      <formalParameter>
+        <formalParameterName>gerrit_cfg</formalParameterName>
+        <defaultValue>default</defaultValue>
+        <description>The name of the config which holds all the connection information for Gerrit. </description>
+        <required>1</required>
+        <type>entry</type>
+      </formalParameter>
+	  <formalParameter>
+        <formalParameterName>group_build_changes</formalParameterName>
+        <defaultValue></defaultValue>
+        <description>List of the changes in the group.</description>
+        <required>0</required>
+        <type>textarea</type>
+      </formalParameter>
+      <step>
+        <stepName>GetCodeFromGerrit</stepName>
+        <alwaysRun>0</alwaysRun>
+        <broadcast>0</broadcast>
+        <condition></condition>
+        <description></description>
+        <errorHandling>failProcedure</errorHandling>
+        <exclusive>0</exclusive>
+        <parallel>0</parallel>
+        <releaseExclusive>0</releaseExclusive>
+        <resourceName></resourceName>
+        <retries>0</retries>
+        <subprocedure>TeamBuildPrepare</subprocedure>
+        <subproject>/plugins/EC-Gerrit/project</subproject>
+        <timeLimit></timeLimit>
+        <timeLimitUnits>minutes</timeLimitUnits>
+        <actualParameters>
+          <property>
+            <propertyName>gerrit_cfg</propertyName>
+            <expandable>1</expandable>
+            <value>$[gerrit_cfg]</value>
+          </property>
+        </actualParameters>
+        <procedureName>GroupBuildExample</procedureName>
+        <projectName>EC-Gerrit-1.2.0.0</projectName>
+        <propertySheet>
+          <property>
+            <propertyName>ec_customEditorData</propertyName>
+            <propertySheet>
+              <property>
+                <propertyName>formType</propertyName>
+                <expandable>1</expandable>
+                <value>procedure</value>
+              </property>
+            </propertySheet>
+          </property>
+        </propertySheet>
+      </step>
+      <step>
+        <stepName>DoWork</stepName>
+        <alwaysRun>0</alwaysRun>
+        <broadcast>0</broadcast>
+        <command>print "Build and test\n";exit 0;</command>
+        <condition></condition>
+        <description></description>
+        <errorHandling>failProcedure</errorHandling>
+        <exclusive>0</exclusive>
+        <logFileName></logFileName>
+        <parallel>0</parallel>
+        <postProcessor></postProcessor>
+        <releaseExclusive>0</releaseExclusive>
+        <resourceName>$[/myJob/git_resource]</resourceName>
+        <retries>0</retries>
+        <shell>ec-perl</shell>
+        <timeLimit></timeLimit>
+        <timeLimitUnits>minutes</timeLimitUnits>
+        <workingDirectory></workingDirectory>
+        <workspaceName></workspaceName>
+        <procedureName>GroupBuildExample</procedureName>
+        <projectName>EC-Gerrit-1.2.0.0</projectName>
+        <propertySheet>
+          <property>
+            <propertyName>ec_customEditorData</propertyName>
+            <propertySheet>
+              <property>
+                <propertyName>formType</propertyName>
+                <expandable>1</expandable>
+                <value>command</value>
+              </property>
+            </propertySheet>
+          </property>
+        </propertySheet>
+      </step>
+      <step>
+        <stepName>GerritCleanup</stepName>
+        <alwaysRun>0</alwaysRun>
+        <broadcast>0</broadcast>
+        <condition></condition>
+        <description>Cleanup the Gerrit environment</description>
+        <errorHandling>failProcedure</errorHandling>
+        <exclusive>0</exclusive>
+        <parallel>0</parallel>
+        <releaseExclusive>0</releaseExclusive>
+        <resourceName></resourceName>
+        <retries>0</retries>
+        <subprocedure>TeamBuildCleanup</subprocedure>
+        <subproject>/plugins/EC-Gerrit/project</subproject>
+        <timeLimit></timeLimit>
+        <timeLimitUnits>minutes</timeLimitUnits>
+        <actualParameters>
+          <property>
+            <propertyName>gerrit_cfg</propertyName>
+            <expandable>1</expandable>
+            <value>$[gerrit_cfg]</value>
+          </property>
+        </actualParameters>
+        <procedureName>GroupBuildExample</procedureName>
+        <projectName>EC-Gerrit-1.2.0.0</projectName>
+        <propertySheet>
+          <property>
+            <propertyName>ec_customEditorData</propertyName>
+            <propertySheet>
+              <property>
+                <propertyName>formType</propertyName>
+                <expandable>1</expandable>
+                <value>procedure</value>
+              </property>
+            </propertySheet>
+          </property>
+        </propertySheet>
+      </step>
+    </procedure>
     <procedure>
       <procedureName>SetupGerritServer</procedureName>
       <description>Setup the default settings into Gerrit to be used with the Electric Commander</description>
@@ -2122,6 +2287,16 @@
                     </property>
                   </propertySheet>
                 </property>
+				 <property>
+                  <propertyName>group_build_changes</propertyName>
+                  <propertySheet>
+                    <property>
+                      <propertyName>formType</propertyName>
+                      <expandable>1</expandable>
+                      <value>standard</value>
+                    </property>
+                  </propertySheet>
+                </property>
                 <property>
                   <propertyName>patchid</propertyName>
                   <propertySheet>
@@ -2163,6 +2338,13 @@
         <description>The name of the config which holds all the connection information for Gerrit. </description>
         <required>1</required>
         <type>entry</type>
+      </formalParameter>
+	   <formalParameter>
+        <formalParameterName>group_build_changes</formalParameterName>
+        <defaultValue></defaultValue>
+        <description>List of the changes in the group.</description>
+        <required>0</required>
+        <type>textarea</type>
       </formalParameter>
       <formalParameter>
         <formalParameterName>project</formalParameterName>
@@ -2211,6 +2393,41 @@
         <alwaysRun>0</alwaysRun>
         <broadcast>0</broadcast>
         <command>##########################&#10;# changes.pl&#10;##########################&#10;$[/myProject/procedure_helpers/preamble]&#10;&#10;# get all eligible change/patch combinations from Gerrit&#10;#my @changes = $gt-&gt;team_build("$[project]", $opts-&gt;{gerrit_branch},$opts-&gt;{team_build_rules},$opts-&gt;{teambuild_project_branches});&#10;my @changes = $gt-&gt;team_build($opts-&gt;{team_build_rules},$opts-&gt;{teambuild_project_branches});&#10;&#10;if (scalar @changes == 0) {&#10;    print "No changes meet the filter criteria.\n";&#10;    exit 0;&#10;}&#10;&#10;# save changes so that code extraction, build, and comments&#10;# all operate on this list regardeless of other changes&#10;# that appear in mid flight&#10;my $json = JSON-&gt;new-&gt;utf8;&#10;my $change_str = $json-&gt;encode(\@changes);&#10;&#10;print "===CHANGES===\n";&#10;print $change_str . "\n";&#10;&#10;$gt-&gt;getCmdr()-&gt;setProperty("/myJob/gerrit_changes", $change_str);&#10;&#10;&#10;</command>
+        <condition></condition>
+        <description>Get the list of changes to be processed and save for rest of procedure.</description>
+        <errorHandling>abortJob</errorHandling>
+        <exclusive>1</exclusive>
+        <logFileName></logFileName>
+        <parallel>0</parallel>
+        <postProcessor></postProcessor>
+        <releaseExclusive>0</releaseExclusive>
+        <resourceName>$[/myJob/git_resource]</resourceName>
+        <retries>0</retries>
+        <shell>ec-perl</shell>
+        <timeLimit></timeLimit>
+        <timeLimitUnits>minutes</timeLimitUnits>
+        <workingDirectory></workingDirectory>
+        <workspaceName></workspaceName>
+        <procedureName>TeamBuildPrepare</procedureName>
+        <projectName>EC-Gerrit-1.2.0.0</projectName>
+        <propertySheet>
+          <property>
+            <propertyName>ec_customEditorData</propertyName>
+            <propertySheet>
+              <property>
+                <propertyName>formType</propertyName>
+                <expandable>1</expandable>
+                <value>command</value>
+              </property>
+            </propertySheet>
+          </property>
+        </propertySheet>
+      </step>
+	  <step>
+        <stepName>annotate</stepName>
+        <alwaysRun>0</alwaysRun>
+        <broadcast>0</broadcast>
+        <command></command>
         <condition></condition>
         <description>Get the list of changes to be processed and save for rest of procedure.</description>
         <errorHandling>abortJob</errorHandling>

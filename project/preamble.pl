@@ -32,6 +32,7 @@ $opts->{gerrit_working_dir} = "$[/myResource/gerrit_working_dir]";
 $opts->{changeid} = $cfg->getProp("/myJob/changeid");
 $opts->{patchid} =  $cfg->getProp("/myJob/patchid");
 $opts->{project} =  $cfg->getProp("/myJob/project");
+$opts->{group_build_changes} = $cfg->getProp("/myJob/group_build_changes");
 
 if (!ElectricCommander::PropMod::loadPerlCodeFromProperty(
     $ec,"/myProject/scm_driver/ECGerrit") ) {

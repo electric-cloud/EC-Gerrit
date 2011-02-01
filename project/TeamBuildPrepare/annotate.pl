@@ -16,7 +16,8 @@ my $msg = "This change is being built with ElectricCommander."
   . "https://$opts->{cmdr_webserver}/commander/link/jobDetails/jobs/$[jobId]";
 
 my @changes = $gt->getChanges();
-my $gt->team_annotate(@changes,$msg);
+
+$gt->team_annotate(\@changes,$msg);
 
 exit 0;
 

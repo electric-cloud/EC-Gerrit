@@ -40,7 +40,7 @@ Each build is conducted in one or more "work directories". If the directory does
 <li>Familiarity with ElectricCommander server administration</li>
 </ul>
 
-<h3 class="help">Setting up the Gerrit server (Alternative method)</h3>
+<h3 class="help">Setting up the Gerrit server</h3>
 <p class="help">
  The easiest way to set up the Gerrit server to be used with Commander is by running the GerritSetup procedure in the project. This sets the Commander user in Gerrit and also the approval bits needed for the integration. Note that this is the default method. If you want further customization, refer to the next section "Setting up the Gerrit server (Alternative method).
  
@@ -167,14 +167,23 @@ Each configuration has the following properties:
 </tr>
 <tr>
 <td>Project/branches manifest file</td>
-<td>The file that contains the name of the projects and branches to be included in the verification.
+<td>The file that contains the name of the projects and branches to be included in the verification. In addition you can specify in here individual changes to be verified.
 <pre class="help">
-Example
+Example1
 
 platform/cts:experimental
 platform/build:master
 
 Which is translated as: include the project platform/cts branch experimental and platform/build branch master.
+
+Example 2
+
+33:platform/cts:experimental
+10:platform/build:master
+platform/build:experimental
+
+Which is translated as: include the change 33 from project platform/cts branch experimental, change 10 from platform/build branch master and all the changes from platform/build in the experimental brach.
+
 </pre></td>
 </tr>
 <tr>
@@ -319,11 +328,9 @@ With these helper methods, you can access some Gerrit functions and create new o
 <tr>
 <td>gr_scanChanges</td>
 <td>Applies the filter for the selected project/branches and sets the changes to be verified</td>
-<td>
-<pre class="help">-Manifest(optional)
+<td><pre class="help">-Manifest(optional)
 -Filter(optional)
-Note: If no args are specified, the default config is used
- </td>
+Note: If no args are specified, the default config is used </pre> </td>
 <td>A string containing the changes, a property called gerrit_changes is set to be used by other steps </td>
 </tr>
 
@@ -494,9 +501,26 @@ in properties, or if you want to use a Source Control Management system</td>
 <td>True if the job was succesful</td>
 </tr>
 
+<tr>
+<td>gr_createGroupFromFile</td>
+<td>Loads a manifest file specifying individual changes and store them in a property.</td>
+<pre class="help">-File Path
+-Group name
+</pre>
+<td> </td>
+</tr>
+
+<tr>
+<td>gr_scanGroup</td>
+<td>Scan the changes from the specified group.</td>
+<pre class="help">
+-Group name
+</pre>
+<td>Set the links in the gerrit Web UI </td>
+</tr>
+
+
 </table>
-
-
 
 
 <h2 class="help">Customizing Repository Commands</h2>
@@ -588,6 +612,11 @@ ElectricCommander schedule. If you want to change the frequency, modify the
 <li>Add configuration for SSH key locations (will not search ~/.ssh)</li>
 <li>Add new helper methods</li>
 <li>Project/branches manifest file can be used to filter the changes</li>
+</ul>
+<h3 class="help">EC-Gerrit-1.2.0.0</h3>
+<ul>
+<li>Grouping features.</li>
+<li>Support for scanning single changes.</li>
 </ul>
 
 </td>

@@ -1,7 +1,7 @@
 ####################################################################
 #
 # ECGerrit
-#   A perl package to encapsulatei interaction with the
+#   A perl package to encapsulate the interaction with the
 #   gerrit code review tool
 #
 ####################################################################
@@ -17,8 +17,7 @@ if ("$ENV{COMMANDER_PLUGIN_PERL}" ne "") {
     push @INC, "$ENV{COMMANDER_PLUGIN_PERL}";
 } else {
     # during production
-    push @INC, "$ENV{COMMANDER_PLUGINS}/@PLUGIN_NAME@/agent/perl";
-    #push @INC, "$ENV{COMMANDER_PLUGINS}/EC-Gerrit-1.0.1.0/agent/perl";
+    push @INC, "$ENV{COMMANDER_PLUGINS}/@PLUGIN_NAME@/agent/perl";   
 }
 require JSON;
 
@@ -382,7 +381,8 @@ sub getOpenChangesFromManifest {
     foreach my $manifest_project (@projects_branches) {	
         @info = split /:/, $manifest_project;
 		my $manifest_size = scalar @info;
-        my $proj = "";
+        my $using_change_id_only = 0;
+		my $proj = "";
 		my $branch = "";
 		my $change_id = "";
 				
@@ -390,7 +390,10 @@ sub getOpenChangesFromManifest {
 			$change_id = @info[0];
 			$proj = @info[1];
 			$branch = @info[2];   
-		} else {
+		} elsif ( $manifest_size == 1){
+		    $change_id = @info[0];
+		    $using_change_id_only = 1;
+		}else {
 			$proj = @info[0];
 			$branch = @info[1]; 
 		}		
@@ -404,16 +407,22 @@ sub getOpenChangesFromManifest {
         $i++;
        
         $query .= "(";
+		if ( ("$branch" ne "") && ("$change_id" eq "") ) {
         $query .= "DEST_BRANCH_NAME = '$destbranch'"
-             .  " AND OPEN = 'Y'";
-        if ("$proj" ne "") {
+		}
+            # .  " AND OPEN = 'Y'"; }
+        if ( ("$proj" ne "") && ("$change_id" eq "") ) {
             $query .= " AND DEST_PROJECT_NAME = '$proj'";
         }		
-		if ("$change_id" ne "") {
-            $query .= " AND CHANGE_ID = '$change_id'";
-        }
-    
-        $query .= ')';         
+		if ("$change_id" ne "") {			
+			if ($self->is_int($change_id) ){   #check if change_id is int
+				$query .= "CHANGE_ID = '$change_id'";
+			} else {
+				$query .= "CHANGE_KEY = '$change_id'";	
+			}
+		}
+		    
+        $query .= " AND OPEN = 'Y')";         
     }  
     $query .= ');';
     return ($self->gerrit_db_query($query));
@@ -601,6 +610,9 @@ sub team_approve {
 #################################################
 sub team_annotate {
     my ($self,$changes,$msg) = @_;
+	
+	#my @temp_changes = @$changes;		
+	
     return $self->team_approve_base($changes, "", "",$msg);
 }
 
@@ -608,7 +620,7 @@ sub team_annotate {
 # team_disappprove
 #################################################
 sub team_disapprove {
-    my ($self,$changes,$rules,$msg) = @_;
+    my ($self,$changes,$rules,$msg) = @_;	
     return $self->team_approve_base($changes, $rules, "ERROR",$msg);
 }
 
@@ -617,7 +629,9 @@ sub team_disapprove {
 #################################################
 sub team_approve_base {
     my ($self,$changes,$rules, $state, $msg) = @_;
-
+	
+    my @temp_changes = @$changes;	
+	
     my $category = "";
     my $value    = "";
     if ("$rules" ne "") {
@@ -632,8 +646,9 @@ sub team_approve_base {
     $self->debugMsg(2,"category = $category");
     $self->debugMsg(2,"value    = $value");
 
-    foreach my $str (@$changes) {
-        my ($changeid, $patchid,$project) = split (/:/,$str);
+    foreach my $str (@temp_changes) {
+	  
+        my ($changeid, $patchid,$project) = split (/:/,$str);		
         $self->approve($project, $changeid, $patchid, $msg, $category,$value);
     }
     return ;
@@ -1114,19 +1129,10 @@ sub parseManifest{
 			
 			my $info_size = scalar @info;
 
-            if ($info_size == 3) {			
+            if ( ($info_size == 3) || ($info_size == 2) || ($info_size == 1) ) {			
 				@output[$c] = $line;
-				$c++;
-			}else {
-				if (!defined @info[1])  {                
-					@output[$c] = @info[0] . ":master";                
-					$c++;                
-				} 
-				else{                
-					@output[$c] = @info[0] . ":" . @info[1];              
-					$c++;
-				}
-			}
+				$c++;		
+			} 
        }
     }
     #the file is empty we send the default values
@@ -1134,8 +1140,7 @@ sub parseManifest{
         @output[0] =":master";
     }
     close (FILE);   
-    return @output;
-    
+    return @output;    
 }
 
 ############################################################
@@ -1168,18 +1173,9 @@ sub parseManifestStr{
             
             my $info_size = scalar @info;
 
-            if ($info_size == 3) {			
+            if ( ($info_size == 3) || ($info_size == 2) || ($info_size == 1) ){			
 				@output[$c] = $line;
 				$c++;
-			} else {
-				if (!defined @info[1])  {                
-					@output[$c] = @info[0] . ":master";                
-					$c++;                
-				} 
-				else{                
-					@output[$c] = @info[0] . ":" . @info[1];              
-					$c++;
-				}				
 			}
        }
     }
@@ -1346,14 +1342,20 @@ sub processNewChanges {
           $self->processSingleProject($opts); 		  
 		} 
         
-        if ($size == 3) {
+        if ( ($size == 3) || ($size == 1) ) {
 		  $change_id = @info[0];
-		  $proj = @info[1];
-          $branch = @info[2];  
-          
-		  chomp $proj, $branch, $change_id;
-          $opts->{"gerrit_project"} = $proj;
-          $opts->{"gerrit_branch"} =  $branch;
+		  chomp $change_id;
+		  
+		  if ($size == 3) {
+			$proj = @info[1];
+			$branch = @info[2];  
+			$opts->{"gerrit_project"} = $proj;
+            $opts->{"gerrit_branch"} =  $branch;
+			chomp $proj, $branch;
+		  } else {
+				$opts->{"gerrit_project"} = "";
+				$opts->{"gerrit_branch"} =  "";
+		  }				  
 		  $opts->{"gerrit_change_id"} = $change_id;
           $self->processSingleChanges($opts);          	   
 		}      
@@ -1454,64 +1456,91 @@ sub processSingleProject{
 sub processSingleChanges{
     my $self = shift;	
     my $opts = shift;
-    	
-	$self->showMsg("Processing change: $opts->{'gerrit_change_id'} from project :  $opts->{'gerrit_project'} branch: $opts->{'gerrit_branch'} ");
- 	
+	
+	my $single_change = 0;
+    my $using_int = 0;
+	
+	if ( ($opts->{'gerrit_project'} ne "") && ($opts->{'gerrit_branch'} ne "") ) {	
+		$self->showMsg("Processing change: $opts->{'gerrit_change_id'} from project :  $opts->{'gerrit_project'} branch: $opts->{'gerrit_branch'} ");
+	} else {
+		$self->showMsg("Processing change: $opts->{'gerrit_change_id'}");
+		$single_change = 1;
+	}
+ 		
+     $using_int = $self->is_int($opts->{'gerrit_change_id'});	
+	
 	my @ch;
 	my $query = "";	
-       $query = "SELECT * FROM CHANGES WHERE CHANGE_ID = '". $opts->{'gerrit_change_id'} ."';";
-       @ch = $self->gerrit_db_query($query);               
+       if ($using_int == 1) {
+			$query = "SELECT * FROM CHANGES WHERE CHANGE_ID = '". $opts->{'gerrit_change_id'} ."';";
+	   } else {
+			$query = "SELECT * FROM CHANGES WHERE CHANGE_KEY = '". $opts->{'gerrit_change_id'} ."';";
+	   }
+	   
+    @ch = $self->gerrit_db_query($query);               
     
 	my $row = @ch[0];  
    
-    my $changeid = $row->{columns}{change_id};
-    my $patchid = $row->{columns}{current_patch_set_id};
-    my $project = $row->{columns}{dest_project_name};
-               
-    $self->showMsg( "Change $changeid:$patchid");
-        
-    # see if any of them need processing
-    my $uuid = 0;
-    my $state = "jobRunning";
-    if ($opts->{devbuild_mode} eq "auto") {
-        $state = "jobCompleted";
-        $uuid += $self->testECState($changeid,$patchid,$state);
-        $state = "jobRunning";
-        $uuid += $self->testECState($changeid,$patchid,$state);
-    } else {
-        $state = "jobAvailable";
-        $uuid += $self->testECState($changeid,$patchid,$state);
-    }
-    if ($uuid) {
-        $self->debugMsg(1, "Already processed change=$changeid patchset=$patchid");
-        next;
-    } 
-    $self->showMsg( "Processing change=$changeid patchset=$patchid");
+    my $change_open = $row->{columns}{open};
+	my $changeid = $row->{columns}{change_id};
+	my $patchid = $row->{columns}{current_patch_set_id};
+	my $project = $row->{columns}{dest_project_name};
+	
+	if ($change_open eq 'Y'){
+		
+		
+				   
+		$self->showMsg( "Change $changeid:$patchid");
+			
+		# see if any of them need processing
+		my $uuid = 0;
+		my $state = "jobRunning";
+		if ($opts->{devbuild_mode} eq "auto") {
+			$state = "jobCompleted";
+			$uuid += $self->testECState($changeid,$patchid,$state);
+			$state = "jobRunning";
+			$uuid += $self->testECState($changeid,$patchid,$state);
+		} else {
+			$state = "jobAvailable";
+			$uuid += $self->testECState($changeid,$patchid,$state);
+		}
+		if ($uuid) {
+			$self->debugMsg(1, "Already processed change=$changeid patchset=$patchid");
+			next;
+		} 
+		$self->showMsg( "Processing change=$changeid patchset=$patchid");
 
-    # create a comment
-    my $msg = "";
-    if ($opts->{devbuild_mode} eq "auto") {
-        # run a job too
-        $self->showMsg ("Running job for $changeid:$patchid");
-        $msg = $self->launchECJob($opts,$changeid,$patchid,$project);
-    } else {
-        # just put a link in comment for building
-        $self->showMsg("Creating a link to run a job for $changeid:$patchid");
-        $msg = "This change can be built with ElectricCommander. "
-            . "https://$opts->{cmdr_webserver}/commander/link/runProcedure/projects/"
-            . uri_escape($opts->{devbuild_cmdr_project}) . "/procedures/"
-            . uri_escape($opts->{devbuild_cmdr_procedure}) . "?"
-            . "&numParameters=4"
-            . "&parameters1_name=gerrit_cfg"
-            . "&parameters1_value="
-            . uri_escape($opts->{gerrit_cfg})
-            . "&parameters2_name=changeid"
-            . "&parameters2_value=$changeid"
-            . "&parameters3_name=project"
-            . "&parameters3_value=$project"
-            . "&parameters4_name=patchid"
-            . "&parameters4_value=$patchid";
-    }       	
+		# create a comment
+		my $msg = "";
+		if ($opts->{devbuild_mode} eq "auto") {
+			# run a job too
+			$self->showMsg ("Running job for $changeid:$patchid");
+			$msg = $self->launchECJob($opts,$changeid,$patchid,$project);
+		} else {
+			# just put a link in comment for building
+			$self->showMsg("Creating a link to run a job for $changeid:$patchid");
+			$msg = "This change can be built with ElectricCommander. "
+				. "https://$opts->{cmdr_webserver}/commander/link/runProcedure/projects/"
+				. uri_escape($opts->{devbuild_cmdr_project}) . "/procedures/"
+				. uri_escape($opts->{devbuild_cmdr_procedure}) . "?"
+				. "&numParameters=4"
+				. "&parameters1_name=gerrit_cfg"
+				. "&parameters1_value="
+				. uri_escape($opts->{gerrit_cfg})
+				. "&parameters2_name=changeid"
+				. "&parameters2_value=$changeid"
+				. "&parameters3_name=project"
+				. "&parameters3_value=$project"
+				. "&parameters4_name=patchid"
+				. "&parameters4_value=$patchid";
+			} 
+	}else {
+		if (defined $changeid) {
+			$self->showMsg("The change: $changeid is closed");	
+        } else {
+		    $self->showMsg("The change: $opts->{'gerrit_change_id'}  cannot be found.");
+		}		
+	}
 }
 
 
@@ -2160,4 +2189,18 @@ sub dumpOpts{
    print "\n-------------end opts------------\n";
 }
 
+#####################################################################
+# is_int
+# Determines if an scalar contains only digits not float of strings
+###################################################################
+sub is_int{
+    my $self = shift;
+	my $string = shift;
+	
+	if ($string =~ /^\d+$/) {
+		return 1;
+    } else {	
+		return 0;
+	}
+}
 1;

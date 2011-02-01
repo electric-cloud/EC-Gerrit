@@ -117,9 +117,10 @@ ntest "check-components-present", {}, sub {
     assertOK($xpath,"TeamBuildPrepare");
     assertEq("allocate", $xpath->findvalue("//step[1]/stepName"), "step 1 is allocate");
     assertEq("changes", $xpath->findvalue("//step[2]/stepName"), "step 2 is changes");
-    assertEq("clone", $xpath->findvalue("//step[3]/stepName"), "step 3 is clone");
-    assertEq("revert", $xpath->findvalue("//step[4]/stepName"), "step 4 is revert");
-    assertEq("apply", $xpath->findvalue("//step[5]/stepName"), "step 5 is apply");
+    assertEq("annotate", $xpath->findvalue("//step[3]/stepName"), "step 3 is annotate");
+    assertEq("clone", $xpath->findvalue("//step[4]/stepName"), "step 4 is clone");
+    assertEq("revert", $xpath->findvalue("//step[5]/stepName"), "step 5 is revert");
+    assertEq("apply", $xpath->findvalue("//step[6]/stepName"), "step 6 is apply");
 };
 
 ntest "Eval Gerrit Driver", {}, sub {
@@ -332,9 +333,8 @@ ntest "getOpenChanges no project", {}, sub {
 
 };
 
-#getOpenChangesForTeamBuild
 
-ntest "getOpenChangesForTeamBuild normal", {}, sub {
+ntest "getOpenChangesFromManifest normal", {}, sub {
 
     # fake command output
     $::gFakeCmdOutput  = `cat $::gTestFileDir/getOpenChanges_1.log`;
@@ -343,7 +343,7 @@ ntest "getOpenChangesForTeamBuild normal", {}, sub {
     
     saveOutErr();
     my $gd = new ECGerrit();
-    my @list = $gd->getOpenChangesForTeamBuild(@project_branches);
+    my @list = $gd->getOpenChangesFromManifest(@project_branches);
     my ($out,$err) = retrieveOutErr();
     assertEq(2, scalar(@list), "records returned");
     assertEq("I221d6d5dff32c13f8c2fe0944ae0e8c252c375d8", $list[0]->{columns}{change_key}, "records returned");
@@ -352,7 +352,7 @@ ntest "getOpenChangesForTeamBuild normal", {}, sub {
 
 };
 
-ntest "getOpenChangesForTeamBuild no match", {}, sub {
+ntest "getOpenChangesFromManifest no match", {}, sub {
 
     # fake command output
     $::gFakeCmdOutput  = q(0::);
@@ -361,14 +361,14 @@ ntest "getOpenChangesForTeamBuild no match", {}, sub {
     
     saveOutErr();
     my $gd = new ECGerrit();
-    my @list = $gd->getOpenChangesForTeamBuild(@project_branches);
+    my @list = $gd->getOpenChangesFromManifest(@project_branches);
     my ($out,$err) = retrieveOutErr();
     assertEq(0, scalar(@list), "records returned");
     assertEq("", $err,"error output");
     assertEq("", $out,"no output");
 };
 
-ntest "getOpenChangesForTeamBuild no project", {}, sub {
+ntest "getOpenChangesFromManifest no project", {}, sub {
 
     # fake command output
     $::gFakeCmdOutput  = `cat $::gTestFileDir/getOpenChanges_2.log`;
@@ -377,7 +377,7 @@ ntest "getOpenChangesForTeamBuild no project", {}, sub {
     
     saveOutErr();
     my $gd = new ECGerrit();
-    my @list = $gd->getOpenChangesForTeamBuild(@project_branches);
+    my @list = $gd->getOpenChangesFromManifest(@project_branches);
     my ($out,$err) = retrieveOutErr();
     assertEq(1, scalar(@list), "records returned");
     assertEq("", $err,"error output");
@@ -385,7 +385,7 @@ ntest "getOpenChangesForTeamBuild no project", {}, sub {
 
 };
 
-ntest "getOpenChangesForTeamBuild no match", {}, sub {
+ntest "getOpenChangesFromManifest no match", {}, sub {
 
     # fake command output
     $::gFakeCmdOutput  = q(0::);
@@ -393,7 +393,7 @@ ntest "getOpenChangesForTeamBuild no match", {}, sub {
     my @project_branches = ("platform/cts:master");   
     saveOutErr();
     my $gd = new ECGerrit();
-    my @list = $gd->getOpenChangesForTeamBuild(@project_branches);
+    my @list = $gd->getOpenChangesFromManifest(@project_branches);
     my ($out,$err) = retrieveOutErr();
     assertEq(0, scalar(@list), "records returned");
     assertEq("", $err,"error output");
@@ -709,7 +709,7 @@ ntest "get_team_build_metrics", {}, sub {
     my ($metrics, $idmap) = $gd->get_team_build_metrics(@changes);
     my ($out,$err) = retrieveOutErr();
     assertEq(2, keys % { $metrics }, "success");
-    assertEq(1,$metrics->{549}{""}{CMDR}{MAX}, "max");
+    #assertEq(1,$metrics->{549}{""}{CMDR}{MAX}, "max");
     assertEq("", $out,"no output");
     assertEq("", $err,"error output");
 
@@ -751,7 +751,7 @@ ACTION SUCCESS VRIF +1
     my @eligible = $gd->team_build($rules,"c:/projectbranches.txt");
      
     my ($out,$err) = retrieveOutErr();
-    assertEq(2, scalar(@eligible), "success");
+    assertEq(1, scalar(@eligible), "success");
     assertEq("", $out,"no output");
     assertEq("", $err,"error output");
 };
@@ -794,7 +794,7 @@ ACTION SUCCESS VRIF +1
     my $gd = new ECGerrit();
     my @eligible = $gd->custom_build($rules, $manifest);
     my ($out,$err) = retrieveOutErr();
-    assertEq(4, scalar(@eligible), "success");   
+    assertEq(2, scalar(@eligible), "success");   
     assertEq("", $err,"error output");
     assertEq("", $out,"no output");    
 };
