@@ -1,7 +1,7 @@
 ##########################
 # setup.pl
 ##########################
-$[/plugins/EC-Gerrit-1.1.1.0/project/procedure_helpers/api]
+$[/plugins/EC-Gerrit/project/procedure_helpers/api]
 
 gr_insertApprovalCategory('ElectricCommander','NULL',3,'NoOp','N','CMDR');
 
