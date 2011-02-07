@@ -124,7 +124,7 @@ link to the right of the EC-Gerrit plugin. This link provides a list of configur
 Each configuration has the following properties:
 </p>
 
-<table class="help" border="1" width="60%">
+<table class="help" border="1" cellpadding="5" width="60%">
 <tr>
 <th width="25%">Property</th>
 <th witch="25%">Meaning</th>
@@ -182,16 +182,15 @@ Example 2
 10:platform/build:master
 platform/build:experimental
 
-Which is translated as: include the change 33 from project platform/cts branch experimental, change 10 from platform/build branch master and all the changes from platform/build in the experimental brach.
+Which is translated as: include change 33 from project platform/cts branch experimental, change 10 from platform/build branch master and all the changes from platform/build in the experimental brach.
 
 </pre></td>
 </tr>
 <tr>
 <td>Developer Build Mode</td>
-<td><pre>Off: No developer builds are run.
+<td>Off: No developer builds are run.
 Manual: Put links in Gerrit but do not launch proactive builds
 Auto: Proactively build changes
-</pre>
 </td>
 </tr>
 <tr>
@@ -245,7 +244,7 @@ to +1 if the build succeeded and -1 if the build failed.
 Developer builds are used to build a single patchset submitted by a developer. ElectricCommander scans Gerrit on a regular basis to find new patchsets to process. What the plugin does depends on the value you set for "Developer Build Mode" in your plugin configuration.
 </p>
 
-<table border="1" valign="top" class="help" width="60%">
+<table border="1" cellpadding="5" valign="top" class="help" width="60%">
 <tr valign="top"><td>Off</td><td>No processing will occur.</td></tr>
 <tr valign="top"><td>Manual</td><td>The plugin adds a comment to Gerrit with a link
 to an ElectricCommander job that can build the change. To use this mode, 
@@ -299,7 +298,7 @@ This plugin provides a framework to get the proper source code in a working dire
 </p>
 
 <h2 class="help">Custom Builds - Processing Multiple Patchsets Using Custom Helper Methods</h2>
-<p>All previous methods are references for how to use the plugin. Custom builds
+<p class="help">All previous methods are references for how to use the plugin. Custom builds
 use several helper methods located in a property called API.
 With these helper methods, you can access some Gerrit functions and create new ones by querying the Gerrit database directly, which provides additional flexibility. 
 </p>
@@ -317,7 +316,7 @@ With these helper methods, you can access some Gerrit functions and create new o
 </pre>
 
 <h3 class="help">API helper methods reference</h3>
-<table class="help" border="1" width="60%">
+<table class="help" cellpadding="5" border="1" width="60%">
 <tr>
 <th width="25%">Helper </th>
 <th witch="25%">Description</th>
@@ -328,9 +327,10 @@ With these helper methods, you can access some Gerrit functions and create new o
 <tr>
 <td>gr_scanChanges</td>
 <td>Applies the filter for the selected project/branches and sets the changes to be verified</td>
-<td><pre class="help">-Manifest(optional)
+<td>
+-Manifest(optional)
 -Filter(optional)
-Note: If no args are specified, the default config is used </pre> </td>
+Note: If no args are specified, the default config is used </td>
 <td>A string containing the changes, a property called gerrit_changes is set to be used by other steps </td>
 </tr>
 
@@ -338,8 +338,8 @@ Note: If no args are specified, the default config is used </pre> </td>
 <td>gr_getChanges</td>
 <td>Gets the list of changes cached in a property gerrit_changes</td>
 <td>
- -none
- </td>
+-none
+</td>
 <td>Array of change records </td>
 </tr>
 
@@ -348,7 +348,7 @@ Note: If no args are specified, the default config is used </pre> </td>
 <td>Gets the list of changes cached in the gerrit_changes property</td>
 <td>
  -change_id
- </td>
+</td>
 <td>Array with the commit message and all comments for a given change </td>
 </tr>
 
@@ -356,9 +356,9 @@ Note: If no args are specified, the default config is used </pre> </td>
 <td>gr_getChangeStatus</td>
 <td>Gets the list of changes cached in the gerrit_changes property</td>
 <td>
- <pre class="help">-id of the change
- -short_mode</pre>
- </td>
+-id of the change
+-short_mode
+</td>
 <td>The status of the change  
  Note: If short mode is false, it displays the complete word, if not
  the routine displays the short version of the status  </td>
@@ -368,9 +368,8 @@ Note: If no args are specified, the default config is used </pre> </td>
 <td>gr_isIncludedInThisVerificationSet</td>
 <td>Determines whether a change is included in the current verification set</td>
 <td>
- <pre class="help">-id of the change
-                   </pre>
- </td>
+-id of the change
+</td>
 <td>True if the change is present in the verification set </td>
 </tr>
 
@@ -378,13 +377,13 @@ Note: If no args are specified, the default config is used </pre> </td>
 <td>gr_insertApprovalCategory</td>
 <td>Adds a new aproval category to Gerrit, and sets the rights. Can be used to specify new categories for custom approval bits</td>
 <td>
- <pre class="help">-name
- -abb_name
- -position
- -function_name 
- -copy_min_score
- -category_id</pre>
- </td>
+-name
+-abb_name
+-position
+-function_name 
+-copy_min_score
+-category_id
+</td>
 <td></td>
 </tr>
 
@@ -392,8 +391,8 @@ Note: If no args are specified, the default config is used </pre> </td>
 <td>gr_insertRefRights</td>
 <td>Adds the category ID to the REF_RIGHTS table</td>
 <td>
- <pre class="help">-category_id</pre>
- </td>
+-category_id
+</td>
 <td></td>
 </tr>
 
@@ -401,8 +400,8 @@ Note: If no args are specified, the default config is used </pre> </td>
 <td>gr_insertProjectRights</td>
 <td>Adds the category ID to the PROJECT_RIGHTS table</td>
 <td>
- <pre class="help">-category_id</pre>
- </td>
+-category_id
+</td>
 <td></td>
 </tr>
 
@@ -410,10 +409,10 @@ Note: If no args are specified, the default config is used </pre> </td>
 <td>gr_insertApprovalCategoryValue</td>
 <td>Inserts a new category value to be used like a new approval bit</td>
 <td>
- <pre class="help">-name
- -category_id
- -value</pre>
- </td>
+-name
+-category_id
+-value
+</td>
 <td></td>
 </tr>
 
@@ -422,8 +421,8 @@ Note: If no args are specified, the default config is used </pre> </td>
 <td>Loads and executes the Perl code from a file. Useful if you do not want to store the code 
 in properties, or if you want to use a Source Control Management system</td>
 <td>
- <pre class="help">-filename</pre>
- </td>
+-filename
+</td>
 <td>True if the execution of the code is succesful</td>
 </tr>
 
@@ -431,18 +430,18 @@ in properties, or if you want to use a Source Control Management system</td>
 <td>gr_loadTextFile </td>
 <td>Loads a text file and returns the text</td>
 <td>
- <pre class="help">-filename</pre>
- </td>
+-filename
+</td>
 <td>A string with the text</td>
 </tr>
 
 <tr>
-<td>gr_loadManifest </td>
+<td>gr_loadManifest</td>
 <td>Loads project/branches manifest from file and stores it in a property</td>
 <td>
- <pre class="help">-property
- -filePath</pre>
- </td>
+-property
+-filePath
+</td>
 <td>A string with the text</td>
 </tr>
 
@@ -450,8 +449,8 @@ in properties, or if you want to use a Source Control Management system</td>
 <td>gr_getProperty </td>
 <td>Reads the content of a property. Works only for properties created using this API</td>
 <td>
- <pre class="help">-property</pre>
- </td>
+-property
+</td>
 <td>value</td>
 </tr>
 
@@ -459,9 +458,9 @@ in properties, or if you want to use a Source Control Management system</td>
 <td>gr_setProperty </td>
 <td>Reads the content of a property. Works only for properties created using this API</td>
 <td>
- <pre class="help">-property
- -value</pre>
- </td>
+-property
+-value
+</td>
 <td></td>
 </tr>
 
@@ -469,8 +468,8 @@ in properties, or if you want to use a Source Control Management system</td>
 <td>gr_encodeJSON </td>
 <td>Encodes the data to JSON format</td>
 <td>
- <pre class="help">-Array of data</pre>
- </td>
+-Array of data
+</td>
 <td>Data string formated in JSON</td>
 </tr>
 
@@ -478,8 +477,8 @@ in properties, or if you want to use a Source Control Management system</td>
 <td>gr_decodeJSON </td>
 <td>Decodes the data to JSON format</td>
 <td>
- <pre class="help">-String data formated in JSON</pre>
- </td>
+-String data formated in JSON
+</td>
 <td>Data array</td>
 </tr>
 
@@ -487,8 +486,8 @@ in properties, or if you want to use a Source Control Management system</td>
 <td>gr_dbQuery </td>
 <td>Performs a query in SQL against the configured Gerrit server</td>
 <td>
- <pre class="help">-SQL query</pre>
- </td>
+-SQL query
+</td>
 <td>Array of data results</td>
 </tr>
 
@@ -496,27 +495,27 @@ in properties, or if you want to use a Source Control Management system</td>
 <td>gr_jobStatus </td>
 <td>Gets the status of a given job</td>
 <td>
- <pre class="help">-Job id</pre>
- </td>
+-Job id
+</td>
 <td>True if the job was succesful</td>
 </tr>
 
 <tr>
 <td>gr_createGroupFromFile</td>
 <td>Loads a manifest file specifying individual changes and store them in a property.</td>
-<pre class="help">-File Path
+<td>
+-File Path
 -Group name
-</pre>
+</td>
 <td> </td>
 </tr>
 
 <tr>
 <td>gr_scanGroup</td>
 <td>Scan the changes from the specified group.</td>
-<pre class="help">
--Group name
-</pre>
-<td>Set the links in the gerrit Web UI </td>
+<td>-Group name
+</td>
+<td>Set the links in the Gerrit Web UI </td>
 </tr>
 
 
@@ -525,11 +524,11 @@ in properties, or if you want to use a Source Control Management system</td>
 
 <h2 class="help">Customizing Repository Commands</h2>
 <p class="help">
-The logic to get code from the repository can be customized.  You can modify perl code 
+The logic to get code from the repository can be customized. You can modify perl code 
 snippets stored in properties on the plugin project "pseudo_code" property sheet that can be modified.
 </p>
 
-<table class="help" border="1" width="50%">
+<table class="help" cellpadding="5" border="1" width="50%">
 <tr valign="top" >
 <th width="25%">Property</th>
 <th width="25%">Default</th>
@@ -602,6 +601,76 @@ ElectricCommander schedule. If you want to change the frequency, modify the
 "<a href="/commander/link/editSchedule/projects/@PLUGIN_NAME@/schedules/Gerrit New Change Scanner">Gerrit New Change Scanner</a>" schedule.
 </p>
 
+      <div>
+      <h2 class="help">Examples</h2>
+
+
+    <h3 class="help">Configuring the Plugin</h3>      
+         <ol>
+            <li>Go to Administration > Plugins > and click the EC-Gerrit <b>Configure</b> link.</li>
+            <br></br>
+            <img src="../../plugins/EC-Gerrit/img/configure1.png"/>
+            
+            <li>Fill-in the fields according to your needs. Note that you will need SSH certificates located on the Electric Commander server.</li>
+            <br></br>
+            <img src="../../plugins/EC-Gerrit/img/configure2.png"/>                            
+                  
+         </ol>
+    
+    <h3 class="help">Running a Developer Scan</h3>      
+        <ol>
+            <li>If you configured everything correctly, go to the Projects tab and select the Gerrit project.</li>
+            <br></br>
+            <img src="../../plugins/EC-Gerrit/img/project.png"/>
+        
+            <li>Select the <b>DeveloperScan</b> procedure.</li>
+            <br></br>
+            <img src="../../plugins/EC-Gerrit/img/procedures.png"/>
+     
+            <li>Run the procedure.</li>     
+            <br></br>      
+            <img src="../../plugins/EC-Gerrit/img/devscan.png"/>
+      
+            <li>The log will show something similar to this.</li>     
+                   
+            <br></br>      
+            <img src="../../plugins/EC-Gerrit/img/devscanresult.png"/>           
+       </ol> 
+
+    <h3 class="help">Running a TeamBuild</h3>      
+        <ol>
+            <li>Select the <b>TeamBuildExample</b> procedure from the Gerrit project page.</li>
+            <br></br>
+            <img src="../../plugins/EC-Gerrit/img/procedures.png"/>
+        
+            <li>Run the <b>TeamBuildExample</b> procedure.</li>
+            <br></br>
+            <img src="../../plugins/EC-Gerrit/img/teambuildrunning.png"/>
+     
+            <li>This will process the changes in the different pathsets defined. Place all build logic for your project in the <b>DoWork</b> step. The previous steps are responsible for getting the changes and overlaying the new files in the working directory.</li>     
+            <br></br>  
+            <li>This process will also update the comments in the Gerrit web UI.</li>                     
+       </ol>   
+
+ <h3 class="help">Running a Group Build using the API helper methods</h3>      
+        <ol>
+            <li>Create a new project called <b>Gerrit API Test</b> from the Gerrit project page.</li>
+            <br></br>
+            <li>Add a procedure and a step, and add a parameter called <b>gerrit_cfg</b>.</li>
+            <img src="../../plugins/EC-Gerrit/img/gerritapi2.png"/>
+        
+            <li>Include the following code in the step.</li>
+            <br></br>
+            <img src="../../plugins/EC-Gerrit/img/gerritapi3.png"/>
+     
+            <li>This creates two groups called <b>group1</b> and <b>group2</b>. This also creates a group of groups called <b>multigroup</b> and then processes <b>multigroup</b>.</li>
+            <br></br>  
+            <li>This process will launch the provided procedure, and perform the check with the changes in the groups.</li>                     
+       </ol>        
+     </div>
+     
+     
+     
 <h2 class="help">Release Notes</h2>
 <h3 class="help">EC-Gerrit-1.1.1.0</h3>
 <ul>
