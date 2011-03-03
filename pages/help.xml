@@ -514,10 +514,19 @@ in properties, or if you want to use a Source Control Management system</td>
 <td>gr_scanGroup</td>
 <td>Scan the changes from the specified group.</td>
 <td>-Group name
+- isMultiGroup
 </td>
 <td>Set the links in the Gerrit Web UI </td>
 </tr>
 
+<tr>
+<td>gr_downloadChanges</td>
+<td>Overlay the changes in the source tree.</td>
+<td>-Group name
+- isMultiGroup
+</td>
+<td></td>
+</tr>
 
 </table>
 
@@ -665,7 +674,8 @@ ElectricCommander schedule. If you want to change the frequency, modify the
      
             <li>This creates two groups called <b>group1</b> and <b>group2</b>. This also creates a group of groups called <b>multigroup</b> and then processes <b>multigroup</b>.</li>
             <br></br>  
-            <li>This process will launch the provided procedure, and perform the check with the changes in the groups.</li>                     
+            <li>This process will launch the provided procedure, and perform the check with the changes in the groups.</li> 
+            <li>The launched procedure should have at least the following parameters <b>gerrit_cfg</b> entry  <b>group_build_changes</b> textarea <b>parent_jobId</b> entry  </li>           
        </ol>        
      </div>
      
@@ -686,6 +696,11 @@ ElectricCommander schedule. If you want to change the frequency, modify the
 <ul>
 <li>Grouping features.</li>
 <li>Support for scanning single changes.</li>
+</ul>
+<h3 class="help">EC-Gerrit-1.3.0.0</h3>
+<ul>
+<li>Download changes.</li>
+<li>Multiscope properties.</li>
 </ul>
 
 </td>

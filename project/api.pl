@@ -35,6 +35,8 @@ $opts->{changeid} = $cfg->getProp("/myJob/changeid");
 $opts->{patchid} =  $cfg->getProp("/myJob/patchid");
 $opts->{project} =  $cfg->getProp("/myJob/project");
 $opts->{group_build_changes} = $cfg->getProp("/myJob/group_build_changes");
+$opts->{parent_jobId} = $cfg->getProp("/myJob/parent_jobId");
+$opts->{self_jobId} = $cfg->getProp("/myJob/jobId");
 
 if (!ElectricCommander::PropMod::loadPerlCodeFromProperty(
     $ec,"/projects/$proj/scm_driver/ECGerrit") ) {
@@ -429,13 +431,36 @@ sub gr_loadManifest {
 #
 #  Args:
 #    property name
+#    jobId
 #  Returns:
 #    value
 ###############################################################################
 sub gr_getProperty {
     my $name = shift;
-    my $property_value = $cfg->getProp("/myJob/gerrit_$name");
-    return $property_value;
+    my $jobId = shift;
+    
+    my $property_value = "";     
+    
+    if ($jobId eq "") {
+        
+        if ($opts->{parent_jobId} eq "") {
+          $property_value = $cfg->getProp("/myJob/gerrit_$name");
+        } else {       
+          @data = gr_readFromFile($name, $opts->{parent_jobId});    
+        }            
+    } else {
+          @data = gr_readFromFile($name, $jobId);    
+    }
+    my $output = "";
+    if ($property_value eq ""){
+        foreach my $line (@data){
+            $output .= $line;
+        }
+        return $output;
+    }
+    else {
+        return $property_value;
+    }   
 }
 
 ###############################################################################
@@ -445,11 +470,65 @@ sub gr_getProperty {
 #  Args:
 #   property name
 #   property value
+#   jobId
 ###############################################################################
 sub gr_setProperty {
     my $name = shift;
-    my $property_value = shift;    
+    my $property_value = shift; 
+    
     $gt->getCmdr()->setProperty("/myJob/gerrit_$name", $property_value);
+    gr_saveToFile($name, $property_value);    
+    
+}
+
+###############################################################################
+#  gr_saveToFile
+#    Sets a new property to a file in the workspace
+#
+#  Args:
+#   property name
+#   property value
+#   jobId
+###############################################################################
+sub gr_saveToFile {
+    my $name = shift;
+    my $property_value = shift; 
+     
+                       #gpf = gerrit property file
+    open FILE, ">$name.gpf" or die $!;
+    print FILE $property_value;
+    close FILE;     
+}
+
+###############################################################################
+#  gr_readFromFile
+#    gets a property from a file in the workspace
+#
+#  Args:
+#   property name
+#   jobId
+###############################################################################
+sub gr_readFromFile {
+    my $name = shift;
+    my $jobId = shift;
+       
+    my $xpath = $gt->getCmdr()->getJobDetails($jobId);
+    
+    my $ws;
+    if ("$^O" eq "MSWin32") {
+       $ws = $xpath->findvalue("//workspace[1]/winUNC"); 
+    } else {
+       $ws = $xpath->findvalue("//workspace[1]/unix"); 
+    }
+    
+                       #gpf = gerrit property file
+    my $path = "$ws/$name.gpf";
+          
+    open FILE, "<$path" or die "Can't open the file $path in the workspace, check the property name or the jobId.";
+    my @data = <FILE>;
+    close FILE;    
+           
+    return @data;    
 }
 
 ###############################################################################
@@ -552,8 +631,9 @@ sub gr_createGroupFromStr{
 # gr_scanGroup
 #   Scan a set of changes specified in a group
 #  Args:
-#    filename
 #    groupname
+#    procedure name
+#    is multigroup?
 #
 ###############################################################################
 sub gr_scanGroup {
@@ -562,7 +642,7 @@ sub gr_scanGroup {
 	my $multiGroup = shift;
 	
 	my $changes = "";
-	
+    	
 	if ($multiGroup ne 1){
 		$changes = gr_getProperty($groupName);        		
 	} else {		
@@ -577,7 +657,8 @@ sub gr_scanGroup {
 		my $xPath = $gt->getCmdr()->runProcedure($opts->{devbuild_cmdr_project} ,
 			{ procedureName => $procedure, 
 			  actualParameter => [
-				{actualParameterName => 'group_build_changes', value => "$changes" },				
+				{actualParameterName => 'group_build_changes', value => "$changes" },			
+                {actualParameterName => 'parent_jobId', value => "$opts->{self_jobId}" },                
 				{actualParameterName => 'gerrit_cfg', value => "$opts->{gerrit_cfg}" },
 			  ]
 			});	
@@ -595,4 +676,47 @@ sub gr_scanGroup {
 	} else {
 		$gt->showError("The procedure cannot be null.");
 	}	
+}
+
+###############################################################################
+# gr_downloadChanges
+#   Launch the build prepare job with the supplied changes
+#  Args:
+#    Group name
+#    is multigroup
+#
+###############################################################################
+sub gr_downloadChanges {
+	my $groupName = shift;		
+	my $multiGroup = shift;
+	
+	my $changes = "";   
+	
+	if ($multiGroup ne 1){
+		$changes = gr_getProperty($groupName);        		
+	} else {		
+		my @groups = split(/\n/, gr_getProperty($groupName));	
+			
+		foreach $group (@groups) {		
+			$changes .=  gr_getProperty($group) . "\n";            			
+		}			
+	}	
+		my $xPath = $gt->getCmdr()->runProcedure($opts->{devbuild_cmdr_project} ,
+			{ procedureName => "TeamBuildPrepare", 
+			  actualParameter => [
+				{actualParameterName => 'group_build_changes', value => "$changes" },                            
+				{actualParameterName => 'gerrit_cfg', value => "$opts->{gerrit_cfg}" },
+			  ]
+			});	
+		my $errcode = $xPath->findvalue('//responses/error/code')->string_value;
+		if (defined $errcode && "$errcode" ne "") {
+			my $errmsg = $xPath->findvalue('//responses/error/message')->string_value;
+			$msg = "ElectricCommander tried but could not run a job for this group. [$errcode]";
+		} else {
+			my $jobId = $xPath->findvalue('//responses/response/jobId')->string_value;
+			# Mark the change as processed
+			$msg = "The scan is running. "
+				. "https://$opts->{cmdr_webserver}/commander/link/jobDetails/jobs/$jobId";
+		}		
+		return $msg;	
 }

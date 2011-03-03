@@ -1678,6 +1678,16 @@
                     </property>
                   </propertySheet>
                 </property>
+                <property>
+                  <propertyName>parent_jobId</propertyName>
+                  <propertySheet>
+                    <property>
+                      <propertyName>formType</propertyName>
+                      <expandable>1</expandable>
+                      <value>standard</value>
+                    </property>
+                  </propertySheet>
+                </property>
               </propertySheet>
             </property>
           </propertySheet>
@@ -1696,6 +1706,13 @@
         <description>List of the changes in the group.</description>
         <required>0</required>
         <type>textarea</type>
+      </formalParameter>
+      <formalParameter>
+        <formalParameterName>parent_jobId</formalParameterName>
+        <defaultValue></defaultValue>
+        <description>Id of the parent job</description>
+        <required>1</required>
+        <type>entry</type>
       </formalParameter>
       <step>
         <stepName>GetCodeFromGerrit</stepName>
