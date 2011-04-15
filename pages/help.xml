@@ -20,6 +20,11 @@ contributions to Android source code repositories. Gerrit is used for non-Androi
 The ElectricCommander Gerrit plugin simplifies the build/test approval process. The goal is to run tests automatically before the reviewer looks at the change, although a setting is available to run builds on demand only. The Android team published a <a href="http://source.android.com/submit-patches/workflow">diagram</a> that describes the workflow for submitting changes (see link). Note the step after "A" titled "Verifier patches the commit to their local client, then builds and tests the change". This is the step ElectricCommander automates for you. The plugin works closely with Gerrit by adding links to run builds and to finished builds directly in Gerrit change comments. Also, ElectricCommander can act as a reviewer by automatically setting a Gerrit category to a value based on the build success or failure.
 </p>
 
+<p class="help">
+            <b>Supported tool version</b><br>
+            This plugin was developed and tested with Gerrit version 2.1.6.1.
+            </p>
+
 <h3 class="help">How does it work?</h3>
 <p class="help">The plugin communicates with the Gerrit server to retrieve information about the 
 change, including the commands used to pull down files in a patch set. First, a full repository is 
@@ -609,79 +614,21 @@ The plugin scans your Gerrit server for changes every 15 minutes--this is an
 ElectricCommander schedule. If you want to change the frequency, modify the 
 "<a href="/commander/link/editSchedule/projects/@PLUGIN_NAME@/schedules/Gerrit New Change Scanner">Gerrit New Change Scanner</a>" schedule.
 </p>
-
-      <div>
-      <h2 class="help">Examples</h2>
-
-
-    <h3 class="help">Configuring the Plugin</h3>      
-         <ol>
-            <li>Go to Administration > Plugins > and click the EC-Gerrit <b>Configure</b> link.</li>
-            <br></br>
-            <img src="../../plugins/EC-Gerrit/img/configure1.png"/>
-            
-            <li>Fill-in the fields according to your needs. Note that you will need SSH certificates located on the Electric Commander server.</li>
-            <br></br>
-            <img src="../../plugins/EC-Gerrit/img/configure2.png"/>                            
-                  
-         </ol>
     
-    <h3 class="help">Running a Developer Scan</h3>      
-        <ol>
-            <li>If you configured everything correctly, go to the Projects tab and select the Gerrit project.</li>
-            <br></br>
-            <img src="../../plugins/EC-Gerrit/img/project.png"/>
-        
-            <li>Select the <b>DeveloperScan</b> procedure.</li>
-            <br></br>
-            <img src="../../plugins/EC-Gerrit/img/procedures.png"/>
-     
-            <li>Run the procedure.</li>     
-            <br></br>      
-            <img src="../../plugins/EC-Gerrit/img/devscan.png"/>
-      
-            <li>The log will show something similar to this.</li>     
-                   
-            <br></br>      
-            <img src="../../plugins/EC-Gerrit/img/devscanresult.png"/>           
-       </ol> 
-
-    <h3 class="help">Running a TeamBuild</h3>      
-        <ol>
-            <li>Select the <b>TeamBuildExample</b> procedure from the Gerrit project page.</li>
-            <br></br>
-            <img src="../../plugins/EC-Gerrit/img/procedures.png"/>
-        
-            <li>Run the <b>TeamBuildExample</b> procedure.</li>
-            <br></br>
-            <img src="../../plugins/EC-Gerrit/img/teambuildrunning.png"/>
-     
-            <li>This will process the changes in the different pathsets defined. Place all build logic for your project in the <b>DoWork</b> step. The previous steps are responsible for getting the changes and overlaying the new files in the working directory.</li>     
-            <br></br>  
-            <li>This process will also update the comments in the Gerrit web UI.</li>                     
-       </ol>   
-
- <h3 class="help">Running a Group Build using the API helper methods</h3>      
-        <ol>
-            <li>Create a new project called <b>Gerrit API Test</b> from the Gerrit project page.</li>
-            <br></br>
-            <li>Add a procedure and a step, and add a parameter called <b>gerrit_cfg</b>.</li>
-            <img src="../../plugins/EC-Gerrit/img/gerritapi2.png"/>
-        
-            <li>Include the following code in the step.</li>
-            <br></br>
-            <img src="../../plugins/EC-Gerrit/img/gerritapi3.png"/>
-     
-            <li>This creates two groups called <b>group1</b> and <b>group2</b>. This also creates a group of groups called <b>multigroup</b> and then processes <b>multigroup</b>.</li>
-            <br></br>  
-            <li>This process will launch the provided procedure, and perform the check with the changes in the groups.</li> 
-            <li>The launched procedure should have at least the following parameters <b>gerrit_cfg</b> entry  <b>group_build_changes</b> textarea <b>parent_jobId</b> entry  </li>           
-       </ol>        
-     </div>
-     
-     
      
 <h2 class="help">Release Notes</h2>
+<h3 class="help">EC-Gerrit-1.3.0.0</h3>
+<ul>
+<li>Download changes</li>
+<li>Multiscope properties</li>
+</ul>
+
+<h3 class="help">EC-Gerrit-1.2.0.0</h3>
+<ul>
+<li>Grouping features</li>
+<li>Support for scanning single changes</li>
+</ul>
+
 <h3 class="help">EC-Gerrit-1.1.1.0</h3>
 <ul>
 <li>Support Gerrit v2.1.3</li>
@@ -692,16 +639,7 @@ ElectricCommander schedule. If you want to change the frequency, modify the
 <li>Add new helper methods</li>
 <li>Project/branches manifest file can be used to filter the changes</li>
 </ul>
-<h3 class="help">EC-Gerrit-1.2.0.0</h3>
-<ul>
-<li>Grouping features.</li>
-<li>Support for scanning single changes.</li>
-</ul>
-<h3 class="help">EC-Gerrit-1.3.0.0</h3>
-<ul>
-<li>Download changes.</li>
-<li>Multiscope properties.</li>
-</ul>
+
 
 </td>
 <td width="25%"></td>
