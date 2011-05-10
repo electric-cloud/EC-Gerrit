@@ -17,8 +17,9 @@ my %vals = $cfg->getRow($cfgName);
 my $opts = \%vals;
 
 # get pseudo code snippets
-my $code = new ElectricCommander::PropDB($ec,"/projects/$proj/gerrit_code");
-my %code_vals = $code->getRow($cfgName);
+my $code = new ElectricCommander::PropDB($ec,"/projects/$proj/");
+my %code_vals = $code->getRow("pseudo_code");
+
 foreach my $snippet (keys %code_vals) {
     $opts->{$snippet} = "$code_vals{$snippet}";
 }
