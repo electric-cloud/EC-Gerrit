@@ -1231,7 +1231,7 @@ sub getChanges {
 }
 
 #############################################################
-# runCmd: run a command
+# runCmd: run a command on the gerrit sshd connections
 #                                                           
 # cmdin - the command to run
 # input - the text to pipe into cmd (optional)
@@ -1277,6 +1277,52 @@ sub runCmd {
 
 }
 
+#############################################################
+# runLocalCmd: run a command on the local machine
+#                                                           
+# cmdin - the command to run
+# input - the text to pipe into cmd (optional)
+#
+# returns
+#   exitstatus - exit code of command
+#   text       - stdout of command
+#############################################################
+sub runLocalCmd {
+    my $self  = shift;
+    my $cmd   = shift;
+    my $input = shift;
+
+    ## for test, if canned output is given, pop off
+    ## the next output block and return
+    if ($::gRunCmdUseFakeOutput) {
+        if ("$::gFakeCmdOutput" eq "") {
+            # we ran out of fake output
+            return (99,"no more output");
+        }
+        my @lines = split(/\|\|/, "$::gFakeCmdOutput");
+        my $text = shift (@lines);
+        my ($exitstatus,$out) = split(/\:\:/,$text);
+        chomp $exitstatus;
+
+        # push remaining text 
+        my $newv = join ("\|\|", @lines);
+        $::gFakeCmdOutput = $newv;
+        return ($exitstatus,$out);
+    }   
+
+    my $pid = open2 (\*CMD_OUT, \*CMD_IN, $cmd);
+    if (defined $input && "$input" ne "") {
+        print CMD_IN "$input\n";
+    }   
+    close CMD_IN;
+    my $out = do { local $/; <CMD_OUT> };
+    close CMD_OUT;
+    waitpid $pid, 0;
+    my $exitstatus = $? >> 8;
+    return ($exitstatus,$out);
+
+}
+
 ############################################################
 # makeReplacementMap
 #
@@ -1288,6 +1334,7 @@ sub runCmd {
 ############################################################
 sub makeReplacementMap {
     my $self = shift;
+    my $opts = shift;
     my $map = (); 
     foreach my $opt (keys % {$opts}) {
         $map->{"{$opt}"} = "$opts->{$opt}";

@@ -3,7 +3,7 @@
 ##########################
 $[/myProject/procedure_helpers/preamble]
 
-my $map = $gt->makeReplacementMap();
+my $map = $gt->makeReplacementMap($opts);
 
 my $magicDir  = $gt->replace_strings("$opts->{cmd_magic_dir}",$map);
 my $magicDir  = $gt->replace_strings("$magicDir",$map);

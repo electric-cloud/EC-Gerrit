@@ -3,7 +3,7 @@
 ##########################
 $[/myProject/procedure_helpers/preamble]
 
-my $map = $gt->makeReplacementMap();
+my $map = $gt->makeReplacementMap($opts);
 
 # get values from configuration
 # run through replacement twice to allow double indirection

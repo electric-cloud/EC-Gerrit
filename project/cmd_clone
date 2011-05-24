@@ -2,4 +2,12 @@ if (!-d "{gerrit_working_dir}") {
     mkdir "{gerrit_working_dir}";
 }
 chdir "{gerrit_working_dir}";
-my ($exit,$out) = $gt->runCmd("{repo_cmd} init -u " . qw({gerrit_server}) . "/platform/manifests.git -b " . qw({gerrit_branch}) . " -m " . qw({gerrit_manifest}) . " 2>&1");
+my $cmd = "{repo_cmd} init -u git://" . qw({gerrit_server}) . "/platform/manifests.git -b " . 
+    qw({gerrit_branch}) . " -m " . qw({gerrit_manifest});
+print "$cmd\n";
+my $out = `$cmd 2>&1`;
+my $ec = $?;
+print "$out\n";
+exit $ec;
+
+

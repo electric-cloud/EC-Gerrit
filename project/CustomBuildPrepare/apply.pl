@@ -3,7 +3,7 @@
 ##########################
 $[/myProject/procedure_helpers/preamble]
 
-my $map = $gt->makeReplacementMap();
+my $map = $gt->makeReplacementMap($opts);
 
 # get values from configuration
 # run through replacement twice to allow double indirection
@@ -28,7 +28,7 @@ foreach my $str (@changes) {
     $opts->{changeid} = $changeid;
     $opts->{patchid} = $patchid;
     $opts->{gerrit_project} = $project;
-    my $newmap = $gt->makeReplacementMap();
+    my $newmap = $gt->makeReplacementMap($opts);
     my $overlayCmd = $gt->replace_strings("$rawOverlayCmd",$newmap);
     my $overlayCmd = $gt->replace_strings("$overlayCmd",$newmap);
     print "overlay cmd\n$overlayCmd\n";
