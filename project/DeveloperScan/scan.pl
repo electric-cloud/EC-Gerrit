@@ -53,6 +53,7 @@ foreach my $cfgName (keys %cfgs) {
     $opts->{'use_file_manifest'} = 1;
 	$opts->{'changes_manifest_file'} = $opts->{"teambuild_project_branches"};
 	
+	$gt->debugMsg(4, "calling: processNewChanges");
     #  process new gerrit changes
     $gt->processNewChanges($opts);
 

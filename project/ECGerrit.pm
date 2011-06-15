@@ -680,14 +680,18 @@ sub approve {
         $gcmd .= " '--project=$project'";
     }
 
-    if ($category && "$category" ne "") {
-        my $category_option = $self->get_category_name($category);
-        if ("$category_option" eq "") {
-            $self->showError( "Could not find category name for $category");
-            return;
-        }
-        $gcmd .= " --$category_option=$value";
-    }
+	if ($category eq "SUBM") {
+       $gcmd .= " --submit ";
+    } else { 
+		if ($category && "$category" ne "") {
+			my $category_option = $self->get_category_name($category);
+			if ("$category_option" eq "") {
+				$self->showError( "Could not find category name for $category");
+				return;
+			}
+			$gcmd .= " --$category_option=$value";
+		}
+	}
 
     $self->debugMsg(2,"approve cmd:$gcmd");
 
@@ -1244,6 +1248,9 @@ sub runCmd {
     my $self  = shift;
     my $cmd   = shift;
     my $input = shift;
+	
+	$self->debugMsg(4,"entering runCmd...\n");
+	
 
     ## for test, if canned output is given, pop off
     ## the next output block and return
@@ -1386,6 +1393,7 @@ sub processNewChanges {
 		  chomp $proj, $branch;
           $opts->{"gerrit_project"} = $proj;
           $opts->{"gerrit_branch"} =  $branch;
+		  $self->debugMsg(4, "processSingleProject=$proj|$branch");
           $self->processSingleProject($opts); 		  
 		} 
         
@@ -1404,6 +1412,7 @@ sub processNewChanges {
 				$opts->{"gerrit_branch"} =  "";
 		  }				  
 		  $opts->{"gerrit_change_id"} = $change_id;
+		  $self->debugMsg(4, "processSingleChanges=$change_id");
           $self->processSingleChanges($opts);          	   
 		}      
     }
