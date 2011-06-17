@@ -3,7 +3,7 @@
 //
 // CreateConfiguration.java is part of ElectricCommander.
 //
-// Copyright (c) 2005-2010 Electric Cloud, Inc.
+// Copyright (c) 2005-2011 Electric Cloud, Inc.
 // All rights reserved.
 //
 
@@ -20,10 +20,10 @@ import com.google.gwt.user.client.ui.Anchor;
 
 import ecinternal.client.InternalFormBase;
 
-import ecinternal.client.ui.FormBuilderLoader;
+import ecinternal.client.ui.CustomEditorLoader;
 
 import com.electriccloud.commander.gwt.client.requests.CgiRequestProxy;
-import com.electriccloud.commander.gwt.client.requests.RunProcedureRequest; 
+import com.electriccloud.commander.gwt.client.requests.RunProcedureRequest;
 import com.electriccloud.commander.gwt.client.responses.DefaultRunProcedureResponseCallback;
 import com.electriccloud.commander.gwt.client.responses.RunProcedureResponse;
 import com.electriccloud.commander.gwt.client.ui.FormBuilder;
@@ -58,10 +58,7 @@ public class CreateConfiguration
 
     @Override protected FormTable initializeFormTable()
     {
-        
-        FormBuilder fb = getUIFactory().createFormBuilder();
-
-        return fb;
+        return getUIFactory().createFormBuilder();
     }
 
     @Override protected void load()
@@ -70,10 +67,10 @@ public class CreateConfiguration
 
         setStatus("Loading...");
 
-        FormBuilderLoader loader = new FormBuilderLoader(fb, this);
+        CustomEditorLoader loader = new CustomEditorLoader(fb, this);
 
         loader.setCustomEditorPath("/plugins/EC-Gerrit"
-            + "/project/ui_forms/GerritCreateConfigForm");
+                + "/project/ui_forms/GerritCreateConfigForm");
         loader.load();
         clearStatus();
     }
@@ -94,11 +91,11 @@ public class CreateConfiguration
         // Build runProcedure request
         RunProcedureRequest request = getRequestFactory()
                 .createRunProcedureRequest();
-                
+
         request.setProjectName("/plugins/EC-Gerrit/project");
         request.setProcedureName("CreateConfiguration");
-        
-        Map<String, String> params  = fb.getValues();
+
+        Map<String, String> params = fb.getValues();
 
         for (String paramName : params.keySet()) {
             request.addActualParameter(paramName, params.get(paramName));
@@ -109,7 +106,7 @@ public class CreateConfiguration
                 @Override public void handleResponse(
                         RunProcedureResponse response)
                 {
-                     
+
                     if (getLog().isDebugEnabled()) {
                         getLog().debug(
                             "Commander runProcedure request returned job id: "
@@ -117,10 +114,9 @@ public class CreateConfiguration
                     }
 
                     waitForJob(response.getJobId());
-                }                     
-                
-        });
-     
+                }
+            });
+
         if (getLog().isDebugEnabled()) {
             getLog().debug("Issuing Commander request: " + request);
         }
@@ -167,11 +163,11 @@ public class CreateConfiguration
                             // We're done!
                             cancel();
                         }
-                        else {                         
+                        else {
                             SimpleErrorBox      error      = getUIFactory()
                                     .createSimpleErrorBox(
-                                    "Error occurred during configuration creation: "
-                                    + responseString);
+                                        "Error occurred during configuration creation: "
+                                        + responseString);
                             CommanderUrlBuilder urlBuilder = createUrl(
                                     "jobDetails.php").setParameter("jobId",
                                     jobId);
@@ -179,7 +175,7 @@ public class CreateConfiguration
                             error.add(
                                 new Anchor("(See job for details)",
                                     urlBuilder.buildString()));
-                                    addErrorMessage(error);
+                            addErrorMessage(error);
                         }
                     }
                 });
