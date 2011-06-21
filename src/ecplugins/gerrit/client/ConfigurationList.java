@@ -3,7 +3,7 @@
 //
 // ConfigurationList.java is part of ElectricCommander.
 //
-// Copyright (c) 2005-2010 Electric Cloud, Inc.
+// Copyright (c) 2005-2011 Electric Cloud, Inc.
 // All rights reserved.
 //
 
@@ -34,9 +34,10 @@ import com.electriccloud.commander.gwt.client.responses.RunProcedureResponse;
 import com.electriccloud.commander.gwt.client.ui.SimpleErrorBox;
 import com.electriccloud.commander.gwt.client.util.CommanderUrlBuilder;
 
+import static ecinternal.client.InternalComponentBaseFactory.getPluginName;
+
 import static ecinternal.client.ui.ListTable.constructActionList;
 
-import static com.electriccloud.commander.gwt.client.ComponentBaseFactory.getPluginName;
 import static com.electriccloud.commander.gwt.client.util.CommanderUrlBuilder.createPageUrl;
 import static com.electriccloud.commander.gwt.client.util.CommanderUrlBuilder.createRedirectUrl;
 
@@ -55,7 +56,7 @@ public class ConfigurationList
 
     public ConfigurationList()
     {
-        super("ecgc","Gerrit Configurations", "All Configurations");
+        super("ecgc", "Gerrit Configurations", "All Configurations");
         m_configList = new GerritConfigList();
     }
 
@@ -76,8 +77,8 @@ public class ConfigurationList
     {
         setStatus("Loading...");
 
-        GerritConfigListLoader loader = new GerritConfigListLoader(m_configList, this,
-                new ChainedCallback() {
+        GerritConfigListLoader loader = new GerritConfigListLoader(m_configList,
+                this, new ChainedCallback() {
                     @Override public void onComplete()
                     {
                         loadList();
@@ -98,7 +99,7 @@ public class ConfigurationList
 
         request.setProjectName("/plugins/EC-Gerrit/project");
         request.setProcedureName("DeleteConfiguration");
-        request.addActualParameter("config", configName);         
+        request.addActualParameter("config", configName);
         request.setCallback(new DefaultRunProcedureResponseCallback(this) {
                 @Override public void handleResponse(
                         RunProcedureResponse response)
@@ -111,9 +112,9 @@ public class ConfigurationList
                     }
 
                     waitForJob(response.getJobId());
-                }               
+                }
             });
-        
+
         // Launch the procedure
         if (getLog().isDebugEnabled()) {
             getLog().debug("Issuing Commander request: " + request);
@@ -144,7 +145,7 @@ public class ConfigurationList
                     "editConfiguration");
 
             urlBuilder.setParameter("configName", configName);
-            urlBuilder.setParameter("redirectTo", 
+            urlBuilder.setParameter("redirectTo",
                 createRedirectUrl().buildString());
 
             Anchor editConfigLink = new Anchor("Edit",
@@ -213,19 +214,19 @@ public class ConfigurationList
                             // We're done!
                             Location.reload();
                         }
-                        else {                        
+                        else {
                             SimpleErrorBox      error      = getUIFactory()
-                                     .createSimpleErrorBox(
-                                     "Error occurred during configuration deletion: "
-                                     + responseString);
-                             CommanderUrlBuilder urlBuilder = CommanderUrlBuilder
-                                     .createUrl("jobDetails.php")
-                                     .setParameter("jobId", jobId);
+                                    .createSimpleErrorBox(
+                                        "Error occurred during configuration deletion: "
+                                        + responseString);
+                            CommanderUrlBuilder urlBuilder = CommanderUrlBuilder
+                                    .createUrl("jobDetails.php")
+                                    .setParameter("jobId", jobId);
 
-                             error.add(
-                                 new Anchor("(See job for details)",
-                                     urlBuilder.buildString()));
-                             addErrorMessage(error);
+                            error.add(
+                                new Anchor("(See job for details)",
+                                    urlBuilder.buildString()));
+                            addErrorMessage(error);
                         }
                     }
                 });

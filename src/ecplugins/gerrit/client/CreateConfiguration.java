@@ -31,7 +31,8 @@ import com.electriccloud.commander.gwt.client.ui.FormTable;
 import com.electriccloud.commander.gwt.client.ui.SimpleErrorBox;
 import com.electriccloud.commander.gwt.client.util.CommanderUrlBuilder;
 
-import static com.electriccloud.commander.gwt.client.ComponentBaseFactory.getPluginName;
+import static ecinternal.client.InternalComponentBaseFactory.getPluginName;
+
 import static com.electriccloud.commander.gwt.client.util.CommanderUrlBuilder.createPageUrl;
 import static com.electriccloud.commander.gwt.client.util.CommanderUrlBuilder.createUrl;
 
