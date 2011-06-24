@@ -8,6 +8,7 @@
 package ECGerrit;
 
 $::gApproveCmd = "review";
+$::gTableCase = '';
 
 $|=1;
 
@@ -173,16 +174,19 @@ sub getDbg {
 sub gerrit_db_query {
     my $self = shift;
     my $operation = shift;
-
+      
     my @sqlout = ();
-
+        
     my $gcmd = "gerrit gsql --format JSON";
 
     my $input = "$operation\n\\q\n";
     #my $input = "$operation";
-    $self->debugMsg(3,"========command =========");
-    $self->debugMsg(3, $operation);
-    $self->debugMsg(3,"========raw output ======");
+    if (($::gTableCase ne '') && ($::gTableCase ne 'checking'))
+    {
+        $self->debugMsg(3,"========command =========");
+        $self->debugMsg(3, $operation);
+        $self->debugMsg(3,"========raw output ======");
+    }
     my ($exit,$out) = $self->runCmd("$gcmd","$input");
     if ($exit != 0 ) {
         # if command did not succeed we should exit
@@ -191,7 +195,9 @@ sub gerrit_db_query {
         $self->showMsg("$out");
         $self->showError("error running command $gcmd ($exit)");
     }
-    $self->debugMsg(3, $out);
+    if (($::gTableCase ne '') && ($::gTableCase ne 'checking')) {
+        $self->debugMsg(3, $out) 
+    }
 
     my $row = 0;
     my (@lines) = split(/\n/,$out);
@@ -252,7 +258,7 @@ sub getChangeComments {
     }
     # must have something after MESSAGE or the limited parser will not work
     return ($self->gerrit_db_query(
-        "select MESSAGE,UUID from CHANGE_MESSAGES where CHANGE_ID = '$changeid';"));
+        "select MESSAGE,UUID from ". $self->t('CHANGE_MESSAGES') ." where CHANGE_ID = '$changeid';"));
 }
 
 ##########################################
@@ -274,7 +280,7 @@ sub getAccountId {
         return undef;
     }
     my @tmp = $self->gerrit_db_query(
-        "select ACCOUNT_ID from ACCOUNTS where SSH_USER_NAME = '$user';");
+        "select ACCOUNT_ID from ". $self->t('ACCOUNTS'). " where SSH_USER_NAME = '$user';");
     if (scalar(@tmp) == 0 || "$tmp[0]->{columns}{account_id}" eq "") {
         $self->showError( "No account found for user $user.");
         return "";
@@ -347,7 +353,7 @@ sub getOpenChanges {
 
     my @result;
     my $destbranch = "refs/heads/$branch";
-    my $query = "SELECT * from CHANGES WHERE"
+    my $query = "SELECT * from ". $self->t('CHANGES') ." WHERE"
         . " DEST_BRANCH_NAME = '$destbranch'"
         . " AND OPEN = 'Y'";
     if ("$proj" ne "") {
@@ -374,7 +380,7 @@ sub getOpenChanges {
 sub getOpenChangesFromManifest {
     my ($self,@projects_branches) = @_;
     my @result;    
-    my $query = "SELECT * from CHANGES WHERE (";    
+    my $query = "SELECT * from ". $self->t('CHANGES') ." WHERE (";    
     my $i = 0;
     my $size = scalar @projects_branches;
    	
@@ -758,8 +764,8 @@ sub get_team_build_metrics {
     foreach my $change (@changes) {
         my $changeid = $change->{columns}{change_id};
         my $project  = $change->{columns}{dest_project_name};
-        my @max = $self->gerrit_db_query("SELECT MAX(PATCH_SET_ID) FROM"
-            . " PATCH_SETS WHERE CHANGE_ID = '$changeid';");
+        my @max = $self->gerrit_db_query("SELECT MAX(PATCH_SET_ID) FROM "
+            . $self->t('PATCH_SETS') ." WHERE CHANGE_ID = '$changeid';");
         my $patchid = $max[0]->{columns}{'max(patch_set_id)'};
         $idmap->{$changeid}{patchid} = "$patchid";
         $idmap->{$changeid}{project} = "$project";
@@ -769,7 +775,7 @@ sub get_team_build_metrics {
         $metrics->{$changeid}{""}{$cat}{MIN}   = 0;
 
         # find all approvals for highest patchset for change
-        my @approvals = $self->gerrit_db_query("SELECT * FROM PATCH_SET_APPROVALS WHERE CHANGE_OPEN = 'Y'"
+        my @approvals = $self->gerrit_db_query("SELECT * FROM " . $self->t('PATCH_SET_APPROVALS') . " WHERE CHANGE_OPEN = 'Y'"
             . " AND CHANGE_ID = '$changeid' AND PATCH_SET_ID = '$patchid';");
         foreach my $approval (@approvals) {
             my $cat      = $approval->{columns}{category_id};
@@ -972,7 +978,7 @@ sub check_count {
 ############################################################
 sub get_user {
     my ($self,$id) = @_;
-    my @accounts = $self->gerrit_db_query("SELECT SSH_USER_NAME FROM ACCOUNTS WHERE ACCOUNT_ID = '$id';");
+    my @accounts = $self->gerrit_db_query("SELECT SSH_USER_NAME FROM ". $self->t('ACCOUNTS')." WHERE ACCOUNT_ID = '$id';");
     if (scalar(@accounts) == 0 || "$accounts[0]->{columns}{ssh_user_name}" eq "") {
         $self->showError("No account found for user $id.");
         return "";
@@ -996,7 +1002,7 @@ sub get_user {
 ############################################################
 sub get_category_name {
     my ($self,$id) = @_;
-    my @cats = $self->gerrit_db_query("SELECT NAME FROM APPROVAL_CATEGORIES  WHERE CATEGORY_ID = '$id';");
+    my @cats = $self->gerrit_db_query("SELECT NAME FROM " . $self->t('APPROVAL_CATEGORIES') . " WHERE CATEGORY_ID = '$id';");
     if (scalar(@cats) == 0 || "$cats[0]->{columns}{name}" eq "") {
         $self->showError("No category name for id $id.");
         return "";
@@ -1249,9 +1255,8 @@ sub runCmd {
     my $cmd   = shift;
     my $input = shift;
 	
-	$self->debugMsg(4,"entering runCmd...\n");
-	
-
+	$self->debugMsg(4,"entering runCmd...\n");	
+  
     ## for test, if canned output is given, pop off
     ## the next output block and return
     if ($::gRunCmdUseFakeOutput) {
@@ -1277,8 +1282,10 @@ sub runCmd {
         $self->getSSHPub,
         $self->getSSHPvt,
         );
-        
-    $self->debugMsg(4,"runCmd:$cmd\ninput:$input\n");
+   
+   if (($::gTableCase ne '') && ($::gTableCase ne 'checking'))    {    
+        $self->debugMsg(4,"runCmd:$cmd\ninput:$input\n");
+    }
     my ($exit,$out) = $self->ssh_runCommand($c,$cmd,$input);
     return ($exit,$out);
 
@@ -1528,9 +1535,9 @@ sub processSingleChanges{
 	my @ch;
 	my $query = "";	
        if ($using_int == 1) {
-			$query = "SELECT * FROM CHANGES WHERE CHANGE_ID = '". $opts->{'gerrit_change_id'} ."';";
+			$query = "SELECT * FROM " . $self->t('CHANGES') . " WHERE CHANGE_ID = '". $opts->{'gerrit_change_id'} ."';";
 	   } else {
-			$query = "SELECT * FROM CHANGES WHERE CHANGE_KEY = '". $opts->{'gerrit_change_id'} ."';";
+			$query = "SELECT * FROM " . $self->t('CHANGES') . " WHERE CHANGE_KEY = '". $opts->{'gerrit_change_id'} ."';";
 	   }
 	   
     @ch = $self->gerrit_db_query($query);               
@@ -1930,7 +1937,7 @@ sub printAllTables {
     my $rows = scalar(@tables);
     for (my $index=0; $index < $rows; $index++) {
         my @tbl = $self->gerrit_db_query("select * from " .
-            $tables[$index]->{columns}{table_name} . ";");
+            $self->t($tables[$index]->{columns}{table_name}) . ";");
         $self->print_table(@tbl);
     }
 }
@@ -2127,7 +2134,7 @@ sub ssh_getDefaultTargetPort() {
 
 sub ssh_connect {
     my ($self,$host, $userName, $port, $pubKeyFile, $privKeyFile) = @_;
-
+  
     # Be sure that pubKeyFile, and privKeyFile are defined and that the two
     # files actually exist.  Error out otherwise.
 
@@ -2258,5 +2265,38 @@ sub is_int{
     } else {	
 		return 0;
 	}
+}
+
+####################################################################
+# t
+# Is used to convert a table name form uppercase to lowercase
+# according to a global flag
+###################################################################
+sub t {
+   my ($self, $name) = @_;
+  
+   if ($::gTableCase eq '') {  
+      $self->set_table_case();
+   }   
+   if ($::gTableCase eq 'lower') {      
+      return lc($name);        
+   }elsif ($::gTableCase eq 'upper') {   
+      return uc($name);
+   }
+}
+
+sub set_table_case {
+    my ($self, $opts) = @_;   
+    my $query =  'SHOW TABLES;';    
+    $::gTableCase = "checking";    
+    my @tables = $self->gerrit_db_query($query); 
+    my $table = @tables[0]->{columns}{table_name};
+
+    if ($table !~ m/[A-Z]/) {
+       $::gTableCase = 'lower';
+    } else {
+        $::gTableCase = 'upper';
+    }    
+    return 1;
 }
 1;
