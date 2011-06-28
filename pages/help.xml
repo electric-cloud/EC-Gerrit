@@ -617,6 +617,10 @@ ElectricCommander schedule. If you want to change the frequency, modify the
     
      
 <h2 class="help">Release Notes</h2>
+<h3 class="help">EC-Gerrit-1.3.5.0</h3>
+<ul>
+<li>Support for mySQL </li>
+</ul>
 <h3 class="help">EC-Gerrit-1.3.4.0</h3>
 <ul>
 <li>Fix a bug with the pseudo code snippet execution</li>
