@@ -118,7 +118,7 @@ sub gr_getChange {
 	my $changeId = shift;
 	my $query = "";
 	if ($changeId ne "") {  
-       $query .= "SELECT * FROM CHANGES WHERE CHANGE_ID = '$changeId';";
+       $query .= "SELECT * FROM ". $gt->t('CHANGES')." WHERE CHANGE_ID = '$changeId';";
        @result = gr_dbQuery($query);               
     }
     else {
@@ -139,7 +139,7 @@ sub gr_getChangeByKey {
 	my $changeKey = shift;
 	my $query = "";	
 	if ($changeKey ne "") {  
-       $query .= "SELECT * FROM CHANGES WHERE CHANGE_KEY = '$changeKey';";
+       $query .= "SELECT * FROM ". $gt->t('CHANGES'). " WHERE CHANGE_KEY = '$changeKey';";
        @result = gr_dbQuery($query);               
     }
     else {
@@ -165,7 +165,7 @@ sub gr_getChangeByKey {
 ############################################################################### 
 sub gr_getChangeMessages {
     my $id = shift;
-    my @commit_msg = $gt->gerrit_db_query("SELECT SUBJECT FROM CHANGES WHERE CHANGE_ID = '$id';");    
+    my @commit_msg = $gt->gerrit_db_query("SELECT SUBJECT FROM ". $gt->t('CHANGES')." WHERE CHANGE_ID = '$id';");    
     if (scalar(@commit_msg) == 0 || "$commit_msg[0]->{columns}{subject}" eq "") {
         $gt->showError("No category name for id $id.");
         return "";
@@ -177,7 +177,7 @@ sub gr_getChangeMessages {
     $o_msg->{commit_msg} = $msg;
     
     #get the comments from gerrit
-    my @query_comments = $gt->gerrit_db_query("SELECT MESSAGE FROM CHANGE_MESSAGES WHERE CHANGE_ID = '$id';");
+    my @query_comments = $gt->gerrit_db_query("SELECT MESSAGE FROM ". $gt->t('CHANGE_MESSAGES')." WHERE CHANGE_ID = '$id';");
     
     @output = ();    
     push @output,$o_msg; 
@@ -205,7 +205,7 @@ sub gr_getChangeMessages {
 sub gr_getChangeStatus {
     my $id = shift;
     my $short_mode = shift;
-    my @status = $gt->gerrit_db_query("SELECT STATUS FROM CHANGES WHERE CHANGE_ID = '$id';");    
+    my @status = $gt->gerrit_db_query("SELECT STATUS FROM ". $gt->t('CHANGES')." WHERE CHANGE_ID = '$id';");    
     if (scalar(@status) == 0 || "$status[0]->{columns}{status}" eq "") {
         $gt->showError("No category name for id $id.");
         return "";
@@ -264,8 +264,8 @@ sub gr_isIncludedInThisVerificationSet {
 sub gr_insertApprovalCategory {
     my ($name, $abb_name, $position, $function_name, 
     $copy_min_score,$category_id) = @_;    
-    my $query = 'INSERT INTO APPROVAL_CATEGORIES '
-       .'(NAME,ABBREVIATED_NAME,POSITION,FUNCTION_NAME,COPY_MIN_SCORE,CATEGORY_ID) ';  
+    my $query = 'INSERT INTO '. $gt->t('APPROVAL_CATEGORIES') 
+       .' (NAME,ABBREVIATED_NAME,POSITION,FUNCTION_NAME,COPY_MIN_SCORE,CATEGORY_ID) ';  
     if ($abb_name eq ""){
         $abb = 'NULL';
     }  
@@ -289,8 +289,8 @@ sub gr_insertApprovalCategory {
 
 sub gr_insertRefRights {
     my $category_id = shift;    
-    my $query = 'INSERT INTO REF_RIGHTS '
-       . '(MIN_VALUE,MAX_VALUE,PROJECT_NAME,REF_PATTERN,CATEGORY_ID,GROUP_ID) ';
+    my $query = 'INSERT INTO '. $gt->t('REF_RIGHTS')
+       . ' (MIN_VALUE,MAX_VALUE,PROJECT_NAME,REF_PATTERN,CATEGORY_ID,GROUP_ID) ';
     my @result;    
     if ($category_id ne "") {
         $query .= "VALUES (-1,1,'-- All Projects --','refs/heads/*','$category_id',3);";
@@ -307,8 +307,8 @@ sub gr_insertRefRights {
 
 sub gr_insertProjectRights {
     my $category_id = shift;    
-    my $query = 'INSERT INTO PROJECT_RIGHTS '
-    . '(MIN_VALUE,MAX_VALUE,PROJECT_NAME,CATEGORY_ID,GROUP_ID) ';
+    my $query = 'INSERT INTO '. $gt->t('PROJECT_RIGHTS')
+    . ' (MIN_VALUE,MAX_VALUE,PROJECT_NAME,CATEGORY_ID,GROUP_ID) ';
     my @result;    
     if ($category_id ne "") {
         $query .= "VALUES (-1,1,'-- All Projects --','$category_id',3);";
@@ -327,8 +327,8 @@ sub gr_insertProjectRights {
 ###############################################################################
 sub gr_insertApprovalCategoryValue {
     my ($name,$category_id, $value ) = @_;
-    my $query = "INSERT INTO APPROVAL_CATEGORY_VALUES "
-       . "(NAME,CATEGORY_ID, VALUE) ";    
+    my $query = "INSERT INTO ". $gt->t('APPROVAL_CATEGORY_VALUES')
+       . " (NAME,CATEGORY_ID, VALUE) ";    
     if ($name ne "") {  
        $query .= "VALUES ('$name','$category_id','$value');";
        @result = gr_dbQuery($query);          
