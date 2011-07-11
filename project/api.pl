@@ -422,7 +422,7 @@ sub gr_loadManifest {
    my $property = shift;
    my $filePath = shift;   
    my $manifest_str = gr_loadTextFile($filePath);   
-   gr_setProperty($property, $manifest_str);   
+   return gr_setProperty($property, $manifest_str);    
 }
 
 ###############################################################################
@@ -471,7 +471,7 @@ sub gr_getProperty {
 #  Args:
 #   property name
 #   property value
-#   jobId
+#   
 ###############################################################################
 sub gr_setProperty {
     my $name = shift;
@@ -479,7 +479,7 @@ sub gr_setProperty {
     
     $gt->getCmdr()->setProperty("/myJob/gerrit_$name", $property_value);
     gr_saveToFile($name, $property_value);    
-    
+    return $property_value;
 }
 
 ###############################################################################
@@ -559,7 +559,7 @@ sub gr_decodeJSON {
     my $data = shift;
     my $json = JSON->new->utf8;
     my $ref = $json->decode($data);
-    return (@$ref);
+    return ($ref);
 }
 
 ###############################################################################
@@ -615,11 +615,11 @@ sub gr_createGroupFromFile{
 }
 
 ###############################################################################
-# gr_createGroupFromFile
-#   Loads a manifest into a property
+# gr_createGroupFromStr
+#   Creates a group from a string
 #  Args:
-#    filename
-#    groupname
+#   groupname
+#   string
 #  
 ###############################################################################
 sub gr_createGroupFromStr{
@@ -685,14 +685,21 @@ sub gr_scanGroup {
 #  Args:
 #    Group name
 #    is multigroup
+#    procedure name
 #
 ###############################################################################
 sub gr_downloadChanges {
 	my $groupName = shift;		
 	my $multiGroup = shift;
+    my $procedureName = shift;
 	
 	my $changes = "";   
 	
+    if ($procedureName eq '') {
+        print "Warning: the procedure name is missing. We will use TeamBuildPrepare by default.\n";
+        $procedureName = 'TeamBuildPrepare';
+    }
+    
 	if ($multiGroup ne 1){
 		$changes = gr_getProperty($groupName);        		
 	} else {		
@@ -703,7 +710,7 @@ sub gr_downloadChanges {
 		}			
 	}	
 		my $xPath = $gt->getCmdr()->runProcedure($opts->{devbuild_cmdr_project} ,
-			{ procedureName => "TeamBuildPrepare", 
+			{ procedureName => $procedureName, 
 			  actualParameter => [
 				{actualParameterName => 'group_build_changes', value => "$changes" },                            
 				{actualParameterName => 'gerrit_cfg', value => "$opts->{gerrit_cfg}" },

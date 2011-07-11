@@ -11,7 +11,7 @@
 
 <h3 class="help">What is Gerrit?</h3>
 <p class="help">
-The <a href="http://gerrit.googlecode.com/svn/documentation/2.1.2/index.html">Gerrit Code Review system</a> is used by the Android Open Source Project and commercial vendors to manage 
+The <a href="http://gerrit.googlecode.com/svn/documentation/2.2.0/index.html">Gerrit Code Review system</a> is used by the Android Open Source Project and commercial vendors to manage 
 contributions to Android source code repositories. Gerrit is used for non-Android projects also and provides a systematic process for evaluating and approving source code changes before they are committed. Gerrit provides facilities to park changes until they are approved by appropriate engineers. Engineers are notified of a change (or they sign into the Gerrit server to find new changes) and must decide if the change should be accepted into the code base. This process is typically implemented by manual code review and/or pulling changes into a local workspace, building the changes, and running some tests.
 </p>
 
@@ -22,7 +22,7 @@ The ElectricCommander Gerrit plugin simplifies the build/test approval process. 
 
 <p class="help">
             <b>Supported tool version</b><br/>
-            This plugin was developed and tested with Gerrit version 2.1.6.1.
+            This plugin was developed and tested with Gerrit version 2.2.0.
             </p>
 
 <h3 class="help">How does it work?</h3>
@@ -375,7 +375,7 @@ Note: If no args are specified, the default config is used </td>
 <td>
 -id of the change
 </td>
-<td>True if the change is present in the verification set </td>
+<td>1 if the change is present in the verification set </td>
 </tr>
 
 <tr>
@@ -428,7 +428,7 @@ in properties, or if you want to use a Source Control Management system</td>
 <td>
 -filename
 </td>
-<td>True if the execution of the code is succesful</td>
+<td>1 if the execution of the code is succesful</td>
 </tr>
 
 <tr>
@@ -502,7 +502,7 @@ in properties, or if you want to use a Source Control Management system</td>
 <td>
 -Job id
 </td>
-<td>True if the job was succesful</td>
+<td>1 if the job was succesful</td>
 </tr>
 
 <tr>
@@ -519,6 +519,7 @@ in properties, or if you want to use a Source Control Management system</td>
 <td>gr_scanGroup</td>
 <td>Scan the changes from the specified group.</td>
 <td>-Group name
+-procedureName
 - isMultiGroup
 </td>
 <td>Set the links in the Gerrit Web UI </td>
@@ -529,6 +530,16 @@ in properties, or if you want to use a Source Control Management system</td>
 <td>Overlay the changes in the source tree.</td>
 <td>-Group name
 - isMultiGroup
+- procedureName
+</td>
+<td></td>
+</tr>
+
+<tr>
+<td>createGroupFromStr</td>
+<td>Creates a group from a string</td>
+<td>-Group name
+- string
 </td>
 <td></td>
 </tr>
@@ -617,6 +628,10 @@ ElectricCommander schedule. If you want to change the frequency, modify the
     
      
 <h2 class="help">Release Notes</h2>
+<h3 class="help">EC-Gerrit-1.3.6.0</h3>
+<ul>
+<li>Minor API improvements </li>
+</ul>
 <h3 class="help">EC-Gerrit-1.3.5.0</h3>
 <ul>
 <li>Support for mySQL </li>
