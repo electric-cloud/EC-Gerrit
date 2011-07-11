@@ -1,7 +1,7 @@
 ##########################
 # annotate.pl
 ##########################
-$[/plugins/EC-Gerrit-1.1.1.0/project/procedure_helpers/api]
+$[/plugins/EC-Gerrit/project/procedure_helpers/api]
 
 my $jobId = "$[jobId]";
 my $xPath = $ec->getProperty("/myJob/outcome");
