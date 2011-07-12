@@ -36,7 +36,7 @@
  ['//procedure[procedureName="CustomBuildPrepare"]/step[stepName="revert"]/command'  ,'CustomBuildPrepare/revert.pl'],
  ['//procedure[procedureName="CustomBuildPrepare"]/step[stepName="helperMetodsExamples"]/command'  ,'CustomBuildPrepare/helpers.pl'],
  
- ['//procedure[procedureName="SettingUpGerritServer"]/step[stepName="Setup"]/command'  ,'Misc/setup.pl'],
+ ['//procedure[procedureName="SetupGerritServer"]/step[stepName="Setup"]/command'  ,'Misc/setup.pl'],
  
  ['//property[propertyName="ec_setup"]/value', 'ec_setup.pl'],
 );
