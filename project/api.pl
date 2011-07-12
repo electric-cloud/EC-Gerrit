@@ -691,15 +691,20 @@ sub gr_scanGroup {
 sub gr_downloadChanges {
 	my $groupName = shift;		
 	my $multiGroup = shift;
+    my $projectName = shift;
     my $procedureName = shift;
 	
 	my $changes = "";   
 	
+     if ($projectName eq '') {
+        print "Warning: the project name is missing. We will use $opts->{devbuild_cmdr_project} by default.\n";
+        $projectName = $opts->{devbuild_cmdr_project};
+    }
     if ($procedureName eq '') {
         print "Warning: the procedure name is missing. We will use TeamBuildPrepare by default.\n";
         $procedureName = 'TeamBuildPrepare';
     }
-    
+       
 	if ($multiGroup ne 1){
 		$changes = gr_getProperty($groupName);        		
 	} else {		
@@ -709,7 +714,7 @@ sub gr_downloadChanges {
 			$changes .=  gr_getProperty($group) . "\n";            			
 		}			
 	}	
-		my $xPath = $gt->getCmdr()->runProcedure($opts->{devbuild_cmdr_project} ,
+		my $xPath = $gt->getCmdr()->runProcedure($projectName,
 			{ procedureName => $procedureName, 
 			  actualParameter => [
 				{actualParameterName => 'group_build_changes', value => "$changes" },                            

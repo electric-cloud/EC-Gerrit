@@ -530,6 +530,7 @@ in properties, or if you want to use a Source Control Management system</td>
 <td>Overlay the changes in the source tree.</td>
 <td>-Group name
 - isMultiGroup
+- projectName
 - procedureName
 </td>
 <td></td>
