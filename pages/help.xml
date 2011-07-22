@@ -531,7 +531,7 @@ in properties, or if you want to use a Source Control Management system</td>
 <td>-Group name
 - isMultiGroup
 - projectName
-- procedureName
+- procedureName (must include gerrit_cfg, and group_build_changes parameters)
 </td>
 <td></td>
 </tr>
@@ -626,7 +626,12 @@ The plugin scans your Gerrit server for changes every 15 minutes--this is an
 ElectricCommander schedule. If you want to change the frequency, modify the 
 "<a href="/commander/link/editSchedule/projects/@PLUGIN_NAME@/schedules/Gerrit New Change Scanner">Gerrit New Change Scanner</a>" schedule.
 </p>
-    
+
+<h2 class="help">Changing the resource for procedures</h2>
+<p class="help">
+The resource for some procedures is set to local for your convenience. However, if you need to change the resource, take these steps:
+click the procedure to see its details, then click Edit, and change the Default Resource to suit your needs.
+</p>
      
 <h2 class="help">Release Notes</h2>
 <h3 class="help">EC-Gerrit-1.3.6.0</h3>
