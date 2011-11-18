@@ -9,14 +9,13 @@
 
 package ecplugins.gerrit.client;
 
-import com.google.gwt.core.client.JavaScriptObject;
-
 import ecinternal.client.InternalComponentBaseFactory;
 import ecinternal.client.InternalFormBase;
 import ecinternal.client.PropertySheetEditor;
 
 import com.electriccloud.commander.gwt.client.BrowserContext;
 import com.electriccloud.commander.gwt.client.Component;
+import com.electriccloud.commander.gwt.client.ComponentContext;
 
 import static com.electriccloud.commander.gwt.client.util.CommanderUrlBuilder.createPageUrl;
 
@@ -26,9 +25,9 @@ public class ConfigurationManagementFactory
 
     //~ Methods ----------------------------------------------------------------
 
-    @Override public Component createComponent(JavaScriptObject jso)
+    @Override public Component createComponent(ComponentContext jso)
     {
-        String    panel     = getParameter(jso, "panel");
+        String    panel     = jso.getParameter("panel");
         Component component;
 
         if ("create".equals(panel)) {
