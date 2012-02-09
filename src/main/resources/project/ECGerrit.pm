@@ -12,13 +12,16 @@ $::gTableCase = '';
 
 $|=1;
 
+my $pluginKey = '{$pluginKey}';
+my $pluginVersion = '{$pluginVersion}';
+
 # get JSON from the plugin directory
 if ("$ENV{COMMANDER_PLUGIN_PERL}" ne "") {
     # during tests
     push @INC, "$ENV{COMMANDER_PLUGIN_PERL}";
 } else {
     # during production
-    push @INC, "$ENV{COMMANDER_PLUGINS}/@PLUGIN_NAME@/agent/perl";   
+    push @INC, "$ENV{COMMANDER_PLUGINS}/ @PLUGIN_NAME@ /agent/perl";
 }
 require JSON;
 

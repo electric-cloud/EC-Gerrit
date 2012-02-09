@@ -1,12 +1,13 @@
-# Makefile
-
+#
+# Makefile responsible for building the EC-Gerrit plugin
+#
+# Copyright (c) 2005-2012 Electric Cloud, Inc.
+# All rights reserved
 
 SRCTOP=..
 include $(SRCTOP)/build/vars.mak
 
 PLUGIN_PATCH_LEVEL=1.3.6
-
-gwtmodules := gerrit/ConfigurationManagement
 
 build: buildJavaPlugin
 unittest:

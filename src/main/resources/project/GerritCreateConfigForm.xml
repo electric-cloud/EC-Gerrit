@@ -64,7 +64,7 @@
         <type>entry</type>
         <label>Project for Developer Builds:</label>
         <property>devbuild_cmdr_project</property>
-        <value>@PLUGIN_NAME@</value>
+        <value>@PLUGIN_KEY@-@PLUGIN_VERSION@</value>
         <documentation>The Commander project that containst the procedure for developer builds.</documentation>
         <required>1</required>
     </formElement>
