@@ -7,8 +7,6 @@
 SRCTOP=..
 include $(SRCTOP)/build/vars.mak
 
-PLUGIN_PATCH_LEVEL=1.3.6
-
 build: buildJavaPlugin
 unittest:
 systemtest: systemtest-setup mysystemtest-run
