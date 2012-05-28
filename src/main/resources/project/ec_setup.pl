@@ -1,8 +1,85 @@
-if ($promoteAction eq 'promote') {
 
-} elsif ($promoteAction eq 'demote') {
+my %CustomBuildExample = (
+    label       => "Gerrit - Custom Build Example",
+    procedure   => "CustomBuildExample",
+    description => "A sample Custom Build using the helper methods",
+    category    => "System"
+);
+my %CustomBuildPrepare = (
+    label       => "Gerrit - Custom Build Prepare",
+    procedure   => "CustomBuildPrepare",
+    description => "Custom build example using the new helper methods",
+    category    => "System"
+);
+my %DevBuildCleanup = (
+    label       => "Gerrit - Developer Build Cleanup",
+    procedure   => "DevBuildCleanup",
+    description => "Cleanup after one developer build. The working tree is cleaned up (runtime artifacts removed, change backed out).  This also marks the job as complete in Gerrit comments",
+    category    => "System"
+);
+my %DevBuildExample = (
+    label       => "Gerrit - Developer Build Example",
+    procedure   => "DevBuildExample",
+    description => "An example of a developer build procedure",
+    category    => "System"
+);
+my %DevBuildPrepare = (
+    label       => "Gerrit - Developer Build Prepare",
+    procedure   => "DevBuildPrepare",
+    description => "Prepare for a developer build. This will be one change. The working tree will be adjusted to be the head of the branch plus changes in the change",
+    category    => "System"
+);
+my %GroupBuildExample = (
+    label       => "Gerrit - Group Build Example",
+    procedure   => "GroupBuildExample",
+    description => "Scan the specified changes in a group of changes, or a group of groups",
+    category    => "System"
+);
+my %TeamBuildCleanup = (
+    label       => "Gerrit - Team Build Cleanup",
+    procedure   => "TeamBuildCleanup",
+    description => "Mark the changes as approved if success",
+    category    => "System"
+);
+my %TeamBuildExample = (
+    label       => "Gerrit - Team Build Example",
+    procedure   => "TeamBuildExample",
+    description => "A sample Team Build procedure",
+    category    => "System"
+);
+my %TeamBuildPrepare = (
+    label       => "Gerrit - Team Build Prepare",
+    procedure   => "TeamBuildPrepare",
+    description => "Create a tree in /myResource/gerrit_working_dir with the head of the branch and an overlay of all open Gerrit changes which match the configuration filters",
+    category    => "System"
+);
+my %DeveloperScan = (
+    label       => "Gerrit - Developer Scan",
+    procedure   => "DeveloperScan",
+    description => "Scan the Gerrit server for any new changes and process them",
+    category    => "System"
+);
+my %SetupGerritServer = (
+    label       => "Gerrit - Setup Gerrit Server",
+    procedure   => "SetupGerritServer",
+    description => "Setup the default settings into Gerrit to be used with the Electric Commander",
+    category    => "System"
+);
 
-}
+$batch->deleteProperty("/server/ec_customEditors/pickerStep/Gerrit - Custom Build Prepare");
+$batch->deleteProperty("/server/ec_customEditors/pickerStep/Gerrit - Custom Build Example");
+$batch->deleteProperty("/server/ec_customEditors/pickerStep/Gerrit - Developer Build Cleanup");
+$batch->deleteProperty("/server/ec_customEditors/pickerStep/Gerrit - Developer Build Example");
+$batch->deleteProperty("/server/ec_customEditors/pickerStep/Gerrit - Developer Build Prepare");
+$batch->deleteProperty("/server/ec_customEditors/pickerStep/Gerrit - Group Build Example");
+$batch->deleteProperty("/server/ec_customEditors/pickerStep/Gerrit - Team Build Cleanup");
+$batch->deleteProperty("/server/ec_customEditors/pickerStep/Gerrit - Team Build Example");
+$batch->deleteProperty("/server/ec_customEditors/pickerStep/Gerrit - Team Build Prepare");
+$batch->deleteProperty("/server/ec_customEditors/pickerStep/Gerrit - Developer Scan");
+$batch->deleteProperty("/server/ec_customEditors/pickerStep/Gerrit - Setup Gerrit Server");
+
+@::createStepPickerSteps = (\%CustomBuildExample, \%DevBuildCleanup, \%DeveloperScan, \%CustomBuildPrepare, \%DevBuildExample, \%DevBuildPrepare, \%GroupBuildExample,
+ \%SetupGerritServer, \%TeamBuildCleanup, \%TeamBuildExample, \%TeamBuildPrepare);
 
 if ($upgradeAction eq 'upgrade') {
     my $query = $commander->newBatch();
@@ -16,15 +93,14 @@ if ($upgradeAction eq 'upgrade') {
     local $self->{abortOnError} = 0;
     my $xpath = $query->submit();
 
-    # if new plugin does not already have cfgs
-    if ($query->findvalue($newcfg,'code') eq 'NoSuchProperty') {
-        # if old cfg has some cfgs to copy
-        if ($query->findvalue($oldcfgs,'code') ne 'NoSuchProperty') {
-            $batch->clone({
-                path => "/plugins/$otherPluginName/project/gerrit_cfgs",
-                cloneName => "/plugins/$pluginName/project/gerrit_cfgs"
-            });
-        }
+    # Copy configurations from $otherPluginName
+    if ($query->findvalue($oldcfgs, 'code') ne 'NoSuchProperty') {
+        $batch->clone(
+                      {
+                        path      => "/plugins/$otherPluginName/project/gerrit_cfgs",
+                        cloneName => "/plugins/$pluginName/project/gerrit_cfgs"
+                      }
+                     );
     }
 
     # move over specific pseudo_code customizations

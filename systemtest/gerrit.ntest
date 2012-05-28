@@ -80,8 +80,8 @@ ntest "check-components-present", {}, sub {
     assertOK($xpath,"DeleteConfiguration");
     assertEq("DeleteConfiguration", $xpath->findvalue("//step[1]/stepName"), "step 1 is DeleteConfiguration");
 
-    $xpath = $::N->getSteps("$::gPlugin_name","DevBuild Example");
-    assertOK($xpath,"DevBuild Example");
+    $xpath = $::N->getSteps("$::gPlugin_name","DevBuildExample");
+    assertOK($xpath,"DevBuildExample");
     assertEq("GetCodeFromGerrit", $xpath->findvalue("//step[1]/stepName"), "step 1 is GetCodeFromGerrit");
     assertEq("DoWork", $xpath->findvalue("//step[2]/stepName"), "step 2 is DoWork");
     assertEq("GerritCleanup", $xpath->findvalue("//step[3]/stepName"), "step 3 is GerritCleanup");

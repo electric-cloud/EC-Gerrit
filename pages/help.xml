@@ -70,7 +70,7 @@ successes or failures. You can use an existing category (Verified, Code Review) 
 echo "INSERT INTO APPROVAL_CATEGORIES 
   \(NAME,ABBREVIATED_NAME,POSITION,FUNCTION_NAME,COPY_MIN_SCORE,CATEGORY_ID\) 
   VALUES\('ElectricCommander',NULL,3,'NoOp','N','CMDR'\);" 
-  | ssh -p 29418 commander@localhost gerrit gsql
+  | ssh -p 29418 commander@localhost gerrit gsql	
 </pre>
 
 <pre class="help">
@@ -265,7 +265,7 @@ A link to start a build (manual mode), a build has been started, a build complet
 <h3 class="help">Creating a build procedure</h3>
 <p class="help">
 This plugin provides a framework for getting the proper source code in a working directory. You supply the actual build/test logic. An example developer build procedure, 
-<a href="/commander/link/projectDetails/projects/@PLUGIN_NAME@/procedures/DevBuild Example">"DevBuild Example"</a> is provided in the EC-Gerrit plugin project. The structure of your build procedure should be:
+<a href="/commander/link/projectDetails/projects/@PLUGIN_NAME@/procedures/DevBuildExample">"DevBuildExample"</a> is provided in the EC-Gerrit plugin project. The structure of your build procedure should be:
 
 <pre class="help">
 1) Subprocedure call to EC-Gerrit plugin "DevBuildPrepare"

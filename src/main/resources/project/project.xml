@@ -7,12 +7,6 @@
 		<workspaceName/>
 		<propertySheet>
 			<property>
-				<propertyName>gerrit_cfgs</propertyName>
-				<propertySheet>  
-
-        </propertySheet>
-			</property>
-			<property>
 				<propertyName>procedure_helpers</propertyName>
 				<description/>
 				<propertySheet>
@@ -37,7 +31,7 @@
 					<property>
 						<propertyName>cmd_clone</propertyName>
 						<expandable>1</expandable>
-						<value>if (!-d "{gerrit_working_dir}") {&#10;    mkdir "{gerrit_working_dir}";&#10;}&#10;chdir "{gerrit_working_dir}";&#10;my ($exit,$out) = $gt-&gt;runCmd("{repo_cmd} init -u " . qw({gerrit_server}) . "/platform/manifests.git -b " . qw({gerrit_branch}) . " -m " . qw({gerrit_manifest}) . " 2&gt;&amp;1");&#10;</value>
+						<value></value>
 					</property>
 					<property>
 						<propertyName>cmd_magic_dir</propertyName>
@@ -48,17 +42,17 @@
 						<propertyName>cmd_overlay</propertyName>
 						<description/>
 						<expandable>1</expandable>
-						<value>chdir "{gerrit_working_dir}";&#10;print "Pulling proposed changes into tree\n";&#10;my ($exit,$out) = $gt-&gt;runCmd("git pull " . qw({gerrit_server}) . "/". qw({project}) . " refs/changes/" . qw({changeid}) % 100 . "/" . qw({changeid}) ."/" . qw({patchid}));&#10;&#10;&#10;</value>
+						<value></value>
 					</property>
 					<property>
 						<propertyName>cmd_revert</propertyName>
 						<expandable>1</expandable>
-						<value>chdir "{gerrit_working_dir}";&#10;print "Setting tree back to commited changes only\n";&#10;my ($exit,$out) = $gt-&gt;runCmd("{repo_cmd} forall -c \"git reset --hard m/{gerrit_branch}\"");&#10;($exit,$out) = $gt-&gt;runCmd("{repo_cmd} forall -c \"git clean -xfd\"");&#10;&#10;</value>
+						<value></value>
 					</property>
 					<property>
 						<propertyName>cmd_update</propertyName>
 						<expandable>1</expandable>
-						<value>chdir "{gerrit_working_dir}";&#10;my ($exit,$out) = $gt-&gt;runCmd("{repo_cmd} sync 2&gt;&amp;1");&#10;&#10;</value>
+						<value></value>
 					</property>
 					<property>
 						<propertyName>repo_cmd</propertyName>
@@ -86,20 +80,20 @@
 					<property>
 						<propertyName>GerritCreateConfigForm</propertyName>
 						<expandable>1</expandable>
-						<value>&lt;editor&gt;&#10;    &lt;formElement&gt;&#10;        &lt;type&gt;entry&lt;/type&gt;&#10;        &lt;label&gt;Configuration Name:&lt;/label&gt;&#10;        &lt;property&gt;config&lt;/property&gt;&#10;        &lt;value&gt;&lt;/value&gt;&#10;        &lt;required&gt;1&lt;/required&gt;&#10;    &lt;/formElement&gt;&#10;    &lt;formElement&gt;&#10;        &lt;type&gt;entry&lt;/type&gt;&#10;        &lt;label&gt;Description:&lt;/label&gt;&#10;        &lt;property&gt;desc&lt;/property&gt;&#10;        &lt;value&gt;Gerrit integration&lt;/value&gt;&#10;        &lt;documentation&gt;A description for this configuration&lt;/documentation&gt;&#10;    &lt;/formElement&gt;&#10;    &lt;formElement&gt;&#10;        &lt;type&gt;entry&lt;/type&gt;&#10;        &lt;label&gt;Gerrit Server:&lt;/label&gt;&#10;        &lt;property&gt;gerrit_server&lt;/property&gt;&#10;        &lt;value&gt;localhost&lt;/value&gt;&#10;        &lt;documentation&gt;The gerrit server&lt;/documentation&gt;&#10;        &lt;required&gt;1&lt;/required&gt;&#10;    &lt;/formElement&gt;&#10;    &lt;formElement&gt;&#10;        &lt;type&gt;entry&lt;/type&gt;&#10;        &lt;label&gt;Gerrit User:&lt;/label&gt;&#10;        &lt;property&gt;gerrit_user&lt;/property&gt;&#10;        &lt;value&gt;user&lt;/value&gt;&#10;        &lt;documentation&gt;The gerrit user&lt;/documentation&gt;&#10;        &lt;required&gt;1&lt;/required&gt;&#10;    &lt;/formElement&gt;&#10;    &lt;formElement&gt;&#10;        &lt;type&gt;entry&lt;/type&gt;&#10;        &lt;label&gt;Gerrit Port:&lt;/label&gt;&#10;        &lt;property&gt;gerrit_port&lt;/property&gt;&#10;        &lt;value&gt;29418&lt;/value&gt;&#10;        &lt;documentation&gt;The gerrit ssh port&lt;/documentation&gt;&#10;        &lt;required&gt;1&lt;/required&gt;&#10;    &lt;/formElement&gt;&#10;    &lt;formElement&gt;&#10;        &lt;type&gt;entry&lt;/type&gt;&#10;        &lt;label&gt;Gerrit Public Key File:&lt;/label&gt;&#10;        &lt;property&gt;gerrit_public_key&lt;/property&gt;&#10;        &lt;value&gt;~/.ssh/id_rsa.pub&lt;/value&gt;&#10;        &lt;documentation&gt;The public key for ssh connection to gerrit&lt;/documentation&gt;&#10;        &lt;required&gt;1&lt;/required&gt;&#10;    &lt;/formElement&gt;&#10;    &lt;formElement&gt;&#10;        &lt;type&gt;entry&lt;/type&gt;&#10;        &lt;label&gt;Gerrit Private Key File:&lt;/label&gt;&#10;        &lt;property&gt;gerrit_private_key&lt;/property&gt;&#10;        &lt;value&gt;~/.ssh/id_rsa&lt;/value&gt;&#10;        &lt;documentation&gt;The private key for ssh connection to gerrit&lt;/documentation&gt;&#10;        &lt;required&gt;1&lt;/required&gt;&#10;    &lt;/formElement&gt;&#10;    &lt;formElement&gt;&#10;        &lt;type&gt;entry&lt;/type&gt;&#10;        &lt;label&gt;ElectricCommander Server:&lt;/label&gt;&#10;        &lt;property&gt;cmdr_webserver&lt;/property&gt;&#10;        &lt;value&gt;localhost&lt;/value&gt;&#10;        &lt;required&gt;1&lt;/required&gt;&#10;    &lt;/formElement&gt;&#10;    &lt;formElement&gt;&#10;        &lt;type&gt;entry&lt;/type&gt;&#10;        &lt;label&gt;Project for Developer Builds:&lt;/label&gt;&#10;        &lt;property&gt;devbuild_cmdr_project&lt;/property&gt;&#10;        &lt;value&gt;EC-Gerrit-1.1.1.0&lt;/value&gt;&#10;        &lt;documentation&gt;The Commander project that containst the procedure for developer builds.&lt;/documentation&gt;&#10;        &lt;required&gt;1&lt;/required&gt;&#10;    &lt;/formElement&gt;&#10;    &lt;formElement&gt;&#10;        &lt;type&gt;entry&lt;/type&gt;&#10;        &lt;label&gt;Procedure for Developer Builds:&lt;/label&gt;&#10;        &lt;property&gt;devbuild_cmdr_procedure&lt;/property&gt;&#10;        &lt;documentation&gt;The Commander procedure that will be called for developer builds.&lt;/documentation&gt;&#10;        &lt;value&gt;DevBuild Example&lt;/value&gt;&#10;        &lt;required&gt;1&lt;/required&gt;&#10;    &lt;/formElement&gt;&#10;    &lt;formElement&gt;&#10;        &lt;type&gt;entry&lt;/type&gt;&#10;        &lt;label&gt;Project/branches manifest file:&lt;/label&gt;&#10;        &lt;property&gt;teambuild_project_branches&lt;/property&gt;&#10;        &lt;documentation&gt;The list of projects to be scanned.&lt;/documentation&gt;&#10;        &lt;value&gt;&lt;/value&gt;&#10;        &lt;required&gt;1&lt;/required&gt;&#10;    &lt;/formElement&gt;&#10;    &lt;formElement&gt;&#10;        &lt;type&gt;entry&lt;/type&gt;&#10;        &lt;label&gt;Resource Pool:&lt;/label&gt;&#10;        &lt;property&gt;ResourcePool&lt;/property&gt;&#10;        &lt;value&gt;&lt;/value&gt;&#10;        &lt;documentation&gt;The resource pool to use.&lt;/documentation&gt;&#10;        &lt;required&gt;1&lt;/required&gt;&#10;    &lt;/formElement&gt;&#10;    &lt;formElement&gt;&#10;        &lt;type&gt;select&lt;/type&gt;&#10;        &lt;label&gt;Developer Build Mode:&lt;/label&gt;&#10;        &lt;property&gt;devbuild_mode&lt;/property&gt;&#10;        &lt;value&gt;off&lt;/value&gt;&#10;        &lt;documentation&gt;auto: Builds run automatically. manual: Builds must be initiated by clicking links in Gerrit off: Do not run scan for this configuration&lt;/documentation&gt;&#10;        &lt;required&gt;1&lt;/required&gt;&#10;        &lt;option&gt;&#10;            &lt;name&gt;Auto&lt;/name&gt;&#10;            &lt;value&gt;auto&lt;/value&gt;&#10;        &lt;/option&gt;&#10;        &lt;option&gt;&#10;            &lt;name&gt;Manual&lt;/name&gt;&#10;            &lt;value&gt;manual&lt;/value&gt;&#10;        &lt;/option&gt;&#10;        &lt;option&gt;&#10;            &lt;name&gt;Off&lt;/name&gt;&#10;            &lt;value&gt;off&lt;/value&gt;&#10;        &lt;/option&gt;&#10;    &lt;/formElement&gt;&#10;    &lt;formElement&gt;&#10;        &lt;type&gt;entry&lt;/type&gt;&#10;        &lt;label&gt;Branch:&lt;/label&gt;&#10;        &lt;property&gt;gerrit_branch&lt;/property&gt;&#10;        &lt;value&gt;master&lt;/value&gt;&#10;        &lt;documentation&gt;The branch to watch.&lt;/documentation&gt;&#10;        &lt;required&gt;1&lt;/required&gt;&#10;    &lt;/formElement&gt;&#10;    &lt;formElement&gt;&#10;        &lt;type&gt;entry&lt;/type&gt;&#10;        &lt;label&gt;Manifest:&lt;/label&gt;&#10;        &lt;property&gt;gerrit_manifest&lt;/property&gt;&#10;        &lt;value&gt;default.xml&lt;/value&gt;&#10;        &lt;documentation&gt;The manifest file to use.&lt;/documentation&gt;&#10;        &lt;required&gt;1&lt;/required&gt;&#10;    &lt;/formElement&gt;&#10;    &lt;formElement&gt;&#10;        &lt;type&gt;textarea&lt;/type&gt;&#10;        &lt;label&gt;Developer Build Rules:&lt;/label&gt;&#10;        &lt;property&gt;dev_build_rules&lt;/property&gt;&#10;        &lt;value&gt;ACTION SUCCESS VRIF +1&#10;ACTION ERROR VRIF -1&lt;/value&gt;&#10;        &lt;required&gt;1&lt;/required&gt;&#10;    &lt;/formElement&gt;&#10;    &lt;formElement&gt;&#10;        &lt;type&gt;textarea&lt;/type&gt;&#10;        &lt;label&gt;Team Build Rules:&lt;/label&gt;&#10;        &lt;property&gt;team_build_rules&lt;/property&gt;&#10;        &lt;value&gt;FILTER MAX CRVW ge +2&#10;FILTER MIN CRVW gt -2&#10;FILTER COUNT VRIF eq 0 USER ne commander&#10;FILTER MAX VRIF le 0 USER eq commander&#10;ACTION SUCCESS VRIF +1&#10;ACTION ERROR VRIF -1&lt;/value&gt;&#10;        &lt;required&gt;1&lt;/required&gt;&#10;    &lt;/formElement&gt;&#10;    &lt;formElement&gt;&#10;        &lt;type&gt;entry&lt;/type&gt;&#10;        &lt;label&gt;Debug:&lt;/label&gt;&#10;        &lt;property&gt;debug&lt;/property&gt;&#10;        &lt;value&gt;&lt;/value&gt;&#10;        &lt;documentation&gt;Debug level for output.&lt;/documentation&gt;&#10;        &lt;required&gt;0&lt;/required&gt;&#10;    &lt;/formElement&gt;&#10;&lt;/editor&gt;&#10;&#10;&#10;</value>
+						<value></value>
 					</property>
 					<property>
 						<propertyName>GerritEditConfigForm</propertyName>
 						<description/>
 						<expandable>1</expandable>
-						<value>&lt;editor&gt;&#10;    &lt;formElement&gt;&#10;        &lt;type&gt;entry&lt;/type&gt;&#10;        &lt;label&gt;Description:&lt;/label&gt;&#10;        &lt;property&gt;desc&lt;/property&gt;&#10;        &lt;documentation&gt;A description for this configuration&lt;/documentation&gt;&#10;    &lt;/formElement&gt;&#10;    &lt;formElement&gt;&#10;        &lt;type&gt;entry&lt;/type&gt;&#10;        &lt;label&gt;Gerrit Server:&lt;/label&gt;&#10;        &lt;property&gt;gerrit_server&lt;/property&gt;&#10;        &lt;documentation&gt;The gerrit server&lt;/documentation&gt;&#10;        &lt;required&gt;1&lt;/required&gt;&#10;    &lt;/formElement&gt;&#10;    &lt;formElement&gt;&#10;        &lt;type&gt;entry&lt;/type&gt;&#10;        &lt;label&gt;Gerrit User:&lt;/label&gt;&#10;        &lt;property&gt;gerrit_user&lt;/property&gt;&#10;        &lt;documentation&gt;The gerrit user&lt;/documentation&gt;&#10;        &lt;required&gt;1&lt;/required&gt;&#10;    &lt;/formElement&gt;&#10;    &lt;formElement&gt;&#10;        &lt;type&gt;entry&lt;/type&gt;&#10;        &lt;label&gt;Gerrit Port:&lt;/label&gt;&#10;        &lt;property&gt;gerrit_port&lt;/property&gt;&#10;        &lt;documentation&gt;The gerrit ssh port&lt;/documentation&gt;&#10;        &lt;required&gt;1&lt;/required&gt;&#10;    &lt;/formElement&gt;&#10;    &lt;formElement&gt;&#10;        &lt;type&gt;entry&lt;/type&gt;&#10;        &lt;label&gt;Gerrit Public Key File:&lt;/label&gt;&#10;        &lt;property&gt;gerrit_public_key&lt;/property&gt;&#10;        &lt;documentation&gt;The public key for ssh connection to gerrit&lt;/documentation&gt;&#10;        &lt;required&gt;1&lt;/required&gt;&#10;    &lt;/formElement&gt;&#10;    &lt;formElement&gt;&#10;        &lt;type&gt;entry&lt;/type&gt;&#10;        &lt;label&gt;Gerrit Private Key File:&lt;/label&gt;&#10;        &lt;property&gt;gerrit_private_key&lt;/property&gt;&#10;        &lt;documentation&gt;The private key for ssh connection to gerrit&lt;/documentation&gt;&#10;        &lt;required&gt;1&lt;/required&gt;&#10;    &lt;/formElement&gt;&#10;    &lt;formElement&gt;&#10;        &lt;type&gt;entry&lt;/type&gt;&#10;        &lt;label&gt;ElectricCommander Server:&lt;/label&gt;&#10;        &lt;property&gt;cmdr_webserver&lt;/property&gt;&#10;    &lt;/formElement&gt;  &#10;    &lt;formElement&gt;&#10;        &lt;type&gt;entry&lt;/type&gt;&#10;        &lt;label&gt;Project for Developer Builds:&lt;/label&gt;&#10;        &lt;property&gt;devbuild_cmdr_project&lt;/property&gt;&#10;        &lt;documentation&gt;The Commander project that containst the procedure for developer builds.&lt;/documentation&gt;&#10;    &lt;/formElement&gt;&#10;    &lt;formElement&gt;&#10;        &lt;type&gt;entry&lt;/type&gt;&#10;        &lt;label&gt;Procedure for Developer Builds:&lt;/label&gt;&#10;        &lt;property&gt;devbuild_cmdr_procedure&lt;/property&gt;&#10;        &lt;documentation&gt;The Commander procedure that will be called for developer builds.&lt;/documentation&gt;&#10;    &lt;/formElement&gt;&#10;    &lt;formElement&gt;&#10;        &lt;type&gt;entry&lt;/type&gt;&#10;        &lt;label&gt;Project/branches manifest file:&lt;/label&gt;&#10;        &lt;property&gt;teambuild_project_branches&lt;/property&gt;&#10;        &lt;documentation&gt;The list of projects to be scanned.&lt;/documentation&gt;       &#10;    &lt;/formElement&gt;&#10;    &lt;formElement&gt;&#10;        &lt;type&gt;entry&lt;/type&gt;&#10;        &lt;label&gt;Resource Pool&lt;/label&gt;&#10;        &lt;property&gt;ResourcePool&lt;/property&gt;&#10;        &lt;documentation&gt;Resource pool to use.&lt;/documentation&gt;&#10;    &lt;/formElement&gt;&#10;    &lt;formElement&gt;&#10;        &lt;type&gt;select&lt;/type&gt;&#10;        &lt;label&gt;Developer Build Mode:&lt;/label&gt;&#10;        &lt;property&gt;devbuild_mode&lt;/property&gt;&#10;        &lt;documentation&gt;auto: Builds run automatically. manual: Builds must be initiated by clicking links in Gerrit. off: do not process this configuration for developer builds.&lt;/documentation&gt;&#10;        &lt;option&gt;&#10;            &lt;name&gt;Auto&lt;/name&gt;&#10;            &lt;value&gt;auto&lt;/value&gt;&#10;        &lt;/option&gt;&#10;        &lt;option&gt;&#10;            &lt;name&gt;Manual&lt;/name&gt;&#10;            &lt;value&gt;manual&lt;/value&gt;&#10;        &lt;/option&gt;&#10;        &lt;option&gt;&#10;            &lt;name&gt;Off&lt;/name&gt;&#10;            &lt;value&gt;off&lt;/value&gt;&#10;        &lt;/option&gt;&#10;    &lt;/formElement&gt;&#10;    &lt;formElement&gt;&#10;        &lt;type&gt;entry&lt;/type&gt;&#10;        &lt;label&gt;Branch:&lt;/label&gt;&#10;        &lt;property&gt;gerrit_branch&lt;/property&gt;&#10;        &lt;documentation&gt;The branch to watch.&lt;/documentation&gt;&#10;    &lt;/formElement&gt;&#10;    &lt;formElement&gt;&#10;        &lt;type&gt;entry&lt;/type&gt;&#10;        &lt;label&gt;Manifest:&lt;/label&gt;&#10;        &lt;property&gt;gerrit_manifest&lt;/property&gt;&#10;        &lt;documentation&gt;The manifest file to use.&lt;/documentation&gt;&#10;    &lt;/formElement&gt;&#10;    &lt;formElement&gt;&#10;        &lt;type&gt;textarea&lt;/type&gt;&#10;        &lt;label&gt;Developer Build Rules:&lt;/label&gt;&#10;        &lt;property&gt;dev_build_rules&lt;/property&gt;&#10;        &lt;documentation&gt;Rules for deciding what to do with developer build results.&lt;/documentation&gt;&#10;    &lt;/formElement&gt;&#10;    &lt;formElement&gt;&#10;        &lt;type&gt;textarea&lt;/type&gt;&#10;        &lt;label&gt;Team Build Rules:&lt;/label&gt;&#10;        &lt;property&gt;team_build_rules&lt;/property&gt;&#10;        &lt;documentation&gt;Rules for deciding which change sets to include in a team build.&lt;/documentation&gt;&#10;    &lt;/formElement&gt;&#10;    &lt;formElement&gt;&#10;        &lt;type&gt;entry&lt;/type&gt;&#10;        &lt;label&gt;Debug:&lt;/label&gt;&#10;        &lt;property&gt;debug&lt;/property&gt;&#10;        &lt;documentation&gt;Debug level for output.&lt;/documentation&gt;&#10;    &lt;/formElement&gt;&#10;&lt;/editor&gt;&#10;</value>
+						<value></value>
 					</property>
 				</propertySheet>
 			</property>
 			<property>
 				<propertyName>ec_setup</propertyName>
 				<expandable>0</expandable>
-				<value>if ($promoteAction eq 'promote') {&#10;&#10;} elsif ($promoteAction eq 'demote') {&#10;&#10;}&#10;&#10;if ($upgradeAction eq 'upgrade') {&#10;    my $query = $commander-&gt;newBatch();&#10;    my $newcfg = $query-&gt;getProperty(&#10;        "/plugins/$pluginName/project/gerrit_cfgs");&#10;    my $oldcfgs = $query-&gt;getProperty(&#10;        "/plugins/$otherPluginName/project/gerrit_cfgs");&#10;    $query-&gt;getProperties( { projectName =&gt; "$otherPluginName", path =&gt; "pseudo_code"});&#10;    $query-&gt;getSchedule( "$otherPluginName", "Gerrit New Change Scanner");&#10;&#10;    local $self-&gt;{abortOnError} = 0;&#10;    my $xpath = $query-&gt;submit();&#10;&#10;    # if new plugin does not already have cfgs&#10;    if ($query-&gt;findvalue($newcfg,'code') eq 'NoSuchProperty') {&#10;        # if old cfg has some cfgs to copy&#10;        if ($query-&gt;findvalue($oldcfgs,'code') ne 'NoSuchProperty') {&#10;            $batch-&gt;clone({&#10;                path =&gt; "/plugins/$otherPluginName/project/gerrit_cfgs",&#10;                cloneName =&gt; "/plugins/$pluginName/project/gerrit_cfgs"&#10;            });&#10;        }&#10;    }&#10;&#10;    # move over specific pseudo_code customizations&#10;    # make a copy of the new code for reference&#10;    $batch-&gt;clone({&#10;        path =&gt; "/plugins/$pluginName/project/pseudo_code",&#10;        cloneName =&gt; "/plugins/$pluginName/project/pseudo_code_$pluginName"&#10;    });&#10;&#10;    # now move over the old settings&#10;    $batch-&gt;setProperty(&#10;        "/plugins/$pluginName/project/pseudo_code/cmd_clone",&#10;        $xpath-&gt;findvalue('//propertySheet/property[propertyName="cmd_clone"]/value')-&gt;string_value);&#10;    $batch-&gt;setProperty(&#10;        "/plugins/$pluginName/project/pseudo_code/cmd_overlay",&#10;        $xpath-&gt;findvalue('//propertySheet/property[propertyName="cmd_overlay"]/value')-&gt;string_value);&#10;    $batch-&gt;setProperty(&#10;        "/plugins/$pluginName/project/pseudo_code/cmd_magic_dir",&#10;        $xpath-&gt;findvalue('//propertySheet/property[propertyName="cmd_magic_dir"]/value')-&gt;string_value);&#10;    $batch-&gt;setProperty(&#10;        "/plugins/$pluginName/project/pseudo_code/cmd_revert",&#10;        $xpath-&gt;findvalue('//propertySheet/property[propertyName="cmd_revert"]/value')-&gt;string_value);&#10;    $batch-&gt;setProperty(&#10;        "/plugins/$pluginName/project/pseudo_code/cmd_update",&#10;        $xpath-&gt;findvalue('//propertySheet/property[propertyName="cmd_update"]/value')-&gt;string_value);&#10;    $batch-&gt;setProperty(&#10;        "/plugins/$pluginName/project/pseudo_code/repo_cmd",&#10;        $xpath-&gt;findvalue('//propertySheet/property[propertyName="repo_cmd"]/value')-&gt;string_value);&#10;&#10;    # preserve schedule customizations&#10;&#10;    # schedule details&#10;    #&lt;response requestId="1"&gt;&#10;    #&lt;schedule&gt;&#10;    #  &lt;scheduleId&gt;27&lt;/scheduleId&gt;&#10;    #  &lt;scheduleName&gt;Gerrit New Change Scanner&lt;/scheduleName&gt;&#10;    #  &lt;beginDate /&gt;&#10;    #  &lt;createTime&gt;2010-05-17T22:09:59.395Z&lt;/createTime&gt;&#10;    #  &lt;description&gt;Scan the gerrit server for changes&lt;/description&gt;&#10;    #  &lt;endDate /&gt;&#10;    #  &lt;interval&gt;15&lt;/interval&gt;&#10;    #  &lt;intervalUnits&gt;minutes&lt;/intervalUnits&gt;&#10;    #  &lt;lastModifiedBy&gt;project: EC-Gerrit-1.0.0.0&lt;/lastModifiedBy&gt;&#10;    #  &lt;lastRunTime&gt;2010-05-17T22:30:00.046Z&lt;/lastRunTime&gt;&#10;    #  &lt;misfirePolicy&gt;ignore&lt;/misfirePolicy&gt;&#10;    #  &lt;modifyTime&gt;2010-05-17T22:30:00.047Z&lt;/modifyTime&gt;&#10;    #  &lt;monthDays /&gt;&#10;    #  &lt;owner&gt;admin&lt;/owner&gt;&#10;    #  &lt;priority&gt;normal&lt;/priority&gt;&#10;    #  &lt;procedureName&gt;DeveloperScan&lt;/procedureName&gt;&#10;    #  &lt;scheduleDisabled&gt;0&lt;/scheduleDisabled&gt;&#10;    #  &lt;startTime /&gt;&#10;    #  &lt;stopTime /&gt;&#10;    #  &lt;timeZone&gt;America/Los_Angeles&lt;/timeZone&gt;&#10;    #  &lt;weekDays /&gt;&#10;    #  &lt;projectName&gt;EC-Gerrit-1.0.0.0&lt;/projectName&gt;&#10;    #  &lt;propertySheetId&gt;21681&lt;/propertySheetId&gt;&#10;    #&lt;/schedule&gt;&#10;    #&lt;/response&gt;&#10;&#10;    my $sched = "Gerrit New Change Scanner";&#10;    $batch-&gt;modifySchedule( "$pluginName", "$sched",&#10;        {&#10;            beginDate             =&gt; $xpath-&gt;findvalue(&#10;                "//schedule[scheduleName=\"$sched\"]/beginDate")-&gt;string_value,&#10;            endDate               =&gt; $xpath-&gt;findvalue(&#10;                "//schedule[scheduleName=\"$sched\"]/endDate")-&gt;string_value,&#10;            interval              =&gt; $xpath-&gt;findvalue(&#10;                "//schedule[scheduleName=\"$sched\"]/interval")-&gt;string_value,&#10;            intervalUnits         =&gt; $xpath-&gt;findvalue(&#10;                "//schedule[scheduleName=\"$sched\"]/intervalUnits")-&gt;string_value,&#10;            misfirePolicy         =&gt; $xpath-&gt;findvalue(&#10;                "//schedule[scheduleName=\"$sched\"]/misfirePolicy")-&gt;string_value,&#10;            monthDays             =&gt; $xpath-&gt;findvalue(&#10;                "//schedule[scheduleName=\"$sched\"]/monthDays")-&gt;string_value,&#10;            weekDays              =&gt; $xpath-&gt;findvalue(&#10;                "//schedule[scheduleName=\"$sched\"]/weekDays")-&gt;string_value,&#10;            priority              =&gt; $xpath-&gt;findvalue(&#10;                "//schedule[scheduleName=\"$sched\"]/priority")-&gt;string_value,&#10;            scheduleDisabled      =&gt; $xpath-&gt;findvalue(&#10;                "//schedule[scheduleName=\"$sched\"]/scheduleDisabled")-&gt;string_value,&#10;            startTime             =&gt; $xpath-&gt;findvalue(&#10;                "//schedule[scheduleName=\"$sched\"]/startTime")-&gt;string_value,&#10;            stopTime              =&gt; $xpath-&gt;findvalue(&#10;                "//schedule[scheduleName=\"$sched\"]/stopTime")-&gt;string_value,&#10;            timeZone              =&gt; $xpath-&gt;findvalue(&#10;                "//schedule[scheduleName=\"$sched\"]/timeZone")-&gt;string_value,&#10;        });&#10;}&#10;</value>
+				<value></value>
 			</property>
 			<property>
 				<propertyName>ec_visibility</propertyName>
@@ -110,11 +104,9 @@
 		</propertySheet>
 		<procedure>
 			<procedureName>CreateConfiguration</procedureName>
-			<description>Create a Gerrit configuration</description>
+			<description>Create a Gerrit configuration.</description>
 			<jobNameTemplate>gerrit-cfg-$[jobId]</jobNameTemplate>
-			<resourceName/>
-			<workspaceName/>
-			<projectName>EC-Gerrit-1.1.1.0</projectName>
+			<projectName>@PLUGIN_KEY@-@PLUGIN_VERSION@</projectName>
 			<propertySheet>
 				<property>
 					<propertyName>ec_customEditorData</propertyName>
@@ -308,6 +300,16 @@
 									</propertySheet>
 								</property>
 								<property>
+									<propertyName>repository_server</propertyName>
+									<propertySheet>
+										<property>
+											<propertyName>formType</propertyName>
+											<expandable>1</expandable>
+											<value>standard</value>
+										</property>
+									</propertySheet>
+								</property>
+								<property>
 									<propertyName>gerrit_user</propertyName>
 									<propertySheet>
 										<property>
@@ -379,7 +381,7 @@
 			</formalParameter>
 			<formalParameter>
 				<formalParameterName>devbuild_cmdr_procedure</formalParameterName>
-				<defaultValue>DevBuild Example</defaultValue>
+				<defaultValue>DevBuildExample</defaultValue>
 				<description>The ElectricCommander procedure to call when a devleoper changeset needs to be built</description>
 				<required>1</required>
 				<type>entry</type>
@@ -435,8 +437,22 @@
 			</formalParameter>
 			<formalParameter>
 				<formalParameterName>gerrit_server</formalParameterName>
-				<defaultValue>ssh://user@host:29418</defaultValue>
+				<defaultValue></defaultValue>
 				<description>The Gerrit server address</description>
+				<required>1</required>
+				<type>entry</type>
+			</formalParameter>
+			<formalParameter>
+				<formalParameterName>repository_server</formalParameterName>
+				<defaultValue></defaultValue>
+				<description>The server where the repository is located. If not provided, the "Gerrit Server" is used. i.e: in this url "git://github.com/ecGerrit/ecGerritTest.git", the repository server is "github.com".</description>
+				<required>0</required>
+				<type>entry</type>
+			</formalParameter>
+			<formalParameter>
+				<formalParameterName>repository_path</formalParameterName>
+				<defaultValue></defaultValue>
+				<description>The path associated to the "Repository Server". i.e: in this url "git://github.com/ecGerrit/ecGerritTest.git", the repository path is "ecGerrit/ecGerritTest.git". (Required)</description>
 				<required>1</required>
 				<type>entry</type>
 			</formalParameter>
@@ -464,7 +480,7 @@
 			<formalParameter>
 				<formalParameterName>teambuild_project_branches</formalParameterName>
 				<defaultValue/>
-				<description>Filter rules for team build</description>
+				<description>The file that contains the name of the projects and branches to be included in the verification. In addition you can specify in here individual changes to be verified. (Required)</description>
 				<required>1</required>
 				<type>entry</type>
 			</formalParameter>
@@ -472,7 +488,7 @@
 				<stepName>CreateConfiguration</stepName>
 				<alwaysRun>0</alwaysRun>
 				<broadcast>0</broadcast>
-				<command>#########################&#10;## createcfg.pl&#10;#########################&#10;use ElectricCommander;&#10;use ElectricCommander::PropDB;&#10;&#10;my $opts;&#10;&#10;my $PLUGIN_NAME = "EC-Gerrit";&#10;&#10;if (!defined $PLUGIN_NAME) {&#10;    print "PLUGIN_NAME must be defined\n";&#10;    exit 1;&#10;}&#10;&#10;## get an EC object&#10;my $ec = new ElectricCommander();&#10;$ec-&gt;abortOnError(0);&#10;&#10;## load option list from procedure parameters&#10;my $x = $ec-&gt;getJobDetails($ENV{COMMANDER_JOBID});&#10;my $nodeset = $x-&gt;find('//actualParameter');&#10;foreach my $node ($nodeset-&gt;get_nodelist) {&#10;    my $parm = $node-&gt;findvalue('actualParameterName');&#10;    my $val = $node-&gt;findvalue('value');&#10;    $opts-&gt;{$parm}="$val";&#10;}&#10;&#10;if (!defined $opts-&gt;{config} || "$opts-&gt;{config}" eq "" ) {&#10;    print "config parameter must exist and be non-blank\n";&#10;    exit 1;&#10;}&#10;&#10;# check to see if a config with this name already exists before we do anything else&#10;my $xpath = $ec-&gt;getProperty("/myProject/gerrit_cfgs/$opts-&gt;{config}");&#10;my $property = $xpath-&gt;findvalue("//response/property/propertyName");&#10;&#10;if (defined $property &amp;&amp; "$property" ne "") {&#10;    my $errMsg = "A configuration named '$opts-&gt;{config}' already exists.";&#10;    $ec-&gt;setProperty("/myJob/configError", $errMsg);&#10;    print $errMsg;&#10;    exit 1;&#10;}&#10;&#10;my $cfg = new ElectricCommander::PropDB($ec,"/myProject/gerrit_cfgs");&#10;&#10;# add all the options as properties&#10;foreach my $key (keys % {$opts}) {&#10;    if ("$key" eq "config" ) { &#10;        next;&#10;    }&#10;    $cfg-&gt;setCol("$opts-&gt;{config}","$key","$opts-&gt;{$key}");&#10;}&#10;exit 0;&#10;</command>
+				<command></command>
 				<condition/>
 				<description>Create a Gerrit configuration</description>
 				<errorHandling>failProcedure</errorHandling>
@@ -489,7 +505,7 @@
 				<workingDirectory/>
 				<workspaceName/>
 				<procedureName>CreateConfiguration</procedureName>
-				<projectName>EC-Gerrit-1.1.1.0</projectName>
+                <projectName>@PLUGIN_KEY@-@PLUGIN_VERSION@</projectName>
 				<propertySheet>
 					<property>
 						<propertyName>ec_customEditorData</propertyName>
@@ -507,11 +523,14 @@
 		<procedure>
 			<procedureName>CustomBuildExample</procedureName>
 			<description>A sample Custom Build using the helper methods.</description>
-			<jobNameTemplate/>
-			<resourceName>local</resourceName>
-			<workspaceName/>
-			<projectName>EC-Gerrit-1.1.1.0</projectName>
+			<jobNameTemplate>gerrit-customBuildExample-$[jobId]</jobNameTemplate>
+			<projectName>@PLUGIN_KEY@-@PLUGIN_VERSION@</projectName>
 			<propertySheet>
+                <property>
+                        <propertyName>ec_parameterForm</propertyName>    
+                        <expandable>1</expandable>
+                        <value></value>
+                </property>
 				<property>
 					<propertyName>ec_customEditorData</propertyName>
 					<propertySheet>
@@ -536,7 +555,7 @@
 			<formalParameter>
 				<formalParameterName>gerrit_cfg</formalParameterName>
 				<defaultValue>default</defaultValue>
-				<description/>
+				<description>The name of the config which holds all the connection information for Gerrit. (Required)</description>
 				<required>1</required>
 				<type>entry</type>
 			</formalParameter>
@@ -593,7 +612,7 @@
 				<releaseExclusive>0</releaseExclusive>
 				<resourceName>$[/myJob/git_resource]</resourceName>
 				<retries>0</retries>
-				<shell/>
+				<shell>ec-perl</shell>
 				<timeLimit/>
 				<timeLimitUnits>minutes</timeLimitUnits>
 				<workingDirectory/>
@@ -633,7 +652,17 @@
 					<property>
 						<propertyName>gerrit_cfg</propertyName>
 						<expandable>1</expandable>
-						<value>default</value>
+						<value>$[gerrit_cfg]</value>
+					</property>
+					<property>
+						<propertyName>group_build_changes</propertyName>
+						<expandable>1</expandable>
+						<value></value>
+					</property>
+					<property>
+						<propertyName>project</propertyName>
+						<expandable>1</expandable>
+						<value></value>
 					</property>
 				</actualParameters>
 				<procedureName>CustomBuildExample</procedureName>
@@ -654,12 +683,15 @@
 		</procedure>
 		<procedure>
 			<procedureName>CustomBuildPrepare</procedureName>
-			<description>Custom build example using the new helper methods</description>
-			<jobNameTemplate/>
-			<resourceName>local</resourceName>
-			<workspaceName/>
-			<projectName>EC-Gerrit-1.1.1.0</projectName>
+			<description>The CustomBuildPrepare use the new helper methods to prepare a custom build.</description>
+			<jobNameTemplate>gerrit-customBuildPrepare$-[jobId]</jobNameTemplate>
+			<projectName>@PLUGIN_KEY@-@PLUGIN_VERSION@</projectName>
 			<propertySheet>
+                <property>
+                        <propertyName>ec_parameterForm</propertyName>    
+                        <expandable>1</expandable>
+                        <value></value>
+                </property>
 				<property>
 					<propertyName>ec_customEditorData</propertyName>
 					<propertySheet>
@@ -868,9 +900,7 @@
 			<procedureName>DeleteConfiguration</procedureName>
 			<description>Delete a Gerrit configuration</description>
 			<jobNameTemplate>gerrit-cfg-$[jobId]</jobNameTemplate>
-			<resourceName/>
-			<workspaceName/>
-			<projectName>EC-Gerrit-1.1.1.0</projectName>
+			<projectName>@PLUGIN_KEY@-@PLUGIN_VERSION@</projectName>
 			<propertySheet>
 				<property>
 					<propertyName>ec_customEditorData</propertyName>
@@ -904,7 +934,7 @@
 				<stepName>DeleteConfiguration</stepName>
 				<alwaysRun>0</alwaysRun>
 				<broadcast>0</broadcast>
-				<command>##########################&#10;# deletecfg.pl&#10;##########################&#10;&#10;use ElectricCommander;&#10;use ElectricCommander::PropDB;&#10;&#10;my $opts;&#10;&#10;my $PLUGIN_NAME = "EC-Gerrit";&#10;&#10;if (!defined $PLUGIN_NAME) {&#10;    print "PLUGIN_NAME must be defined\n";&#10;    exit 1;&#10;}&#10;&#10;## get an EC object&#10;my $ec = new ElectricCommander();&#10;$ec-&gt;abortOnError(0);&#10;&#10;my $opts;&#10;$opts-&gt;{config} = "$[config]";&#10;&#10;if (!defined $opts-&gt;{config} || "$opts-&gt;{config}" eq "" ) {&#10;    print "config parameter must exist and be non-blank\n";&#10;    exit 1;&#10;}&#10;&#10;# check to see if a config with this name already exists before we do anything else&#10;my $xpath = $ec-&gt;getProperty("/myProject/gerrit_cfgs/$opts-&gt;{config}");&#10;my $property = $xpath-&gt;findvalue("//response/property/propertyName");&#10;&#10;if (!defined $property || "$property" eq "") {&#10;    my $errMsg = "Error: A configuration named '$opts-&gt;{config}' does not exist.";&#10;    $ec-&gt;setProperty("/myJob/configError", $errMsg);&#10;    print $errMsg;&#10;    exit 1;&#10;}&#10;&#10;$ec-&gt;deleteProperty("/myProject/gerrit_cfgs/$opts-&gt;{config}");&#10;exit 0;&#10;</command>
+				<command></command>
 				<condition/>
 				<description>Delete a Gerrit configuration</description>
 				<errorHandling>failProcedure</errorHandling>
@@ -921,7 +951,7 @@
 				<workingDirectory/>
 				<workspaceName/>
 				<procedureName>DeleteConfiguration</procedureName>
-				<projectName>EC-Gerrit-1.1.1.0</projectName>
+                <projectName>@PLUGIN_KEY@-@PLUGIN_VERSION@</projectName>
 				<propertySheet>
 					<property>
 						<propertyName>ec_customEditorData</propertyName>
@@ -937,29 +967,22 @@
 			</step>
 		</procedure>
 		<procedure>
-			<procedureName>DevBuild Example</procedureName>
+			<procedureName>DevBuildExample</procedureName>
 			<description>An example of a developer build procedure.</description>
-			<jobNameTemplate>gerrit-$[jobId]</jobNameTemplate>
-			<resourceName>local</resourceName>
-			<workspaceName>default</workspaceName>
-			<projectName>EC-Gerrit-1.1.1.0</projectName>
+			<jobNameTemplate>gerrit-devBuildExample$-[jobId]</jobNameTemplate>
+			<projectName>@PLUGIN_KEY@-@PLUGIN_VERSION@</projectName>
 			<propertySheet>
+                <property>
+                        <propertyName>ec_parameterForm</propertyName>    
+                        <expandable>1</expandable>
+                        <value></value>
+                </property>
 				<property>
 					<propertyName>ec_customEditorData</propertyName>
 					<propertySheet>
 						<property>
 							<propertyName>parameters</propertyName>
 							<propertySheet>
-								<property>
-									<propertyName>branch</propertyName>
-									<propertySheet>
-										<property>
-											<propertyName>formType</propertyName>
-											<expandable>1</expandable>
-											<value>standard</value>
-										</property>
-									</propertySheet>
-								</property>
 								<property>
 									<propertyName>changeid</propertyName>
 									<propertySheet>
@@ -1000,16 +1023,6 @@
 										</property>
 									</propertySheet>
 								</property>
-								<property>
-									<propertyName>resource</propertyName>
-									<propertySheet>
-										<property>
-											<propertyName>formType</propertyName>
-											<expandable>1</expandable>
-											<value>standard</value>
-										</property>
-									</propertySheet>
-								</property>
 							</propertySheet>
 						</property>
 					</propertySheet>
@@ -1018,28 +1031,28 @@
 			<formalParameter>
 				<formalParameterName>changeid</formalParameterName>
 				<defaultValue/>
-				<description>The change id to be built</description>
+				<description>The change id to be built. (Required)</description>
 				<required>1</required>
 				<type>entry</type>
 			</formalParameter>
 			<formalParameter>
 				<formalParameterName>gerrit_cfg</formalParameterName>
 				<defaultValue>default</defaultValue>
-				<description>The name of the config which holds all the connection information for Gerrit. </description>
+				<description>The name of the config which holds all the connection information for Gerrit. (Required)</description>
 				<required>1</required>
 				<type>entry</type>
 			</formalParameter>
 			<formalParameter>
 				<formalParameterName>patchid</formalParameterName>
 				<defaultValue/>
-				<description>The patch set id to be built</description>
+				<description>The patch set id to be built. (Required)</description>
 				<required>1</required>
 				<type>entry</type>
 			</formalParameter>
 			<formalParameter>
 				<formalParameterName>project</formalParameterName>
 				<defaultValue/>
-				<description>The project which contains the change</description>
+				<description>The project that contains the change to build. (Required)</description>
 				<required>1</required>
 				<type>entry</type>
 			</formalParameter>
@@ -1081,7 +1094,7 @@
 						<value>$[project]</value>
 					</property>
 				</actualParameters>
-				<procedureName>DevBuild Example</procedureName>
+				<procedureName>DevBuildExample</procedureName>
 				<projectName>EC-Gerrit-1.1.1.0</projectName>
 				<propertySheet>
 					<property>
@@ -1116,7 +1129,7 @@
 				<timeLimitUnits>minutes</timeLimitUnits>
 				<workingDirectory/>
 				<workspaceName/>
-				<procedureName>DevBuild Example</procedureName>
+				<procedureName>DevBuildExample</procedureName>
 				<projectName>EC-Gerrit-1.1.1.0</projectName>
 				<propertySheet>
 					<property>
@@ -1163,8 +1176,13 @@
 						<expandable>1</expandable>
 						<value>$[patchid]</value>
 					</property>
+					<property>
+						<propertyName>project</propertyName>
+						<expandable>1</expandable>
+						<value>$[project]</value>
+					</property>
 				</actualParameters>
-				<procedureName>DevBuild Example</procedureName>
+				<procedureName>DevBuildExample</procedureName>
 				<projectName>EC-Gerrit-1.1.1.0</projectName>
 				<propertySheet>
 					<property>
@@ -1183,27 +1201,20 @@
 		<procedure>
 			<procedureName>DevBuildCleanup</procedureName>
 			<description>Cleanup after one developer build. The working tree is cleaned up (runtime artifacts removed, change backed out).  This also marks the job as complete in Gerrit comments.</description>
-			<jobNameTemplate>gerrit-$[jobId]</jobNameTemplate>
-			<resourceName>local</resourceName>
-			<workspaceName>default</workspaceName>
-			<projectName>EC-Gerrit-1.1.1.0</projectName>
+			<jobNameTemplate>gerrit-devBuildCleanup$-[jobId]</jobNameTemplate>
+			<projectName>@PLUGIN_KEY@-@PLUGIN_VERSION@</projectName>
 			<propertySheet>
+                <property>
+					<propertyName>ec_parameterForm</propertyName>    
+					<expandable>1</expandable>
+					<value></value>
+                </property>
 				<property>
 					<propertyName>ec_customEditorData</propertyName>
 					<propertySheet>
 						<property>
 							<propertyName>parameters</propertyName>
 							<propertySheet>
-								<property>
-									<propertyName>branch</propertyName>
-									<propertySheet>
-										<property>
-											<propertyName>formType</propertyName>
-											<expandable>1</expandable>
-											<value>standard</value>
-										</property>
-									</propertySheet>
-								</property>
 								<property>
 									<propertyName>changeid</propertyName>
 									<propertySheet>
@@ -1244,16 +1255,6 @@
 										</property>
 									</propertySheet>
 								</property>
-								<property>
-									<propertyName>resource</propertyName>
-									<propertySheet>
-										<property>
-											<propertyName>formType</propertyName>
-											<expandable>1</expandable>
-											<value>standard</value>
-										</property>
-									</propertySheet>
-								</property>
 							</propertySheet>
 						</property>
 					</propertySheet>
@@ -1262,29 +1263,36 @@
 			<formalParameter>
 				<formalParameterName>changeid</formalParameterName>
 				<defaultValue/>
-				<description>The change id to be built</description>
+				<description>The short change id to be built. i.e: '5'. (Required)</description>
 				<required>1</required>
 				<type>entry</type>
 			</formalParameter>
 			<formalParameter>
 				<formalParameterName>gerrit_cfg</formalParameterName>
 				<defaultValue>default</defaultValue>
-				<description>The name of the config which holds all the connection information for Gerrit. </description>
+				<description>The name of the config which holds all the connection information for Gerrit. (Required)</description>
 				<required>1</required>
 				<type>entry</type>
 			</formalParameter>
 			<formalParameter>
 				<formalParameterName>patchid</formalParameterName>
 				<defaultValue/>
-				<description>The patch set id to be built</description>
+				<description>The short patch set id to be built. i.e: '5'. (Required)</description>
+				<required>1</required>
+				<type>entry</type>
+			</formalParameter>
+			<formalParameter>
+				<formalParameterName>project</formalParameterName>
+				<defaultValue/>
+				<description>The project that contains the change to build. (Required)</description>
 				<required>1</required>
 				<type>entry</type>
 			</formalParameter>
 			<step>
 				<stepName>annotate</stepName>
-				<alwaysRun>1</alwaysRun>
+				<alwaysRun>0</alwaysRun>
 				<broadcast>0</broadcast>
-				<command>##########################&#10;# annotate.pl&#10;##########################&#10;$[/myProject/procedure_helpers/preamble]&#10;&#10;my $jobId = "$[jobId]";&#10;my $xPath = $ec-&gt;getProperty("/myJob/outcome");&#10;my $outcome = $xPath-&gt;findvalue('//value')-&gt;string_value;&#10;my $msg;&#10;my $cat, $value;&#10;&#10;# get the actions&#10;my ($filters,$actions) = $gt-&gt;parseRules("$opts-&gt;{dev_build_rules}");&#10;&#10;if ($outcome eq "success") {&#10;      $cat   = $actions-&gt;{SUCCESS}{CAT} || "";&#10;      $value = $actions-&gt;{SUCCESS}{VAL} || "";&#10;      $msg = "This change was successfully built with ElectricCommander."&#10;        . "https://$opts-&gt;{cmdr_webserver}/commander/link/jobDetails/jobs/$jobId";&#10;} else {&#10;      $cat   = $actions-&gt;{ERROR}{CAT} || "";&#10;      $value = $actions-&gt;{ERROR}{VAL} || "";&#10;      $msg = "This change failed the ElectricCommander build."&#10;        . "https://$opts-&gt;{cmdr_webserver}/commander/link/jobDetails/jobs/$jobId";&#10;}&#10;&#10;$gt-&gt;setECState( "$opts-&gt;{project}", "$opts-&gt;{changeid}", &#10;    "$opts-&gt;{patchid}","jobComplete",$msg, $cat,$value);&#10;&#10;print "Updating gerrit comment to:\n$msg\n";&#10;exit 0;&#10;&#10;</command>
+				<command></command>
 				<condition/>
 				<description>Annotate Gerrit to tell it the job has finished</description>
 				<errorHandling>abortProcedure</errorHandling>
@@ -1293,7 +1301,7 @@
 				<parallel>0</parallel>
 				<postProcessor/>
 				<releaseExclusive>0</releaseExclusive>
-				<resourceName>$[/myJob/git_resource]</resourceName>
+				<resourceName></resourceName>
 				<retries>0</retries>
 				<shell>ec-perl</shell>
 				<timeLimit/>
@@ -1301,7 +1309,7 @@
 				<workingDirectory/>
 				<workspaceName/>
 				<procedureName>DevBuildCleanup</procedureName>
-				<projectName>EC-Gerrit-1.1.1.0</projectName>
+				<projectName>Gerrit</projectName>
 				<propertySheet>
 					<property>
 						<propertyName>ec_customEditorData</propertyName>
@@ -1318,28 +1326,21 @@
 		</procedure>
 		<procedure>
 			<procedureName>DevBuildPrepare</procedureName>
-			<description>Prepare for a developer build. This will be one change.  The working tree will be adjusted to be the head of the branch plus changes in the change</description>
-			<jobNameTemplate>gerrit-$[jobId]</jobNameTemplate>
-			<resourceName>local</resourceName>
-			<workspaceName>default</workspaceName>
-			<projectName>EC-Gerrit-1.1.1.0</projectName>
+			<description>Prepare for a developer build. This will be one change. The working tree will be adjusted to be the head of the branch plus changes in the change</description>
+			<jobNameTemplate>gerrit-devBuildPrepare$-[jobId]</jobNameTemplate>
+			<projectName>@PLUGIN_KEY@-@PLUGIN_VERSION@</projectName>
 			<propertySheet>
+                <property>
+					<propertyName>ec_parameterForm</propertyName>    
+					<expandable>1</expandable>
+					<value></value>
+                </property>
 				<property>
 					<propertyName>ec_customEditorData</propertyName>
 					<propertySheet>
 						<property>
 							<propertyName>parameters</propertyName>
 							<propertySheet>
-								<property>
-									<propertyName>branch</propertyName>
-									<propertySheet>
-										<property>
-											<propertyName>formType</propertyName>
-											<expandable>1</expandable>
-											<value>standard</value>
-										</property>
-									</propertySheet>
-								</property>
 								<property>
 									<propertyName>changeid</propertyName>
 									<propertySheet>
@@ -1380,16 +1381,6 @@
 										</property>
 									</propertySheet>
 								</property>
-								<property>
-									<propertyName>resource</propertyName>
-									<propertySheet>
-										<property>
-											<propertyName>formType</propertyName>
-											<expandable>1</expandable>
-											<value>standard</value>
-										</property>
-									</propertySheet>
-								</property>
 							</propertySheet>
 						</property>
 					</propertySheet>
@@ -1398,28 +1389,28 @@
 			<formalParameter>
 				<formalParameterName>changeid</formalParameterName>
 				<defaultValue/>
-				<description>The change id to be built</description>
+				<description>The change id to be built. (Required)</description>
 				<required>1</required>
 				<type>entry</type>
 			</formalParameter>
 			<formalParameter>
 				<formalParameterName>gerrit_cfg</formalParameterName>
 				<defaultValue>default</defaultValue>
-				<description>The name of the config which holds all the connection information for Gerrit. </description>
+				<description>The name of the config which holds all the connection information for Gerrit. (Required)</description>
 				<required>1</required>
 				<type>entry</type>
 			</formalParameter>
 			<formalParameter>
 				<formalParameterName>patchid</formalParameterName>
 				<defaultValue/>
-				<description>The patch set id to be built</description>
+				<description>The patch set id to be built. (Required)</description>
 				<required>1</required>
 				<type>entry</type>
 			</formalParameter>
 			<formalParameter>
 				<formalParameterName>project</formalParameterName>
 				<defaultValue/>
-				<description>The project that contains the change to build</description>
+				<description>The project that contains the change to build. (Required)</description>
 				<required>1</required>
 				<type>entry</type>
 			</formalParameter>
@@ -1427,7 +1418,7 @@
 				<stepName>allocate</stepName>
 				<alwaysRun>0</alwaysRun>
 				<broadcast>0</broadcast>
-				<command>##########################&#10;# allocate.pl&#10;##########################&#10;use ElectricCommander;&#10;use File::Basename;&#10;use ElectricCommander::PropDB;&#10;use ElectricCommander::PropMod;&#10;&#10;$|=1;&#10;&#10;my $ec = new ElectricCommander();&#10;$ec-&gt;abortOnError(0);&#10;&#10;my $cfgName = "$[gerrit_cfg]";&#10;my $proj = "$[/myProject/projectName]";&#10;my $cfg = new ElectricCommander::PropDB($ec,"/projects/$proj/gerrit_cfgs");&#10;my %vals = $cfg-&gt;getRow($cfgName);&#10;my $opts = \%vals;&#10;&#10;if ("$opts-&gt;{ResourcePool}" eq "") {&#10;    print "Error: no resource pool specified.\n";&#10;    exit 1;&#10;}&#10;&#10;$ec-&gt;setProperty("/myJob/git_resource",$opts-&gt;{ResourcePool});&#10;exit 0;&#10;</command>
+				<command></command>
 				<condition/>
 				<description>Pick a resource for this run</description>
 				<errorHandling>abortProcedure</errorHandling>
@@ -1462,7 +1453,7 @@
 				<stepName>annotate</stepName>
 				<alwaysRun>0</alwaysRun>
 				<broadcast>0</broadcast>
-				<command>##########################&#10;# annotate.pl&#10;##########################&#10;$[/myProject/procedure_helpers/preamble]&#10;&#10;my $msg = "This change is being built with ElectricCommander."&#10;           . " https://$opts-&gt;{cmdr_webserver}/commander/link/jobDetails/jobs/$[jobId]";&#10;&#10;# update gerrit.  No approvals for jobRunning&#10;$gt-&gt;setECState("", "$opts-&gt;{changeid}", "$opts-&gt;{patchid}","jobRunning",$msg,"","");&#10;print "Updating gerrit comment to:\n$msg\n";&#10;exit 0;&#10;&#10;</command>
+				<command></command>
 				<condition/>
 				<description>If this job was launched manually, annotate Gerrit so it knows about the job</description>
 				<errorHandling>abortJob</errorHandling>
@@ -1497,7 +1488,7 @@
 				<stepName>clone</stepName>
 				<alwaysRun>0</alwaysRun>
 				<broadcast>0</broadcast>
-				<command>##########################&#10;# clone.pl&#10;##########################&#10;$[/myProject/procedure_helpers/preamble]&#10;&#10;my $map = $gt-&gt;makeReplacementMap();&#10;&#10;# get values from configuration&#10;# run through replacement twice to allow double indirection&#10;#     i.e.   a-&gt;b-&gt;c&#10;my $cloneCmd  = $gt-&gt;replace_strings("$opts-&gt;{cmd_clone}",$map);&#10;my $cloneCmd  = $gt-&gt;replace_strings("$cloneCmd",$map);&#10;my $updateCmd = $gt-&gt;replace_strings("$opts-&gt;{cmd_update}",$map);&#10;my $updateCmd = $gt-&gt;replace_strings("$updateCmd",$map);&#10;my $magicDir  = $gt-&gt;replace_strings("$opts-&gt;{cmd_magic_dir}",$map);&#10;my $magicDir  = $gt-&gt;replace_strings("$magicDir",$map);&#10;&#10;### If working directory is blank&#10;if ("$opts-&gt;{gerrit_working_dir}" eq "") {&#10;    print "Working directory not specified.  Set the directory in a property"&#10;        . " named gerrit_working_dir on the resource.\n";&#10;    exit 1;&#10;}&#10;&#10;### Examine working directory and see if it needs to be created from scratch&#10;if (! -d $opts-&gt;{gerrit_working_dir}) {&#10;    print "Creating a clone of remote repository\n";&#10;    eval "$cloneCmd";&#10;}&#10;&#10;### Do we have an initialized dir?&#10;if (!-d "$opts-&gt;{gerrit_working_dir}/$magicDir") {&#10;    print "$opts-&gt;{gerrit_working_dir} missing directory $magicDir.\n";&#10;    exit 1;&#10;}&#10;&#10;### Sync to head&#10;print "Updating the repository to latest head.\n";&#10;eval  "$updateCmd" ;&#10;&#10;&#10;&#10;&#10;</command>
+				<command></command>
 				<condition/>
 				<description>If needed, clone the remote repo in gerrit to a working directory then fetch contents. The tree should now be in sync with the head of the master.</description>
 				<errorHandling>abortJob</errorHandling>
@@ -1532,7 +1523,7 @@
 				<stepName>revert</stepName>
 				<alwaysRun>0</alwaysRun>
 				<broadcast>0</broadcast>
-				<command>##########################&#10;# revert.pl&#10;##########################&#10;$[/myProject/procedure_helpers/preamble]&#10;&#10;my $map = $gt-&gt;makeReplacementMap();&#10;&#10;my $magicDir  = $gt-&gt;replace_strings("$opts-&gt;{cmd_magic_dir}",$map);&#10;my $magicDir  = $gt-&gt;replace_strings("$magicDir",$map);&#10;&#10;my $revertCmd = $gt-&gt;replace_strings("$opts-&gt;{cmd_revert}",$map);&#10;my $revertCmd = $gt-&gt;replace_strings("$revertCmd",$map);&#10;&#10;if (!-d "$opts-&gt;{gerrit_working_dir}/$magicDir") {&#10;    print "$opts-&gt;{gerrit_working_dir} not a git repostitory.\n";&#10;    exit 1;&#10;}&#10;&#10;chdir $opts-&gt;{gerrit_working_dir};&#10;print "Revert repository to latest head.\n";&#10;eval "$revertCmd" ;&#10;&#10;</command>
+				<command></command>
 				<condition/>
 				<description>Get tree in clean state before overlaying files</description>
 				<errorHandling>abortJob</errorHandling>
@@ -1567,7 +1558,7 @@
 				<stepName>apply</stepName>
 				<alwaysRun>0</alwaysRun>
 				<broadcast>0</broadcast>
-				<command>##########################&#10;# apply.pl&#10;##########################&#10;$[/myProject/procedure_helpers/preamble]&#10;&#10;my $map = $gt-&gt;makeReplacementMap();&#10;&#10;# get values from configuration&#10;# run through replacement twice to allow double indirection&#10;#     i.e.   a-&gt;b-&gt;c&#10;&#10;my $overlayCmd = $gt-&gt;replace_strings("$opts-&gt;{cmd_overlay}",$map);&#10;my $overlayCmd = $gt-&gt;replace_strings("$overlayCmd",$map);&#10;&#10;my $magicDir  = $gt-&gt;replace_strings("$opts-&gt;{cmd_magic_dir}",$map);&#10;my $magicDir  = $gt-&gt;replace_strings("$magicDir",$map);&#10;&#10;if (!-d "$opts-&gt;{gerrit_working_dir}/$magicDir") {&#10;    print "$opts-&gt;{gerrit_working_dir} missing directory $magicDir.\n";&#10;    exit 1;&#10;}&#10;&#10;chdir $opts-&gt;{gerrit_working_dir};&#10;&#10;print "Get updates\n";&#10;# create pull command&#10;eval "$overlayCmd";&#10;&#10;  &#10;&#10;&#10;</command>
+				<command></command>
 				<condition/>
 				<description>Get the changes from Gerrit and overlay on top of  local repostiory</description>
 				<errorHandling>abortJob</errorHandling>
@@ -1602,17 +1593,15 @@
 		<procedure>
 			<procedureName>DeveloperScan</procedureName>
 			<description>Scan the Gerrit server for any new changes and process them</description>
-			<jobNameTemplate>gerrit-scan-$[jobId]</jobNameTemplate>
-			<resourceName>local</resourceName>
-			<workspaceName/>
-			<projectName>EC-Gerrit-1.1.1.0</projectName>
+			<jobNameTemplate>gerrit-developerScan$-[jobId]</jobNameTemplate>
+			<projectName>@PLUGIN_KEY@-@PLUGIN_VERSION@</projectName>
 			<propertySheet>
       </propertySheet>
 			<step>
 				<stepName>scan</stepName>
 				<alwaysRun>0</alwaysRun>
 				<broadcast>0</broadcast>
-				<command>##########################&#10;# scan.pl&#10;##########################&#10;&#10;use URI::Escape;&#10;use ElectricCommander;&#10;use ElectricCommander::PropDB;&#10;use ElectricCommander::PropMod;&#10;&#10;my $ec = new ElectricCommander();&#10;$ec-&gt;abortOnError(0);&#10;&#10;my $proj = "$[/myProject/projectName]";&#10;&#10;my $cfg = new ElectricCommander::PropDB($ec,"");&#10;my %cfgs = $cfg-&gt;getSheets("/projects/$proj/gerrit_cfgs");&#10;&#10;if (!ElectricCommander::PropMod::loadPerlCodeFromProperty(&#10;    $ec,"/myProject/scm_driver/ECGerrit") ) {&#10;    print "Could not load ECGerrit.pm\n";&#10;    exit 1;&#10;}&#10;&#10;# for each configuration&#10;foreach my $cfgName (keys %cfgs) {&#10;    print "====Scanning configuration $cfgName =====\n";&#10;&#10;    my $config = new ElectricCommander::PropDB($ec,"/projects/$proj/gerrit_cfgs");&#10;    my %vals = $config-&gt;getRow($cfgName);&#10;    my $opts = \%vals;&#10;&#10;    if (!defined $opts-&gt;{gerrit_server} || $opts-&gt;{gerrit_server} eq "") {&#10;            print "configuration [$cfgName] does not contain a gerrit server name\n";&#10;                exit 1;&#10;    }&#10;&#10;    # only process if scan enabled&#10;    if ($opts-&gt;{devbuild_mode} eq "off") {&#10;        next;&#10;    }&#10;&#10;    ## add other parms and values to opts&#10;    $opts-&gt;{gerrit_cfg} = "$cfgName";&#10;&#10;    my $gt = new ECGerrit( $ec, &#10;        "$opts-&gt;{gerrit_user}", &#10;        "$opts-&gt;{gerrit_server}", &#10;        "$opts-&gt;{gerrit_port}", &#10;        "$opts-&gt;{gerrit_public_key}", &#10;        "$opts-&gt;{gerrit_private_key}", &#10;        $opts-&gt;{debug});&#10;&#10;    #  process new gerrit changes&#10;    $gt-&gt;processNewChanges($opts);&#10;&#10;    #  process commander jobs&#10;    $gt-&gt;processFinishedJobs($opts);&#10;&#10;    #  cleanup old jobs&#10;    $gt-&gt;cleanup($opts);&#10;}&#10;&#10;</command>
+				<command></command>
 				<condition/>
 				<description>Scan the Gerrit server</description>
 				<errorHandling>failProcedure</errorHandling>
@@ -1621,7 +1610,7 @@
 				<parallel>0</parallel>
 				<postProcessor>postp</postProcessor>
 				<releaseExclusive>0</releaseExclusive>
-				<resourceName>local</resourceName>
+				<resourceName></resourceName>
 				<retries>0</retries>
 				<shell>ec-perl</shell>
 				<timeLimit>12</timeLimit>
@@ -1645,195 +1634,16 @@
 			</step>
 		</procedure>
 		<procedure>
-			<procedureName>GroupBuildExample</procedureName>
-			<description>Scan the specified changes in a group of changes, or a group of groups.</description>
-			<jobNameTemplate/>
-			<resourceName/>
-			<workspaceName/>
-			<projectName>EC-Gerrit-1.2.0.0</projectName>
-			<propertySheet>
-				<property>
-					<propertyName>ec_customEditorData</propertyName>
-					<propertySheet>
-						<property>
-							<propertyName>parameters</propertyName>
-							<propertySheet>
-								<property>
-									<propertyName>gerrit_cfg</propertyName>
-									<propertySheet>
-										<property>
-											<propertyName>formType</propertyName>
-											<expandable>1</expandable>
-											<value>standard</value>
-										</property>
-									</propertySheet>
-								</property>
-								<property>
-									<propertyName>group_build_changes</propertyName>
-									<propertySheet>
-										<property>
-											<propertyName>formType</propertyName>
-											<expandable>1</expandable>
-											<value>standard</value>
-										</property>
-									</propertySheet>
-								</property>
-								<property>
-									<propertyName>parent_jobId</propertyName>
-									<propertySheet>
-										<property>
-											<propertyName>formType</propertyName>
-											<expandable>1</expandable>
-											<value>standard</value>
-										</property>
-									</propertySheet>
-								</property>
-							</propertySheet>
-						</property>
-					</propertySheet>
-				</property>
-			</propertySheet>
-			<formalParameter>
-				<formalParameterName>gerrit_cfg</formalParameterName>
-				<defaultValue>default</defaultValue>
-				<description>The name of the config which holds all the connection information for Gerrit. </description>
-				<required>1</required>
-				<type>entry</type>
-			</formalParameter>
-			<formalParameter>
-				<formalParameterName>group_build_changes</formalParameterName>
-				<defaultValue/>
-				<description>List of the changes in the group.</description>
-				<required>0</required>
-				<type>textarea</type>
-			</formalParameter>
-			<formalParameter>
-				<formalParameterName>parent_jobId</formalParameterName>
-				<defaultValue/>
-				<description>Id of the parent job</description>
-				<required>1</required>
-				<type>entry</type>
-			</formalParameter>
-			<step>
-				<stepName>GetCodeFromGerrit</stepName>
-				<alwaysRun>0</alwaysRun>
-				<broadcast>0</broadcast>
-				<condition/>
-				<description/>
-				<errorHandling>failProcedure</errorHandling>
-				<exclusive>0</exclusive>
-				<parallel>0</parallel>
-				<releaseExclusive>0</releaseExclusive>
-				<resourceName/>
-				<retries>0</retries>
-				<subprocedure>TeamBuildPrepare</subprocedure>
-				<subproject>/plugins/EC-Gerrit/project</subproject>
-				<timeLimit/>
-				<timeLimitUnits>minutes</timeLimitUnits>
-				<actualParameters>
-					<property>
-						<propertyName>gerrit_cfg</propertyName>
-						<expandable>1</expandable>
-						<value>$[gerrit_cfg]</value>
-					</property>
-				</actualParameters>
-				<procedureName>GroupBuildExample</procedureName>
-				<projectName>EC-Gerrit-1.2.0.0</projectName>
-				<propertySheet>
-					<property>
-						<propertyName>ec_customEditorData</propertyName>
-						<propertySheet>
-							<property>
-								<propertyName>formType</propertyName>
-								<expandable>1</expandable>
-								<value>procedure</value>
-							</property>
-						</propertySheet>
-					</property>
-				</propertySheet>
-			</step>
-			<step>
-				<stepName>DoWork</stepName>
-				<alwaysRun>0</alwaysRun>
-				<broadcast>0</broadcast>
-				<command>print "Build and test\n";exit 0;</command>
-				<condition/>
-				<description/>
-				<errorHandling>failProcedure</errorHandling>
-				<exclusive>0</exclusive>
-				<logFileName/>
-				<parallel>0</parallel>
-				<postProcessor/>
-				<releaseExclusive>0</releaseExclusive>
-				<resourceName>$[/myJob/git_resource]</resourceName>
-				<retries>0</retries>
-				<shell>ec-perl</shell>
-				<timeLimit/>
-				<timeLimitUnits>minutes</timeLimitUnits>
-				<workingDirectory/>
-				<workspaceName/>
-				<procedureName>GroupBuildExample</procedureName>
-				<projectName>EC-Gerrit-1.2.0.0</projectName>
-				<propertySheet>
-					<property>
-						<propertyName>ec_customEditorData</propertyName>
-						<propertySheet>
-							<property>
-								<propertyName>formType</propertyName>
-								<expandable>1</expandable>
-								<value>command</value>
-							</property>
-						</propertySheet>
-					</property>
-				</propertySheet>
-			</step>
-			<step>
-				<stepName>GerritCleanup</stepName>
-				<alwaysRun>0</alwaysRun>
-				<broadcast>0</broadcast>
-				<condition/>
-				<description>Cleanup the Gerrit environment</description>
-				<errorHandling>failProcedure</errorHandling>
-				<exclusive>0</exclusive>
-				<parallel>0</parallel>
-				<releaseExclusive>0</releaseExclusive>
-				<resourceName/>
-				<retries>0</retries>
-				<subprocedure>TeamBuildCleanup</subprocedure>
-				<subproject>/plugins/EC-Gerrit/project</subproject>
-				<timeLimit/>
-				<timeLimitUnits>minutes</timeLimitUnits>
-				<actualParameters>
-					<property>
-						<propertyName>gerrit_cfg</propertyName>
-						<expandable>1</expandable>
-						<value>$[gerrit_cfg]</value>
-					</property>
-				</actualParameters>
-				<procedureName>GroupBuildExample</procedureName>
-				<projectName>EC-Gerrit-1.2.0.0</projectName>
-				<propertySheet>
-					<property>
-						<propertyName>ec_customEditorData</propertyName>
-						<propertySheet>
-							<property>
-								<propertyName>formType</propertyName>
-								<expandable>1</expandable>
-								<value>procedure</value>
-							</property>
-						</propertySheet>
-					</property>
-				</propertySheet>
-			</step>
-		</procedure>
-		<procedure>
 			<procedureName>SetupGerritServer</procedureName>
 			<description>Setup the default settings into Gerrit to be used with the Electric Commander</description>
-			<jobNameTemplate>gerrit-$[jobId]</jobNameTemplate>
-			<resourceName>local</resourceName>
-			<workspaceName>default</workspaceName>
-			<projectName>EC-Gerrit-1.1.1.0</projectName>
+			<jobNameTemplate>gerrit-setupGerritServer$-[jobId]</jobNameTemplate>
+			<projectName>@PLUGIN_KEY@-@PLUGIN_VERSION@</projectName>
 			<propertySheet>
+                <property>
+                        <propertyName>ec_parameterForm</propertyName>    
+                        <expandable>1</expandable>
+                        <value></value>
+                </property>
 				<property>
 					<propertyName>ec_customEditorData</propertyName>
 					<propertySheet>
@@ -1858,7 +1668,7 @@
 			<formalParameter>
 				<formalParameterName>gerrit_cfg</formalParameterName>
 				<defaultValue>default</defaultValue>
-				<description>The name of the config which holds all the connection information for Gerrit. </description>
+				<description>The name of the config which holds all the connection information for Gerrit. (Required)</description>
 				<required>1</required>
 				<type>entry</type>
 			</formalParameter>
@@ -1866,7 +1676,7 @@
 				<stepName>Setup</stepName>
 				<alwaysRun>0</alwaysRun>
 				<broadcast>0</broadcast>
-				<command>##########################&#10;# setup.pl&#10;##########################&#10;$[/plugins/EC-Gerrit-1.2.0.0/project/procedure_helpers/api]&#10;&#10;gr_insertApprovalCategory('ElectricCommander','NULL',3,'NoOp','N','CMDR');&#10;&#10;gr_insertApprovalCategoryValue('Build succeeded','CMDR',1);&#10;gr_insertApprovalCategoryValue('No score','CMDR',0);&#10;gr_insertApprovalCategoryValue('Build failed','CMDR',-1);&#10;</command>
+				<command></command>
 				<condition/>
 				<description/>
 				<errorHandling>failProcedure</errorHandling>
@@ -1901,37 +1711,20 @@
 		<procedure>
 			<procedureName>TeamBuildCleanup</procedureName>
 			<description>Mark the changes as approved if success</description>
-			<jobNameTemplate>gerrit-$[jobId]</jobNameTemplate>
-			<resourceName>local</resourceName>
-			<workspaceName>default</workspaceName>
-			<projectName>EC-Gerrit-1.2.0.0</projectName>
+			<jobNameTemplate>gerrit-teamBuildCleanup$-[jobId]</jobNameTemplate>
+			<projectName>@PLUGIN_KEY@-@PLUGIN_VERSION@</projectName>
 			<propertySheet>
+                <property>
+                        <propertyName>ec_parameterForm</propertyName>    
+                        <expandable>1</expandable>
+                        <value></value>
+                </property>
 				<property>
 					<propertyName>ec_customEditorData</propertyName>
 					<propertySheet>
 						<property>
 							<propertyName>parameters</propertyName>
 							<propertySheet>
-								<property>
-									<propertyName>branch</propertyName>
-									<propertySheet>
-										<property>
-											<propertyName>formType</propertyName>
-											<expandable>1</expandable>
-											<value>standard</value>
-										</property>
-									</propertySheet>
-								</property>
-								<property>
-									<propertyName>changeid</propertyName>
-									<propertySheet>
-										<property>
-											<propertyName>formType</propertyName>
-											<expandable>1</expandable>
-											<value>standard</value>
-										</property>
-									</propertySheet>
-								</property>
 								<property>
 									<propertyName>gerrit_cfg</propertyName>
 									<propertySheet>
@@ -1943,7 +1736,7 @@
 									</propertySheet>
 								</property>
 								<property>
-									<propertyName>patchid</propertyName>
+									<propertyName>group_build_changes</propertyName>
 									<propertySheet>
 										<property>
 											<propertyName>formType</propertyName>
@@ -1962,16 +1755,6 @@
 										</property>
 									</propertySheet>
 								</property>
-								<property>
-									<propertyName>resource</propertyName>
-									<propertySheet>
-										<property>
-											<propertyName>formType</propertyName>
-											<expandable>1</expandable>
-											<value>standard</value>
-										</property>
-									</propertySheet>
-								</property>
 							</propertySheet>
 						</property>
 					</propertySheet>
@@ -1980,22 +1763,29 @@
 			<formalParameter>
 				<formalParameterName>gerrit_cfg</formalParameterName>
 				<defaultValue>default</defaultValue>
-				<description>The name of the config which holds all the connection information for Gerrit. </description>
+				<description>The name of the config which holds all the connection information for Gerrit. (Required)</description>
+				<required>1</required>
+				<type>entry</type>
+			</formalParameter>
+			<formalParameter>
+				<formalParameterName>group_build_changes</formalParameterName>
+				<defaultValue/>
+				<description>List of the changes in the group. Any number of lines can be added. (Required)</description>
 				<required>1</required>
 				<type>entry</type>
 			</formalParameter>
 			<formalParameter>
 				<formalParameterName>project</formalParameterName>
 				<defaultValue/>
-				<description>The Project for this build. If blank, all projects are considered.</description>
-				<required>0</required>
+				<description>The project that contains the change to build. (Required)</description>
+				<required>1</required>
 				<type>entry</type>
 			</formalParameter>
 			<step>
 				<stepName>allocate</stepName>
 				<alwaysRun>0</alwaysRun>
 				<broadcast>0</broadcast>
-				<command>##########################&#10;# allocate.pl&#10;##########################&#10;use ElectricCommander;&#10;use File::Basename;&#10;use ElectricCommander::PropDB;&#10;use ElectricCommander::PropMod;&#10;&#10;$|=1;&#10;&#10;my $ec = new ElectricCommander();&#10;$ec-&gt;abortOnError(0);&#10;&#10;my $cfgName = "$[gerrit_cfg]";&#10;my $proj = "$[/myProject/projectName]";&#10;my $cfg = new ElectricCommander::PropDB($ec,"/projects/$proj/gerrit_cfgs");&#10;my %vals = $cfg-&gt;getRow($cfgName);&#10;my $opts = \%vals;&#10;&#10;if ("$opts-&gt;{ResourcePool}" eq "") {&#10;    print "Error: no resource pool specified.\n";&#10;    exit 1;&#10;}&#10;&#10;$ec-&gt;setProperty("/myJob/git_resource",$opts-&gt;{ResourcePool});&#10;exit 0;&#10;</command>
+				<command></command>
 				<condition/>
 				<description>Pick a resource for this run</description>
 				<errorHandling>abortProcedure</errorHandling>
@@ -2030,8 +1820,8 @@
 				<stepName>approve</stepName>
 				<alwaysRun>0</alwaysRun>
 				<broadcast>0</broadcast>
-				<command>##########################&#10;# approve.pl&#10;##########################&#10;$[/myProject/procedure_helpers/preamble]&#10;&#10;&#10;my $jobId = "$[jobId]";&#10;my $xPath = $ec-&gt;getProperty("/myJob/outcome");&#10;my $outcome = $xPath-&gt;findvalue('//value')-&gt;string_value;&#10;my $msg;&#10;&#10;my $project = "$[project]";&#10;my $branch  = "$opts-&gt;{gerrit_branch}";&#10;my $rules   = "$opts-&gt;{team_build_rules}";&#10;&#10;my @changes= $gt-&gt;getChanges();&#10;&#10;my $msg;&#10;if ($outcome eq "success") {&#10;      $msg="ElectricCommander team build succeeded."&#10;        . " https://$opts-&gt;{cmdr_webserver}/commander/link/jobDetails/jobs/$jobId";&#10;    $gt-&gt;team_approve(\@changes, $rules,$msg);&#10;} else {&#10;      $msg="ElectricCommander team build outcome=$outcome."&#10;        . " https://$opts-&gt;{cmdr_webserver}/commander/link/jobDetails/jobs/$jobId";&#10;    $gt-&gt;team_disapprove(\@changes, $rules,$msg);&#10;}   &#10;exit 0;&#10;&#10;</command>
-				<condition>$[/javascript myJob.gerrit_changes]</condition>
+				<command></command>
+				<condition></condition>
 				<description>Get the changes from Gerrit and overlay on top of  local repostiory</description>
 				<errorHandling>abortJob</errorHandling>
 				<exclusive>1</exclusive>
@@ -2065,11 +1855,14 @@
 		<procedure>
 			<procedureName>TeamBuildExample</procedureName>
 			<description>A sample Team Build procedure.</description>
-			<jobNameTemplate>gerrit-$[jobId]</jobNameTemplate>
-			<resourceName>local</resourceName>
-			<workspaceName>default</workspaceName>
-			<projectName>EC-Gerrit-1.2.0.0</projectName>
+			<jobNameTemplate>gerrit-teamBuildExample$-[jobId]</jobNameTemplate>
+			<projectName>@PLUGIN_KEY@-@PLUGIN_VERSION@</projectName>
 			<propertySheet>
+                <property>
+                        <propertyName>ec_parameterForm</propertyName>    
+                        <expandable>1</expandable>
+                        <value></value>
+                </property>
 				<property>
 					<propertyName>ec_customEditorData</propertyName>
 					<propertySheet>
@@ -2077,17 +1870,7 @@
 							<propertyName>parameters</propertyName>
 							<propertySheet>
 								<property>
-									<propertyName>branch</propertyName>
-									<propertySheet>
-										<property>
-											<propertyName>formType</propertyName>
-											<expandable>1</expandable>
-											<value>standard</value>
-										</property>
-									</propertySheet>
-								</property>
-								<property>
-									<propertyName>changeid</propertyName>
+									<propertyName>group_build_changes</propertyName>
 									<propertySheet>
 										<property>
 											<propertyName>formType</propertyName>
@@ -2107,27 +1890,7 @@
 									</propertySheet>
 								</property>
 								<property>
-									<propertyName>patchid</propertyName>
-									<propertySheet>
-										<property>
-											<propertyName>formType</propertyName>
-											<expandable>1</expandable>
-											<value>standard</value>
-										</property>
-									</propertySheet>
-								</property>
-								<property>
 									<propertyName>project</propertyName>
-									<propertySheet>
-										<property>
-											<propertyName>formType</propertyName>
-											<expandable>1</expandable>
-											<value>standard</value>
-										</property>
-									</propertySheet>
-								</property>
-								<property>
-									<propertyName>resource</propertyName>
 									<propertySheet>
 										<property>
 											<propertyName>formType</propertyName>
@@ -2144,7 +1907,21 @@
 			<formalParameter>
 				<formalParameterName>gerrit_cfg</formalParameterName>
 				<defaultValue>default</defaultValue>
-				<description>The name of the config which holds all the connection information for Gerrit. </description>
+				<description>The name of the config which holds all the connection information for Gerrit. (Required)</description>
+				<required>1</required>
+				<type>entry</type>
+			</formalParameter>
+			<formalParameter>
+				<formalParameterName>group_build_changes</formalParameterName>
+				<defaultValue/>
+				<description>List of the changes in the group. Any number of lines can be added. (Required)</description>
+				<required>1</required>
+				<type>entry</type>
+			</formalParameter>
+			<formalParameter>
+				<formalParameterName>project</formalParameterName>
+				<defaultValue/>
+				<description>The project that contains the change to build. (Required)</description>
 				<required>1</required>
 				<type>entry</type>
 			</formalParameter>
@@ -2169,6 +1946,16 @@
 						<propertyName>gerrit_cfg</propertyName>
 						<expandable>1</expandable>
 						<value>$[gerrit_cfg]</value>
+					</property>
+					<property>
+						<propertyName>group_build_changes</propertyName>
+						<expandable>1</expandable>
+						<value>$[group_build_changes]</value>
+					</property>
+					<property>
+						<propertyName>project</propertyName>
+						<expandable>1</expandable>
+						<value>$[project]</value>
 					</property>
 				</actualParameters>
 				<procedureName>TeamBuildExample</procedureName>
@@ -2243,6 +2030,16 @@
 						<expandable>1</expandable>
 						<value>$[gerrit_cfg]</value>
 					</property>
+					<property>
+						<propertyName>group_build_changes</propertyName>
+						<expandable>1</expandable>
+						<value>$[group_build_changes]</value>
+					</property>
+					<property>
+						<propertyName>project</propertyName>
+						<expandable>1</expandable>
+						<value>$[project]</value>
+					</property>
 				</actualParameters>
 				<procedureName>TeamBuildExample</procedureName>
 				<projectName>EC-Gerrit-1.2.0.0</projectName>
@@ -2262,38 +2059,21 @@
 		</procedure>
 		<procedure>
 			<procedureName>TeamBuildPrepare</procedureName>
-			<description>Create a tree in /myResource/gerrit_working_dir with the head of the branch and an overlay of all open Gerrit changes which match the configuration filters</description>
-			<jobNameTemplate>gerrit-$[jobId]</jobNameTemplate>
-			<resourceName>local</resourceName>
-			<workspaceName>default</workspaceName>
-			<projectName>EC-Gerrit-1.2.0.0</projectName>
+			<description>Create a tree in /myResource/gerrit_working_dir with the head of the branch and an overlay of all open Gerrit changes which match the configuration filters</description>			
+			<jobNameTemplate>gerrit-teamBuildPrepare$-[jobId]</jobNameTemplate>
+			<projectName>@PLUGIN_KEY@-@PLUGIN_VERSION@</projectName>
 			<propertySheet>
+                <property>
+                        <propertyName>ec_parameterForm</propertyName>    
+                        <expandable>1</expandable>
+                        <value></value>
+                </property>
 				<property>
 					<propertyName>ec_customEditorData</propertyName>
 					<propertySheet>
 						<property>
 							<propertyName>parameters</propertyName>
 							<propertySheet>
-								<property>
-									<propertyName>branch</propertyName>
-									<propertySheet>
-										<property>
-											<propertyName>formType</propertyName>
-											<expandable>1</expandable>
-											<value>standard</value>
-										</property>
-									</propertySheet>
-								</property>
-								<property>
-									<propertyName>changeid</propertyName>
-									<propertySheet>
-										<property>
-											<propertyName>formType</propertyName>
-											<expandable>1</expandable>
-											<value>standard</value>
-										</property>
-									</propertySheet>
-								</property>
 								<property>
 									<propertyName>gerrit_cfg</propertyName>
 									<propertySheet>
@@ -2315,27 +2095,7 @@
 									</propertySheet>
 								</property>
 								<property>
-									<propertyName>patchid</propertyName>
-									<propertySheet>
-										<property>
-											<propertyName>formType</propertyName>
-											<expandable>1</expandable>
-											<value>standard</value>
-										</property>
-									</propertySheet>
-								</property>
-								<property>
 									<propertyName>project</propertyName>
-									<propertySheet>
-										<property>
-											<propertyName>formType</propertyName>
-											<expandable>1</expandable>
-											<value>standard</value>
-										</property>
-									</propertySheet>
-								</property>
-								<property>
-									<propertyName>resource</propertyName>
 									<propertySheet>
 										<property>
 											<propertyName>formType</propertyName>
@@ -2352,29 +2112,29 @@
 			<formalParameter>
 				<formalParameterName>gerrit_cfg</formalParameterName>
 				<defaultValue>default</defaultValue>
-				<description>The name of the config which holds all the connection information for Gerrit. </description>
+				<description>The name of the config which holds all the connection information for Gerrit. (Required)</description>
 				<required>1</required>
 				<type>entry</type>
 			</formalParameter>
 			<formalParameter>
 				<formalParameterName>group_build_changes</formalParameterName>
 				<defaultValue/>
-				<description>List of the changes in the group.</description>
-				<required>0</required>
+				<description>List of the changes in the group. (Required)</description>
+				<required>1</required>
 				<type>textarea</type>
 			</formalParameter>
 			<formalParameter>
 				<formalParameterName>project</formalParameterName>
 				<defaultValue/>
-				<description>The Project for this build. If blank, all projects are considered.</description>
-				<required>0</required>
+				<description>The project that contains the change to build. (Required)</description>
+				<required>1</required>
 				<type>entry</type>
 			</formalParameter>
 			<step>
 				<stepName>allocate</stepName>
 				<alwaysRun>0</alwaysRun>
 				<broadcast>0</broadcast>
-				<command>##########################&#10;# allocate.pl&#10;##########################&#10;use ElectricCommander;&#10;use File::Basename;&#10;use ElectricCommander::PropDB;&#10;use ElectricCommander::PropMod;&#10;&#10;$|=1;&#10;&#10;my $ec = new ElectricCommander();&#10;$ec-&gt;abortOnError(0);&#10;&#10;my $cfgName = "$[gerrit_cfg]";&#10;my $proj = "$[/myProject/projectName]";&#10;my $cfg = new ElectricCommander::PropDB($ec,"/projects/$proj/gerrit_cfgs");&#10;my %vals = $cfg-&gt;getRow($cfgName);&#10;my $opts = \%vals;&#10;&#10;if ("$opts-&gt;{ResourcePool}" eq "") {&#10;    print "Error: no resource pool specified.\n";&#10;    exit 1;&#10;}&#10;&#10;$ec-&gt;setProperty("/myJob/git_resource",$opts-&gt;{ResourcePool});&#10;exit 0;&#10;</command>
+				<command></command>
 				<condition/>
 				<description>Pick a resource for this run</description>
 				<errorHandling>abortProcedure</errorHandling>

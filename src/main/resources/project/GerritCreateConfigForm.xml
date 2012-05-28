@@ -15,6 +15,22 @@
     </formElement>
     <formElement>
         <type>entry</type>
+        <label>Repository Server:</label>
+        <property>repository_server</property>
+        <value></value>
+        <documentation>The server where the repository is located. If not provided, the "Gerrit Server" is used. i.e: in this url "git://github.com/ecGerrit/ecGerritTest.git", the repository server is "github.com".</documentation>
+        <required>0</required>
+    </formElement>
+    <formElement>
+        <type>entry</type>
+        <label>Repository Path:</label>
+        <property>repository_path</property>
+        <value></value>
+        <documentation>The path associated to the "Repository Server". i.e: in this url "git://github.com/ecGerrit/ecGerritTest.git", the repository path is "ecGerrit/ecGerritTest.git". (Required)</documentation>
+        <required>1</required>
+    </formElement>
+    <formElement>
+        <type>entry</type>
         <label>Gerrit Server:</label>
         <property>gerrit_server</property>
         <value>localhost</value>
@@ -73,14 +89,14 @@
         <label>Procedure for Developer Builds:</label>
         <property>devbuild_cmdr_procedure</property>
         <documentation>The Commander procedure that will be called for developer builds.</documentation>
-        <value>DevBuild Example</value>
+        <value>DevBuildExample</value>
         <required>1</required>
     </formElement>
     <formElement>
         <type>entry</type>
         <label>Project/branches manifest file:</label>
         <property>teambuild_project_branches</property>
-        <documentation>The list of projects to be scanned.</documentation>
+        <documentation>The file that contains the name of the projects and branches to be included in the verification. In addition you can specify in here individual changes to be verified. (Required)</documentation>
         <value></value>
         <required>1</required>
     </formElement>
