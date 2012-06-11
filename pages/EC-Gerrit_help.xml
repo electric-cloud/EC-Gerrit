@@ -418,7 +418,13 @@
             build the same branch many times, each reset and sync
             will run much faster than a full init and sync. Changes
             are applied as before.</p>
-
+			
+            <p>Here is an example of how to create the resource.</p>
+			<p>First, enter to the "Cloud" tab in the ElectricCommander. Here you can create the resource to use with the Gerrit tool, or edit an existing one:</p><img src="../../plugins/EC-Gerrit/images/Resource/EC-Gerrit_Resource1.png" />
+			<p>Then, provide the parameters for the creation of the Resource. Now, to add the "gerrir_working_dir" required property, enter to "Create Property" in the "Custom Resource Properties":</p><img src="../../plugins/EC-Gerrit/images/Resource/EC-Gerrit_Resource2.png" />
+			<p>Provide the name of the property, in our case must be called "gerrir_working_dir", and provide the value:</p><img src="../../plugins/EC-Gerrit/images/Resource/EC-Gerrit_Resource3.png" />
+             
+			
             <p><b>Customizations to Schedule:</b> the plugin scans
             your Gerrit server for changes every 15 minutes. This
             is an ElectricCommander schedule. If you want to change
@@ -1635,6 +1641,12 @@
 
         <h1>Release Notes</h1>
 
+        <h2 class="help">EC-Gerrit-2.0.2.0</h2>
+
+        <ul>
+            <li>Small bug fixes</li>
+        </ul>
+		
         <h2 class="help">EC-Gerrit-2.0.1.0</h2>
 
         <ul>

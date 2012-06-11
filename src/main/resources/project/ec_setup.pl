@@ -3,67 +3,61 @@ my %CustomBuildExample = (
     label       => "Gerrit - Custom Build Example",
     procedure   => "CustomBuildExample",
     description => "A sample Custom Build using the helper methods",
-    category    => "System"
+    category    => "Code Analysis"
 );
 my %CustomBuildPrepare = (
     label       => "Gerrit - Custom Build Prepare",
     procedure   => "CustomBuildPrepare",
     description => "Custom build example using the new helper methods",
-    category    => "System"
+    category    => "Code Analysis"
 );
 my %DevBuildCleanup = (
     label       => "Gerrit - Developer Build Cleanup",
     procedure   => "DevBuildCleanup",
     description => "Cleanup after one developer build. The working tree is cleaned up (runtime artifacts removed, change backed out).  This also marks the job as complete in Gerrit comments",
-    category    => "System"
+    category    => "Code Analysis"
 );
 my %DevBuildExample = (
     label       => "Gerrit - Developer Build Example",
     procedure   => "DevBuildExample",
     description => "An example of a developer build procedure",
-    category    => "System"
+    category    => "Code Analysis"
 );
 my %DevBuildPrepare = (
     label       => "Gerrit - Developer Build Prepare",
     procedure   => "DevBuildPrepare",
     description => "Prepare for a developer build. This will be one change. The working tree will be adjusted to be the head of the branch plus changes in the change",
-    category    => "System"
-);
-my %GroupBuildExample = (
-    label       => "Gerrit - Group Build Example",
-    procedure   => "GroupBuildExample",
-    description => "Scan the specified changes in a group of changes, or a group of groups",
-    category    => "System"
+    category    => "Code Analysis"
 );
 my %TeamBuildCleanup = (
     label       => "Gerrit - Team Build Cleanup",
     procedure   => "TeamBuildCleanup",
     description => "Mark the changes as approved if success",
-    category    => "System"
+    category    => "Code Analysis"
 );
 my %TeamBuildExample = (
     label       => "Gerrit - Team Build Example",
     procedure   => "TeamBuildExample",
     description => "A sample Team Build procedure",
-    category    => "System"
+    category    => "Code Analysis"
 );
 my %TeamBuildPrepare = (
     label       => "Gerrit - Team Build Prepare",
     procedure   => "TeamBuildPrepare",
     description => "Create a tree in /myResource/gerrit_working_dir with the head of the branch and an overlay of all open Gerrit changes which match the configuration filters",
-    category    => "System"
+    category    => "Code Analysis"
 );
 my %DeveloperScan = (
     label       => "Gerrit - Developer Scan",
     procedure   => "DeveloperScan",
     description => "Scan the Gerrit server for any new changes and process them",
-    category    => "System"
+    category    => "Code Analysis"
 );
 my %SetupGerritServer = (
     label       => "Gerrit - Setup Gerrit Server",
     procedure   => "SetupGerritServer",
     description => "Setup the default settings into Gerrit to be used with the Electric Commander",
-    category    => "System"
+    category    => "Code Analysis"
 );
 
 $batch->deleteProperty("/server/ec_customEditors/pickerStep/Gerrit - Custom Build Prepare");
@@ -78,7 +72,7 @@ $batch->deleteProperty("/server/ec_customEditors/pickerStep/Gerrit - Team Build 
 $batch->deleteProperty("/server/ec_customEditors/pickerStep/Gerrit - Developer Scan");
 $batch->deleteProperty("/server/ec_customEditors/pickerStep/Gerrit - Setup Gerrit Server");
 
-@::createStepPickerSteps = (\%CustomBuildExample, \%DevBuildCleanup, \%DeveloperScan, \%CustomBuildPrepare, \%DevBuildExample, \%DevBuildPrepare, \%GroupBuildExample,
+@::createStepPickerSteps = (\%CustomBuildExample, \%DevBuildCleanup, \%DeveloperScan, \%CustomBuildPrepare, \%DevBuildExample, \%DevBuildPrepare,
  \%SetupGerritServer, \%TeamBuildCleanup, \%TeamBuildExample, \%TeamBuildPrepare);
 
 if ($upgradeAction eq 'upgrade') {
@@ -102,33 +96,6 @@ if ($upgradeAction eq 'upgrade') {
                       }
                      );
     }
-
-    # move over specific pseudo_code customizations
-    # make a copy of the new code for reference
-    $batch->clone({
-        path => "/plugins/$pluginName/project/pseudo_code",
-        cloneName => "/plugins/$pluginName/project/pseudo_code_$pluginName"
-    });
-
-    # now move over the old settings
-    $batch->setProperty(
-        "/plugins/$pluginName/project/pseudo_code/cmd_clone",
-        $xpath->findvalue('//propertySheet/property[propertyName="cmd_clone"]/value')->string_value);
-    $batch->setProperty(
-        "/plugins/$pluginName/project/pseudo_code/cmd_overlay",
-        $xpath->findvalue('//propertySheet/property[propertyName="cmd_overlay"]/value')->string_value);
-    $batch->setProperty(
-        "/plugins/$pluginName/project/pseudo_code/cmd_magic_dir",
-        $xpath->findvalue('//propertySheet/property[propertyName="cmd_magic_dir"]/value')->string_value);
-    $batch->setProperty(
-        "/plugins/$pluginName/project/pseudo_code/cmd_revert",
-        $xpath->findvalue('//propertySheet/property[propertyName="cmd_revert"]/value')->string_value);
-    $batch->setProperty(
-        "/plugins/$pluginName/project/pseudo_code/cmd_update",
-        $xpath->findvalue('//propertySheet/property[propertyName="cmd_update"]/value')->string_value);
-    $batch->setProperty(
-        "/plugins/$pluginName/project/pseudo_code/repo_cmd",
-        $xpath->findvalue('//propertySheet/property[propertyName="repo_cmd"]/value')->string_value);
 
     # preserve schedule customizations
 
