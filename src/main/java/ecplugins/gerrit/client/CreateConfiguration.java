@@ -3,7 +3,7 @@
 //
 // CreateConfiguration.java is part of ElectricCommander.
 //
-// Copyright (c) 2005-2011 Electric Cloud, Inc.
+// Copyright (c) 2005-2012 Electric Cloud, Inc.
 // All rights reserved.
 //
 
@@ -11,6 +11,7 @@ package ecplugins.gerrit.client;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import com.google.gwt.http.client.Request;
 import com.google.gwt.http.client.RequestCallback;
@@ -18,23 +19,22 @@ import com.google.gwt.http.client.RequestException;
 import com.google.gwt.http.client.Response;
 import com.google.gwt.user.client.ui.Anchor;
 
-import ecinternal.client.InternalFormBase;
-
-import ecinternal.client.ui.CustomEditorLoader;
-
+import com.electriccloud.commander.client.requests.RunProcedureRequest;
+import com.electriccloud.commander.client.responses.DefaultRunProcedureResponseCallback;
+import com.electriccloud.commander.client.responses.RunProcedureResponse;
 import com.electriccloud.commander.gwt.client.requests.CgiRequestProxy;
-import com.electriccloud.commander.gwt.client.requests.RunProcedureRequest;
-import com.electriccloud.commander.gwt.client.responses.DefaultRunProcedureResponseCallback;
-import com.electriccloud.commander.gwt.client.responses.RunProcedureResponse;
 import com.electriccloud.commander.gwt.client.ui.FormBuilder;
 import com.electriccloud.commander.gwt.client.ui.FormTable;
 import com.electriccloud.commander.gwt.client.ui.SimpleErrorBox;
 import com.electriccloud.commander.gwt.client.util.CommanderUrlBuilder;
 
-import static ecinternal.client.InternalComponentBaseFactory.getPluginName;
+import ecinternal.client.InternalFormBase;
+import ecinternal.client.ui.CustomEditorLoader;
 
 import static com.electriccloud.commander.gwt.client.util.CommanderUrlBuilder.createPageUrl;
 import static com.electriccloud.commander.gwt.client.util.CommanderUrlBuilder.createUrl;
+
+import static ecinternal.client.InternalComponentBaseFactory.getPluginName;
 
 /**
  * Create Gerrit Configuration.
@@ -47,6 +47,8 @@ public class CreateConfiguration
 
     public CreateConfiguration()
     {
+
+        // noinspection HardCodedStringLiteral
         super("New Gerrit Configuration", "Gerrit Configurations");
 
         CommanderUrlBuilder urlBuilder = createPageUrl(getPluginName(),
@@ -66,6 +68,7 @@ public class CreateConfiguration
     {
         FormBuilder fb = (FormBuilder) getFormTable();
 
+        // noinspection HardCodedStringLiteral
         setStatus("Loading...");
 
         CustomEditorLoader loader = new CustomEditorLoader(fb, this);
@@ -78,6 +81,8 @@ public class CreateConfiguration
 
     @Override protected void submit()
     {
+
+        // noinspection HardCodedStringLiteral
         setStatus("Saving...");
         clearAllErrors();
 
@@ -98,8 +103,9 @@ public class CreateConfiguration
 
         Map<String, String> params = fb.getValues();
 
-        for (String paramName : params.keySet()) {
-            request.addActualParameter(paramName, params.get(paramName));
+        for (Entry<String, String> stringStringEntry : params.entrySet()) {
+            request.addActualParameter(stringStringEntry.getKey(),
+                stringStringEntry.getValue());
         }
 
         // Launch the procedure
@@ -125,6 +131,7 @@ public class CreateConfiguration
         doRequest(request);
     }
 
+    @SuppressWarnings("OverlyComplexAnonymousInnerClass")
     private void waitForJob(final String jobId)
     {
         CgiRequestProxy     cgiRequestProxy = new CgiRequestProxy(
@@ -145,6 +152,8 @@ public class CreateConfiguration
                             Request   request,
                             Throwable exception)
                     {
+
+                        // noinspection HardCodedStringLiteral
                         addErrorMessage("CGI request failed: ", exception);
                     }
 
@@ -165,6 +174,12 @@ public class CreateConfiguration
                             cancel();
                         }
                         else {
+                            @SuppressWarnings(
+                                {
+                                    "HardCodedStringLiteral",
+                                    "StringConcatenation"
+                                }
+                            )
                             SimpleErrorBox      error      = getUIFactory()
                                     .createSimpleErrorBox(
                                         "Error occurred during configuration creation: "
@@ -173,6 +188,7 @@ public class CreateConfiguration
                                     "jobDetails.php").setParameter("jobId",
                                     jobId);
 
+                            // noinspection HardCodedStringLiteral
                             error.add(
                                 new Anchor("(See job for details)",
                                     urlBuilder.buildString()));
@@ -182,6 +198,8 @@ public class CreateConfiguration
                 });
         }
         catch (RequestException e) {
+
+            // noinspection HardCodedStringLiteral
             addErrorMessage("CGI request failed: ", e);
         }
     }

@@ -3,7 +3,7 @@
 //
 // GerritConfigListLoader.java is part of ElectricCommander.
 //
-// Copyright (c) 2005-2011 Electric Cloud, Inc.
+// Copyright (c) 2005-2012 Electric Cloud, Inc.
 // All rights reserved.
 //
 
@@ -12,22 +12,24 @@ package ecplugins.gerrit.client;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.jetbrains.annotations.NonNls;
+
 import com.google.gwt.http.client.Request;
 import com.google.gwt.http.client.RequestCallback;
 import com.google.gwt.http.client.RequestException;
 import com.google.gwt.http.client.Response;
 
+import com.electriccloud.commander.client.ChainedCallback;
+import com.electriccloud.commander.client.domain.Property;
+import com.electriccloud.commander.client.requests.GetPropertyRequest;
+import com.electriccloud.commander.client.responses.CommanderError;
+import com.electriccloud.commander.client.responses.PropertyCallback;
+import com.electriccloud.commander.client.util.StringUtil;
+import com.electriccloud.commander.gwt.client.Component;
+import com.electriccloud.commander.gwt.client.requests.CgiRequestProxy;
+
 import ecinternal.client.HasErrorPanel;
 import ecinternal.client.Loader;
-
-import com.electriccloud.commander.gwt.client.ChainedCallback;
-import com.electriccloud.commander.gwt.client.Component;
-import com.electriccloud.commander.gwt.client.domain.Property;
-import com.electriccloud.commander.gwt.client.requests.CgiRequestProxy;
-import com.electriccloud.commander.gwt.client.requests.GetPropertyRequest;
-import com.electriccloud.commander.gwt.client.responses.CommanderError;
-import com.electriccloud.commander.gwt.client.responses.PropertyCallback;
-import com.electriccloud.commander.gwt.client.util.StringUtil;
 
 import static ecinternal.client.InternalComponentBaseFactory.getPluginName;
 
@@ -48,15 +50,6 @@ public class GerritConfigListLoader
             Component        component,
             ChainedCallback  callback)
     {
-        this(configList, null, component, callback);
-    }
-
-    public GerritConfigListLoader(
-            GerritConfigList configList,
-            String           implementedMethod,
-            Component        component,
-            ChainedCallback  callback)
-    {
         super(component, callback);
         m_configList      = configList;
         m_cgiRequestProxy = new CgiRequestProxy(getPluginName(), "gerrit.cgi");
@@ -72,6 +65,7 @@ public class GerritConfigListLoader
         loadConfigs(cgiParams);
     }
 
+    @SuppressWarnings("OverlyComplexAnonymousInnerClass")
     private void loadConfigs(Map<String, String> cgiParams)
     {
 
@@ -79,31 +73,37 @@ public class GerritConfigListLoader
             String request = m_cgiRequestProxy.issueGetRequest(cgiParams,
                     new RequestCallback() {
                         @Override public void onError(
-                                Request   request,
+                                @SuppressWarnings(
+                                    "AnonymousClassVariableHidesContainingMethodVariable"
+                                ) Request request,
                                 Throwable exception)
                         {
+
+                            // noinspection HardCodedStringLiteral
                             ((HasErrorPanel) m_component).addErrorMessage(
                                 "Error loading Gerrit configuration list: ",
                                 exception);
                         }
 
                         @Override public void onResponseReceived(
-                                Request  request,
+                                @SuppressWarnings(
+                                    "AnonymousClassVariableHidesContainingMethodVariable"
+                                ) Request request,
                                 Response response)
                         {
-                            String responseString = response.getText();
+                            @NonNls String responseString = response.getText();
 
                             // if HTML returned we never made it to the CGI
-                            Boolean isHtml = (responseString.indexOf(
-                                        "DOCTYPE HTML") != -1);
+                            Boolean isHtml = responseString.contains(
+                                    "DOCTYPE HTML");
                             String  error;
 
-                            if (!isHtml) {
-                                error = m_configList.parseResponse(
-                                        responseString);
+                            if (isHtml) {
+                                error = responseString;
                             }
                             else {
-                                error = responseString;
+                                error = m_configList.parseResponse(
+                                        responseString);
                             }
 
                             if (m_component.getLog()
@@ -116,11 +116,7 @@ public class GerritConfigListLoader
                                                + " error:" + error);
                             }
 
-                            if (error != null) {
-                                ((HasErrorPanel) m_component).addErrorMessage(
-                                    error);
-                            }
-                            else {
+                            if (error == null) {
 
                                 if (StringUtil.isEmpty(m_editorName)
                                         || m_configList.isEmpty()) {
@@ -134,6 +130,10 @@ public class GerritConfigListLoader
                                     loadEditors();
                                 }
                             }
+                            else {
+                                ((HasErrorPanel) m_component).addErrorMessage(
+                                    error);
+                            }
                         }
                     });
 
@@ -146,6 +146,8 @@ public class GerritConfigListLoader
         catch (RequestException e) {
 
             if (m_component instanceof HasErrorPanel) {
+
+                // noinspection HardCodedStringLiteral
                 ((HasErrorPanel) m_component).addErrorMessage(
                     "Error loading SCM configuration list: ", e);
             }
@@ -194,7 +196,7 @@ public class GerritConfigListLoader
 
         //~ Constructors -------------------------------------------------------
 
-        public EditorLoaderCallback(String configPlugin)
+        public EditorLoaderCallback(@NonNls String configPlugin)
         {
             m_configPlugin = configPlugin;
         }
@@ -234,6 +236,7 @@ public class GerritConfigListLoader
             }
 
             // There was no property value found in the response
+            @SuppressWarnings({"HardCodedStringLiteral", "StringConcatenation"})
             String errorMsg = "Editor '" + m_editorName
                     + "' not found for Gerrit plugin '" + m_configPlugin + "'";
 
