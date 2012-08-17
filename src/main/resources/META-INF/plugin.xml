@@ -8,7 +8,7 @@
   <help>@PLUGIN_KEY@_help.xml</help>
   <author>Electric Cloud</author>
   <authorUrl>http://www.electric-cloud.com/support</authorUrl>
-  <category>System</category>
+  <category>Code Analysis</category>
   <commander-version min="3.6"/>
   <components>
     <component name="ConfigurationManagement">
