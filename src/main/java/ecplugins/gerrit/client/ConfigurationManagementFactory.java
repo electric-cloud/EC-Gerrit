@@ -16,6 +16,7 @@ import ecinternal.client.PropertySheetEditor;
 import com.electriccloud.commander.gwt.client.BrowserContext;
 import com.electriccloud.commander.gwt.client.Component;
 import com.electriccloud.commander.gwt.client.ComponentContext;
+import org.jetbrains.annotations.NotNull;
 
 import static com.electriccloud.commander.gwt.client.util.CommanderUrlBuilder.createPageUrl;
 
@@ -25,6 +26,7 @@ public class ConfigurationManagementFactory
 
     //~ Methods ----------------------------------------------------------------
 
+    @NotNull
     @Override public Component createComponent(ComponentContext jso)
     {
         String    panel     = jso.getParameter("panel");
