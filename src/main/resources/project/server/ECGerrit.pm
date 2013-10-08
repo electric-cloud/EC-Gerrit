@@ -493,7 +493,8 @@ sub testECState {
         my $msg = $row->{columns}{message};
         if ($msg =~ m/ec\:$changeid\:$patchid\:$state/) {
             $self->debugMsg(2, "testECState found state set");
-            return $row->{columns}{uuid};
+            # $row->{columns}{uuid} from gerrit 2.2.0 is a string like "AAAAAX///7c=" which result in 0 when adding to a number. so return 1 explicitly.
+            return 1;
         }
     }
     $self->debugMsg(2, "testECState found state not set");
@@ -1465,7 +1466,7 @@ sub processSingleProject{
         my $uuid = 0;
         my $state = "jobRunning";
         if ($opts->{devbuild_mode} eq "auto") {
-            $state = "jobCompleted";
+            $state = "jobComplete";
             $uuid += $self->testECState($changeid,$patchid,$state);
             $state = "jobRunning";
             $uuid += $self->testECState($changeid,$patchid,$state);
@@ -1563,7 +1564,7 @@ sub processSingleChanges{
 		my $uuid = 0;
 		my $state = "jobRunning";
 		if ($opts->{devbuild_mode} eq "auto") {
-			$state = "jobCompleted";
+			$state = "jobComplete";
 			$uuid += $self->testECState($changeid,$patchid,$state);
 			$state = "jobRunning";
 			$uuid += $self->testECState($changeid,$patchid,$state);
