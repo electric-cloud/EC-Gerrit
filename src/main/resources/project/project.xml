@@ -602,7 +602,7 @@
 				<alwaysRun>0</alwaysRun>
 				<broadcast>0</broadcast>
 				<command>print "Build and test\n";exit 0;</command>
-				<condition/>
+                <condition>$[/javascript myJob.gerrit_changes]</condition>
 				<description/>
 				<errorHandling>failProcedure</errorHandling>
 				<exclusive>0</exclusive>
@@ -636,7 +636,7 @@
 				<stepName>GerritCleanup</stepName>
 				<alwaysRun>0</alwaysRun>
 				<broadcast>0</broadcast>
-				<condition/>
+                <condition>$[/javascript myJob.gerrit_changes]</condition>
 				<description/>
 				<errorHandling>failProcedure</errorHandling>
 				<exclusive>0</exclusive>
@@ -865,7 +865,7 @@
 				<alwaysRun>0</alwaysRun>
 				<broadcast>0</broadcast>
 				<command>##########################&#10;# apply.pl&#10;##########################&#10;$[/myProject/procedure_helpers/preamble]&#10;&#10;my $map = $gt-&gt;makeReplacementMap();&#10;&#10;# get values from configuration&#10;# run through replacement twice to allow double indirection&#10;#     i.e.   a-&gt;b-&gt;c&#10;&#10;my $magicDir  = $gt-&gt;replace_strings("$opts-&gt;{cmd_magic_dir}",$map);&#10;my $magicDir  = $gt-&gt;replace_strings("$magicDir",$map);&#10;&#10;if (!-d "$opts-&gt;{gerrit_working_dir}/$magicDir") {&#10;    print "$opts-&gt;{gerrit_working_dir} missing directory $magicDir.\n";&#10;    exit 1;&#10;}&#10;&#10;my $rawOverlayCmd = "$opts-&gt;{cmd_overlay}";&#10;&#10;chdir $opts-&gt;{gerrit_working_dir};&#10;&#10;my @changes = $gt-&gt;getChanges();&#10;&#10;foreach my $str (@changes) {&#10;    my ($changeid, $patchid,$project) = split (/:/,$str);&#10;    $opts-&gt;{changeid} = $changeid;&#10;    $opts-&gt;{patchid} = $patchid;&#10;    $opts-&gt;{gerrit_project} = $project;&#10;    my $newmap = $gt-&gt;makeReplacementMap();&#10;    my $overlayCmd = $gt-&gt;replace_strings("$rawOverlayCmd",$newmap);&#10;    my $overlayCmd = $gt-&gt;replace_strings("$overlayCmd",$newmap);&#10;    print "overlay cmd\n$overlayCmd\n";&#10;&#10;    print "Get updates\n";&#10;    # create pull command&#10;    eval "$overlayCmd";&#10;}&#10;&#10;&#10;&#10;&#10;&#10;</command>
-				<condition>$[/javascript myJob.gerrit_changes]ec</condition>
+				<condition>$[/javascript myJob.gerrit_changes]</condition>
 				<description>Get the changes from Gerrit and overlay on top of  local repository</description>
 				<errorHandling>failProcedure</errorHandling>
 				<exclusive>0</exclusive>

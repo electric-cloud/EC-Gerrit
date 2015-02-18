@@ -733,7 +733,7 @@ sub get_eligible_changes {
     my ($self,$filters, $metrics,$idmap) = @_;
 
     my @eligble;
-    foreach my $changeid (keys % {$metrics}) {
+    foreach my $changeid (sort {$a<=>$b} keys % {$metrics}) {
         # check filters against metrics
         $self->debugMsg(1, "---Checking change $changeid against filters ---");
         if ($self->check_filters($filters, $metrics->{$changeid} )) {

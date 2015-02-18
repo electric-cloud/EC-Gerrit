@@ -1,22 +1,13 @@
-my $workDir = "{gerrit_working_dir}" . "/" . qw({project});
-my $changeID = qw({changeid}) % 100;
-my $cmd = "";
+print "Overlaying change for project: {project} : changeid: {changeid} : patchid: {patchid}\n";
 
-if (!-d "$workDir") {
-	print "The path of the project don't exist.\n";
-	exit 1;
-}
+chdir "{gerrit_working_dir}";
 
-chdir "$workDir";
+my $current_dir = `pwd`;
+print "Overlaying pending changes in directory: $current_dir";
+
 print "Pulling proposed changes into tree\n";
-if ($changeID < 10) {
-	$cmd = "git pull " . "ssh://" . qw({gerrit_user}) . "@". qw({gerrit_server}). ":". qw({gerrit_port}) . "/". qw({project}) . " refs/changes/0" . 
-	$changeID . "/" . qw({changeid}) ."/" . qw({patchid});
-} else {
-	$cmd = "git pull " . "ssh://" . qw({gerrit_user}) . "@". qw({gerrit_server}). ":". qw({gerrit_port}) . "/". qw({project}) . " refs/changes/" . 
-	$changeID . "/" . qw({changeid}) ."/" . qw({patchid});
-}
-
+my $cmd = "{repo_cmd} download " . qw({project}) . " " . qw({changeid}) . "/" . qw({patchid});
+print "Executing $cmd\n";
 
 my $out = `$cmd 2>&1`;
 my $ec = $?;

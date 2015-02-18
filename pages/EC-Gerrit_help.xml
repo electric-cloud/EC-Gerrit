@@ -1641,6 +1641,12 @@
 
         <h1>Release Notes</h1>
 
+        <h2 class="help">EC-Gerrit-2.0.3</h2>
+
+        <ul>
+            <li>Updated the logic for applying eligible pending changes to honor project paths defined in the repo manifest.</li>
+        </ul>
+
         <h2 class="help">EC-Gerrit-2.0.2.0</h2>
 
         <ul>
