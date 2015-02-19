@@ -1640,6 +1640,12 @@
         </table>
 
         <h1>Release Notes</h1>
+        
+	<h2>EC-Gerrit-2.0.4</h2>
+
+        <ul>
+            <li>Fixed manifest file.</li>
+        </ul>
 
         <h2 class="help">EC-Gerrit-2.0.3</h2>
 
