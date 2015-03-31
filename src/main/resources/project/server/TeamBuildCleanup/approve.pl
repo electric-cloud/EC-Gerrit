@@ -36,6 +36,6 @@ if ($outcome eq "success") {
         . " https://$opts->{cmdr_webserver}/commander/link/jobDetails/jobs/$jobId";
     $gt->team_disapprove(\@changes, $rules,$msg);
 }   
-print "Updating gerrit comment to:\n$msg\n";
+print "Updated gerrit comment to:\n$msg\n";
 exit 0;
 

@@ -56,7 +56,7 @@ my %DeveloperScan = (
 my %SetupGerritServer = (
     label       => "Gerrit - Setup Gerrit Server",
     procedure   => "SetupGerritServer",
-    description => "Setup the default settings into Gerrit to be used with the Electric Commander",
+    description => "[Deprecated] Setup the default settings into Gerrit to be used with the Electric Commander. This procedure is not supported with Gerrit version 2.6 and above.",
     category    => "Code Analysis"
 );
 

@@ -428,7 +428,7 @@ sub getOpenChangesFromManifest {
 			if ($self->is_int($change_id) ){   #check if change_id is int
 				$query .= "CHANGE_ID = '$change_id'";
 			} else {
-				$query .= "CHANGE_KEY = '$change_id'";	
+				$query .= "CHANGE_KEY = '$change_id'";
 			}
 		}
 		    
@@ -541,7 +541,12 @@ sub setECState {
 
     my $result;
     my $msg = "$notes    ec:$changeid:$patchid:$state";
-    return $self->approve($project,$changeid, $patchid,$msg,$category,$value);
+    my $exit = $self->approve($project,$changeid, $patchid,$msg,$category,$value);
+    if ($exit) {
+        print "Error: Failed to set state '$state' on $changeid:$patchid\n";
+        exit $exit;
+    }
+    return 0;
 }
 
 #################################################
@@ -694,13 +699,8 @@ sub approve {
 	if ($category eq "SUBM") {
        $gcmd .= " --submit ";
     } else { 
-		if ($category && "$category" ne "") {
-			my $category_option = $self->get_category_name($category);
-			if ("$category_option" eq "") {
-				$self->showError( "Could not find category name for $category");
-				return;
-			}
-			$gcmd .= " --$category_option=$value";
+		if ($category) {
+			$gcmd .= " --label $category=$value";
 		}
 	}
 
@@ -784,7 +784,7 @@ sub get_team_build_metrics {
             . " AND CHANGE_ID = '$changeid' AND PATCH_SET_ID = '$patchid';");
         foreach my $approval (@approvals) {
             my $cat      = $approval->{columns}{category_id};
-            my $user     = $approval->{columns}{account_id}; #= $self->get_user($approval->{columns}{account_id} );
+            my $user     = $self->get_user($approval->{columns}{account_id} );
             my $value    = $approval->{columns}{value};
 
             $metrics->{$changeid}{""}{$cat}{COUNT} += 1;
@@ -983,12 +983,16 @@ sub check_count {
 ############################################################
 sub get_user {
     my ($self,$id) = @_;
-    my @accounts = $self->gerrit_db_query("SELECT SSH_USER_NAME FROM ". $self->t('ACCOUNTS')." WHERE ACCOUNT_ID = '$id';");
-    if (scalar(@accounts) == 0 || "$accounts[0]->{columns}{ssh_user_name}" eq "") {
+    #Reference: https://groups.google.com/forum/#!topic/repo-discuss/b_enE_dXrOI
+    my @accounts = $self->gerrit_db_query("SELECT external_id FROM ". $self->t('account_external_ids')." WHERE ACCOUNT_ID = '$id' AND EXTERNAL_ID LIKE 'username:%';");
+    if (scalar(@accounts) == 0 || !$accounts[0]->{columns}{external_id}) {
         $self->showError("No account found for user $id.");
         return "";
     }
-    my $user = $accounts[0]->{columns}{ssh_user_name};
+    my $user = $accounts[0]->{columns}{external_id};
+    $user =~ m/^username:(.+)/;
+    $user = $1;
+
     $self->debugMsg(3,"id=$id user=$user");
     return $user;
 }
@@ -1132,7 +1136,7 @@ sub parseManifest{
       return @fakeOutput;
     }    
     $self->debugMsg(3,"Parsing manifest file:$fileName");
-    open FILE, $fileName or die "Could not open the manifest file, check the path in the configuration settings";
+    open FILE, $fileName or die "Error: Could not open the manifest file, check the path in the configuration settings";
     my @lines = <FILE>;   
     my @output;
     my $size = scalar @lines;    
@@ -1505,7 +1509,7 @@ sub processSingleProject{
                 . "&parameters4_value=$patchid";
         }
         # DevBuildPrepare::annotate should do this...
-        #$self->setECState($project,$changeid, $patchid, $state, $msg, "","");
+        $self->setECState($project,$changeid, $patchid, $state, $msg, "","");
     }
 }
 
@@ -2011,10 +2015,10 @@ sub print_actions {
     my ($self,$actions) = @_;
 
     print "--ACTIONS--\n";
-    print "action SUCCESS: "
+    print "action SUCCESS "
         . " $actions->{SUCCESS}{CAT}"
         . " $actions->{SUCCESS}{USER}\n";
-    print "action ERROR: "
+    print "action ERROR "
         . " $actions->{ERROR}{CAT}"
         . " $actions->{ERROR}{USER}\n";
 }
@@ -2199,7 +2203,7 @@ sub ssh_connect {
             "the following key files:\n" .
             "public key file: $pubKeyFile\n" .
             "private key file: $privKeyFile\n" .
-            "error detail: $errorString";        
+            "error: $errorString";
         
 		$self->showError(4,$msg);
     }

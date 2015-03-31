@@ -10,7 +10,8 @@
         <label>Repository Server:</label>
         <property>repository_server</property>
         <value></value>
-        <documentation>The server where the repository is located. If not provided, the "Gerrit Server" is used. i.e: in this url "git://github.com/ecGerrit/ecGerritTest.git", the repository server is "github.com".</documentation>
+        <documentation>The server where the repository is located. If not provided, the "Gerrit Server" is used. i.e: in this url "git://github.com/ecGerrit/ecGerritTest.git", the repository server is "github.com".
+            The server can be specified with the protocol it is using, e.g., "ssh://my_gerrit_server.my_domain.com". If no protocol is specified, by default, the server is assumed to be using 'git' protocol.</documentation>
         <required>0</required>
     </formElement>
     <formElement>

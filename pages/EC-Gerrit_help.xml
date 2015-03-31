@@ -154,9 +154,9 @@
 
                         <td>The server where the repository is
                         located. If not provided, the "Gerrit
-                        Server" is used. i.e: in this url
+                        Server" is used. e.g., in this url
                         "git://github.com/ecGerrit/ecGerritTest.git",
-                        the repository server is "github.com".</td>
+                        the repository server is "github.com". The server can be specified with the protocol it is using, e.g., "ssh://my_gerrit_server.my_domain.com". If no protocol is specified, by default, the server is assumed to be using 'git' protocol.</td>
                     </tr>
 
                     <tr>
@@ -326,12 +326,12 @@
 
                             <p><b>Example</b></p>
 
-                            <p>ACTION SUCCESS VRIF +1<br />
-                             ACTION ERROR VRIF -1<br />
+                            <p>ACTION SUCCESS Verified +1<br />
+                             ACTION ERROR Verified -1<br />
                             <br />
                              Which is translated as: when you
                             complete the build, set the
-                            Verification to +1 if the build
+                            Verified label to +1 if the build
                             succeeded and -1 if the build
                             failed.</p>
                         </td>
@@ -349,14 +349,14 @@
 
                             <p><b>Example</b></p>
 
-                            <p>FILTER MAX CRVW ge +2<br />
-                             FILTER MIN CRVW gt -2<br />
-                             FILTER COUNT VRIF eq 0 USER ne
+                            <p>FILTER MAX Code-Review ge +2<br />
+                             FILTER MIN Code-Review gt -2<br />
+                             FILTER COUNT Verified eq 0 USER ne
                             commander<br />
-                             FILTER MAX VRIF le 0 USER eq
+                             FILTER MAX Verified le 0 USER eq
                             commander<br />
-                             ACTION SUCCESS VRIF +1<br />
-                             ACTION ERROR VRIF -1<br />
+                             ACTION SUCCESS Verified +1<br />
+                             ACTION ERROR Verified -1<br />
                             <br />
                              Which is translated as: include all
                             changes with at least a +2 Code Review,
@@ -364,7 +364,7 @@
                             anyone other than the Commander user,
                             no Verifications greater than 0 from
                             the Commander user. When you complete
-                            the build, set the Verification to +1
+                            the build, set the Verified label to +1
                             if the build succeeded and -1 if the
                             build failed.</p>
                         </td>
@@ -448,13 +448,13 @@
 
             <h3>SetupGerritServer</h3>
 
-            <p>The SetupGerritServer setup the default settings
+            <p>[Deprecated] The SetupGerritServer procedure sets up the default settings
             into Gerrit to be used with the Electric Commander.
             This sets the Commander user in Gerrit and also the
             approval bits needed for the integration. Note that
             this is the default method, if you want to include
-            different categories of approval bits please refere to
-            the Gerrit Official Site for more information.</p>
+            different categories of approval bits please refer to
+            the Gerrit Official Site for more information. Note that this procedure is no longer supported with Gerrit version 2.6 and above.</p>
 
             <table class="grid">
                 <thead>
@@ -1440,7 +1440,7 @@
 
                     <td>Adds a new aproval category to Gerrit, and
                     sets the rights. Can be used to specify new
-                    categories for custom approval bits</td>
+                    categories for custom approval bits. <b>Note:</b><u>Not supported with Gerrit version 2.6 and above.</u></td>
 
                     <td>-name<br />
                     -abb_name<br />
@@ -1478,7 +1478,7 @@
                     <td>gr_insertApprovalCategoryValue</td>
 
                     <td>Inserts a new category value to be used
-                    like a new approval bit</td>
+                    like a new approval bit. <b>Note:</b><u>Not supported with Gerrit version 2.6 and above.</u></td>
 
                     <td>-name<br />
                     -category_id<br />
@@ -1640,8 +1640,14 @@
         </table>
 
         <h1>Release Notes</h1>
-        
-	<h2>EC-Gerrit-2.0.4</h2>
+
+        <h2>EC-Gerrit-2.1.0</h2>
+
+        <ul>
+            <li>Added support for Gerrit v2.8.5</li>
+        </ul>
+
+        <h2>EC-Gerrit-2.0.4</h2>
 
         <ul>
             <li>Fixed manifest file.</li>

@@ -27,6 +27,6 @@ if ($outcome eq "success") {
 $gt->setECState( "$opts->{project}", "$opts->{changeid}", 
     "$opts->{patchid}","jobComplete",$msg, $cat,$value);
 
-print "Updating gerrit comment to:\n$msg\n";
+print "Updated gerrit comment to:\n$msg\n";
 exit 0;
 

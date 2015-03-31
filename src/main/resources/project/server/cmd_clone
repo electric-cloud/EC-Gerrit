@@ -2,7 +2,19 @@ if (!-d "{gerrit_working_dir}") {
     mkdir "{gerrit_working_dir}";
 }
 chdir "{gerrit_working_dir}";
-my $cmd = "{repo_cmd} init -u git://" . qw({repository_server}) . qw({repository_path}) . " -b " . 
+
+#Default repository server to git protocol if none specified in the
+#server value itself. Gives the user the flexibility to use other
+#protocols supported by Git such as ssh and https
+my $repo_server_url;
+if ("{repository_server}" !~ /^\w+:\/\//) {
+    $repo_server_url = "git://" . "{repository_server}";
+} else {
+    $repo_server_url = "{repository_server}";
+}
+print "Connecting to repo server: $repo_server_url\n";
+
+my $cmd = "{repo_cmd} init -u $repo_server_url" . qw({repository_path}) . " -b " .
     qw({gerrit_branch}) . " -m " . qw({gerrit_manifest});
 print "$cmd\n";
 my $out = `$cmd 2>&1`;

@@ -101,6 +101,12 @@
 				<expandable>1</expandable>
 				<value>pickListOnly</value>
 			</property>
+            <property>
+                <propertyName>postpMatchers</propertyName>
+                <description>Postp matchers for the plugin procedures</description>
+                <expandable>1</expandable>
+                <value/>
+            </property>
 		</propertySheet>
 		<procedure>
 			<procedureName>CreateConfiguration</procedureName>
@@ -445,7 +451,8 @@
 			<formalParameter>
 				<formalParameterName>repository_server</formalParameterName>
 				<defaultValue></defaultValue>
-				<description>The server where the repository is located. If not provided, the "Gerrit Server" is used. i.e: in this url "git://github.com/ecGerrit/ecGerritTest.git", the repository server is "github.com".</description>
+				<description>The server where the repository is located. If not provided, the "Gerrit Server" is used. i.e: in this url "git://github.com/ecGerrit/ecGerritTest.git", the repository server is "github.com".
+                    The server can be specified with the protocol it is using, e.g., "ssh://my_gerrit_server.my_domain.com". If no protocol is specified, by default, the server is assumed to be using 'git' protocol.</description>
 				<required>0</required>
 				<type>entry</type>
 			</formalParameter>
@@ -731,7 +738,7 @@
 				<exclusive>0</exclusive>
 				<logFileName/>
 				<parallel>0</parallel>
-				<postProcessor/>
+                <postProcessor>postp --loadProperty "/myProject/postpMatchers"</postProcessor>
 				<releaseExclusive>0</releaseExclusive>
 				<resourceName/>
 				<retries>0</retries>
@@ -766,7 +773,7 @@
 				<exclusive>0</exclusive>
 				<logFileName/>
 				<parallel>0</parallel>
-				<postProcessor/>
+                <postProcessor>postp --loadProperty "/myProject/postpMatchers"</postProcessor>
 				<releaseExclusive>0</releaseExclusive>
 				<resourceName>$[/myJob/git_resource]</resourceName>
 				<retries>0</retries>
@@ -801,7 +808,7 @@
 				<exclusive>0</exclusive>
 				<logFileName/>
 				<parallel>0</parallel>
-				<postProcessor/>
+                <postProcessor>postp --loadProperty "/myProject/postpMatchers"</postProcessor>
 				<releaseExclusive>0</releaseExclusive>
 				<resourceName>$[/myJob/git_resource]</resourceName>
 				<retries>0</retries>
@@ -836,7 +843,7 @@
 				<exclusive>0</exclusive>
 				<logFileName/>
 				<parallel>0</parallel>
-				<postProcessor/>
+                <postProcessor>postp --loadProperty "/myProject/postpMatchers"</postProcessor>
 				<releaseExclusive>0</releaseExclusive>
 				<resourceName>$[/myJob/git_resource]</resourceName>
 				<retries>0</retries>
@@ -871,7 +878,7 @@
 				<exclusive>0</exclusive>
 				<logFileName/>
 				<parallel>0</parallel>
-				<postProcessor/>
+                <postProcessor>postp --loadProperty "/myProject/postpMatchers"</postProcessor>
 				<releaseExclusive>0</releaseExclusive>
 				<resourceName>$[/myJob/git_resource]</resourceName>
 				<retries>0</retries>
@@ -1299,7 +1306,7 @@
 				<exclusive>0</exclusive>
 				<logFileName/>
 				<parallel>0</parallel>
-				<postProcessor/>
+                <postProcessor>postp --loadProperty "/myProject/postpMatchers"</postProcessor>
 				<releaseExclusive>0</releaseExclusive>
 				<resourceName></resourceName>
 				<retries>0</retries>
@@ -1323,6 +1330,41 @@
 					</property>
 				</propertySheet>
 			</step>
+            <step>
+                <stepName>revert</stepName>
+                <alwaysRun>1</alwaysRun>
+                <broadcast>0</broadcast>
+                <command></command>
+                <condition/>
+                <description>Revert any uncommitted changes from the working directory.</description>
+                <errorHandling>abortProcedure</errorHandling>
+                <exclusive>0</exclusive>
+                <logFileName/>
+                <parallel>0</parallel>
+                <postProcessor>postp --loadProperty "/myProject/postpMatchers"</postProcessor>
+                <releaseExclusive>0</releaseExclusive>
+                <resourceName>$[/myJob/git_resource]</resourceName>
+                <retries>0</retries>
+                <shell>ec-perl</shell>
+                <timeLimit/>
+                <timeLimitUnits>minutes</timeLimitUnits>
+                <workingDirectory/>
+                <workspaceName/>
+                <procedureName>DevBuildCleanup</procedureName>
+                <projectName>@PLUGIN_KEY@-@PLUGIN_VERSION@</projectName>
+                <propertySheet>
+                    <property>
+                        <propertyName>ec_customEditorData</propertyName>
+                        <propertySheet>
+                            <property>
+                                <propertyName>formType</propertyName>
+                                <expandable>1</expandable>
+                                <value>command</value>
+                            </property>
+                        </propertySheet>
+                    </property>
+                </propertySheet>
+            </step>
 		</procedure>
 		<procedure>
 			<procedureName>DevBuildPrepare</procedureName>
@@ -1425,7 +1467,7 @@
 				<exclusive>0</exclusive>
 				<logFileName/>
 				<parallel>0</parallel>
-				<postProcessor/>
+                <postProcessor>postp --loadProperty "/myProject/postpMatchers"</postProcessor>
 				<releaseExclusive>0</releaseExclusive>
 				<resourceName/>
 				<retries>0</retries>
@@ -1460,7 +1502,7 @@
 				<exclusive>0</exclusive>
 				<logFileName/>
 				<parallel>0</parallel>
-				<postProcessor/>
+                <postProcessor>postp --loadProperty "/myProject/postpMatchers"</postProcessor>
 				<releaseExclusive>0</releaseExclusive>
 				<resourceName>$[/myJob/git_resource]</resourceName>
 				<retries>0</retries>
@@ -1495,7 +1537,7 @@
 				<exclusive>1</exclusive>
 				<logFileName/>
 				<parallel>0</parallel>
-				<postProcessor/>
+                <postProcessor>postp --loadProperty "/myProject/postpMatchers"</postProcessor>
 				<releaseExclusive>0</releaseExclusive>
 				<resourceName>$[/myJob/git_resource]</resourceName>
 				<retries>0</retries>
@@ -1530,7 +1572,7 @@
 				<exclusive>1</exclusive>
 				<logFileName/>
 				<parallel>0</parallel>
-				<postProcessor/>
+                <postProcessor>postp --loadProperty "/myProject/postpMatchers"</postProcessor>
 				<releaseExclusive>0</releaseExclusive>
 				<resourceName>$[/myJob/git_resource]</resourceName>
 				<retries>0</retries>
@@ -1565,7 +1607,7 @@
 				<exclusive>1</exclusive>
 				<logFileName/>
 				<parallel>0</parallel>
-				<postProcessor/>
+                <postProcessor>postp --loadProperty "/myProject/postpMatchers"</postProcessor>
 				<releaseExclusive>0</releaseExclusive>
 				<resourceName>$[/myJob/git_resource]</resourceName>
 				<retries>0</retries>
@@ -1608,7 +1650,7 @@
 				<exclusive>0</exclusive>
 				<logFileName/>
 				<parallel>0</parallel>
-				<postProcessor>postp</postProcessor>
+                <postProcessor>postp --loadProperty "/myProject/postpMatchers"</postProcessor>
 				<releaseExclusive>0</releaseExclusive>
 				<resourceName></resourceName>
 				<retries>0</retries>
@@ -1635,7 +1677,7 @@
 		</procedure>
 		<procedure>
 			<procedureName>SetupGerritServer</procedureName>
-			<description>Setup the default settings into Gerrit to be used with the Electric Commander</description>
+			<description>[Deprecated] Setup the default settings into Gerrit to be used with the Electric Commander. This procedure is not supported with Gerrit version 2.6 and above.</description>
 			<jobNameTemplate>gerrit-setupGerritServer-$[jobId]</jobNameTemplate>
 			<projectName>@PLUGIN_KEY@-@PLUGIN_VERSION@</projectName>
 			<propertySheet>
@@ -1710,7 +1752,7 @@
 		</procedure>
 		<procedure>
 			<procedureName>TeamBuildCleanup</procedureName>
-			<description>Mark the changes as approved if success</description>
+			<description>Mark the changes as approved if success and revert any uncommitted changes from the working directory.</description>
 			<jobNameTemplate>gerrit-teamBuildCleanup-$[jobId]</jobNameTemplate>
 			<projectName>@PLUGIN_KEY@-@PLUGIN_VERSION@</projectName>
 			<propertySheet>
@@ -1792,7 +1834,7 @@
 				<exclusive>0</exclusive>
 				<logFileName/>
 				<parallel>0</parallel>
-				<postProcessor/>
+                <postProcessor>postp --loadProperty "/myProject/postpMatchers"</postProcessor>
 				<releaseExclusive>0</releaseExclusive>
 				<resourceName/>
 				<retries>0</retries>
@@ -1827,7 +1869,7 @@
 				<exclusive>1</exclusive>
 				<logFileName/>
 				<parallel>0</parallel>
-				<postProcessor/>
+                <postProcessor>postp --loadProperty "/myProject/postpMatchers"</postProcessor>
 				<releaseExclusive>0</releaseExclusive>
 				<resourceName>$[/myJob/git_resource]</resourceName>
 				<retries>0</retries>
@@ -1851,6 +1893,41 @@
 					</property>
 				</propertySheet>
 			</step>
+            <step>
+                <stepName>revert</stepName>
+                <alwaysRun>1</alwaysRun>
+                <broadcast>0</broadcast>
+                <command></command>
+                <condition/>
+                <description>Revert any uncommitted changes from the working directory.</description>
+                <errorHandling>abortProcedure</errorHandling>
+                <exclusive>0</exclusive>
+                <logFileName/>
+                <parallel>0</parallel>
+                <postProcessor>postp --loadProperty "/myProject/postpMatchers"</postProcessor>
+                <releaseExclusive>0</releaseExclusive>
+                <resourceName>$[/myJob/git_resource]</resourceName>
+                <retries>0</retries>
+                <shell>ec-perl</shell>
+                <timeLimit/>
+                <timeLimitUnits>minutes</timeLimitUnits>
+                <workingDirectory/>
+                <workspaceName/>
+                <procedureName>TeamBuildCleanup</procedureName>
+                <projectName>@PLUGIN_KEY@-@PLUGIN_VERSION@</projectName>
+                <propertySheet>
+                    <property>
+                        <propertyName>ec_customEditorData</propertyName>
+                        <propertySheet>
+                            <property>
+                                <propertyName>formType</propertyName>
+                                <expandable>1</expandable>
+                                <value>command</value>
+                            </property>
+                        </propertySheet>
+                    </property>
+                </propertySheet>
+            </step>
 		</procedure>
 		<procedure>
 			<procedureName>TeamBuildExample</procedureName>
@@ -2141,7 +2218,7 @@
 				<exclusive>0</exclusive>
 				<logFileName/>
 				<parallel>0</parallel>
-				<postProcessor/>
+                <postProcessor>postp --loadProperty "/myProject/postpMatchers"</postProcessor>
 				<releaseExclusive>0</releaseExclusive>
 				<resourceName/>
 				<retries>0</retries>
@@ -2176,7 +2253,7 @@
 				<exclusive>1</exclusive>
 				<logFileName/>
 				<parallel>0</parallel>
-				<postProcessor/>
+                <postProcessor>postp --loadProperty "/myProject/postpMatchers"</postProcessor>
 				<releaseExclusive>0</releaseExclusive>
 				<resourceName>$[/myJob/git_resource]</resourceName>
 				<retries>0</retries>
@@ -2211,7 +2288,7 @@
 				<exclusive>1</exclusive>
 				<logFileName/>
 				<parallel>0</parallel>
-				<postProcessor/>
+                <postProcessor>postp --loadProperty "/myProject/postpMatchers"</postProcessor>
 				<releaseExclusive>0</releaseExclusive>
 				<resourceName>$[/myJob/git_resource]</resourceName>
 				<retries>0</retries>
@@ -2246,7 +2323,7 @@
 				<exclusive>1</exclusive>
 				<logFileName/>
 				<parallel>0</parallel>
-				<postProcessor/>
+                <postProcessor>postp --loadProperty "/myProject/postpMatchers"</postProcessor>
 				<releaseExclusive>0</releaseExclusive>
 				<resourceName>$[/myJob/git_resource]</resourceName>
 				<retries>0</retries>
@@ -2281,7 +2358,7 @@
 				<exclusive>1</exclusive>
 				<logFileName/>
 				<parallel>0</parallel>
-				<postProcessor/>
+                <postProcessor>postp --loadProperty "/myProject/postpMatchers"</postProcessor>
 				<releaseExclusive>0</releaseExclusive>
 				<resourceName>$[/myJob/git_resource]</resourceName>
 				<retries>0</retries>
@@ -2316,7 +2393,7 @@
 				<exclusive>1</exclusive>
 				<logFileName/>
 				<parallel>0</parallel>
-				<postProcessor/>
+                <postProcessor>postp --loadProperty "/myProject/postpMatchers"</postProcessor>
 				<releaseExclusive>0</releaseExclusive>
 				<resourceName>$[/myJob/git_resource]</resourceName>
 				<retries>0</retries>

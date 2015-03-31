@@ -63,48 +63,48 @@ shell> echo "\d" | ssh -p 29418 user@host gerrit gsql
 
 <p class="help">
 Next, decide which Gerrit categories you want ElectricCommander to use to record build 
-successes or failures. You can use an existing category (Verified, Code Review) or create a new category. To create a special "ElectricCommander" category, follow the instructions in Gerrit documentation. See the sample script below (assumes user "commander")
+successes or failures. You can use an existing category (Verified, Code Review) or create a new category. To create a special "ElectricCommander" category, follow the instructions in Gerrit documentation. You may refer to the sample script below (assumes user "commander") if using Gerrit version older than 2.6.
 </p>
 
 <pre class="help">
-echo "INSERT INTO APPROVAL_CATEGORIES 
-  \(NAME,ABBREVIATED_NAME,POSITION,FUNCTION_NAME,COPY_MIN_SCORE,CATEGORY_ID\) 
-  VALUES\('ElectricCommander',NULL,3,'NoOp','N','CMDR'\);" 
-  | ssh -p 29418 commander@localhost gerrit gsql	
-</pre>
-
-<pre class="help">
-echo "INSERT INTO APPROVAL_CATEGORY_VALUES 
-  \(NAME,CATEGORY_ID, VALUE\) 
-  VALUES\(build succeeded','CMDR','1'\);" 
+echo "INSERT INTO APPROVAL_CATEGORIES
+  \(NAME,ABBREVIATED_NAME,POSITION,FUNCTION_NAME,COPY_MIN_SCORE,CATEGORY_ID\)
+  VALUES\('ElectricCommander',NULL,3,'NoOp','N','CMDR'\);"
   | ssh -p 29418 commander@localhost gerrit gsql
 </pre>
 
 <pre class="help">
-echo "INSERT INTO APPROVAL_CATEGORY_VALUES 
-  \(NAME,CATEGORY_ID, VALUE\) 
-  VALUES\('No score','CMDR','0'\);" 
+echo "INSERT INTO APPROVAL_CATEGORY_VALUES
+  \(NAME,CATEGORY_ID, VALUE\)
+  VALUES\(build succeeded','CMDR','1'\);"
   | ssh -p 29418 commander@localhost gerrit gsql
 </pre>
 
 <pre class="help">
-echo "INSERT INTO APPROVAL_CATEGORY_VALUES 
-  \(NAME,CATEGORY_ID, VALUE\) 
-  VALUES\('build failed','CMDR','-1'\);" 
+echo "INSERT INTO APPROVAL_CATEGORY_VALUES
+  \(NAME,CATEGORY_ID, VALUE\)
+  VALUES\('No score','CMDR','0'\);"
   | ssh -p 29418 commander@localhost gerrit gsql
 </pre>
 
 <pre class="help">
-echo "INSERT INTO REF_RIGHTS 
-  \(MIN_VALUE,MAX_VALUE,PROJECT_NAME,REF_PATTERN,CATEGORY_ID,GROUP_ID\) 
-  VALUES \(-1,1,'-- All Projects --','refs/heads/*','CMDR',3\);" 
+echo "INSERT INTO APPROVAL_CATEGORY_VALUES
+  \(NAME,CATEGORY_ID, VALUE\)
+  VALUES\('build failed','CMDR','-1'\);"
   | ssh -p 29418 commander@localhost gerrit gsql
 </pre>
 
 <pre class="help">
-echo "INSERT INTO PROJECT_RIGHTS 
-  \(MIN_VALUE,MAX_VALUE,PROJECT_NAME,CATEGORY_ID,GROUP_ID\) 
-  VALUES \(-1,1,'-- All Projects --','CMDR',3\);" 
+echo "INSERT INTO REF_RIGHTS
+  \(MIN_VALUE,MAX_VALUE,PROJECT_NAME,REF_PATTERN,CATEGORY_ID,GROUP_ID\)
+  VALUES \(-1,1,'-- All Projects --','refs/heads/*','CMDR',3\);"
+  | ssh -p 29418 commander@localhost gerrit gsql
+</pre>
+
+<pre class="help">
+echo "INSERT INTO PROJECT_RIGHTS
+  \(MIN_VALUE,MAX_VALUE,PROJECT_NAME,CATEGORY_ID,GROUP_ID\)
+  VALUES \(-1,1,'-- All Projects --','CMDR',3\);"
   | ssh -p 29418 commander@localhost gerrit gsql
 </pre>
 
@@ -204,10 +204,10 @@ Auto: Proactively build changes
 <pre class="help">
 Example
 
-ACTION SUCCESS VRIF +1 
-ACTION ERROR VRIF -1
+ACTION SUCCESS Verified +1
+ACTION ERROR Verified -1
 Which is translated as: include 
-When you complete the build, set the Verification
+When you complete the build, set the Verified label
 to +1 if the build succeeded and -1 if the build failed.
 </pre></td></tr>
 <tr>
@@ -229,13 +229,13 @@ what action to values to set when the build finishes
 <pre class="help">
 Example
 
-FILTER MAX CRVW ge +2
-FILTER MIN CRVW gt -2
-FILTER COUNT VRIF eq 0 USER ne commander
-FILTER MAX VRIF le 0 USER eq commander
-ACTION SUCCESS VRIF +1 
-ACTION ERROR VRIF -1
-Which is translated as: include all changes with at least a +2 Code Review, no -2 Code Reviews, no Verifications by anyone other than the Commander user, no Verifications greater than 0 from the Commander user. When you complete the build, set the Verification
+FILTER MAX Code-Review ge +2
+FILTER MIN Code-Review gt -2
+FILTER COUNT Verified eq 0 USER ne commander
+FILTER MAX Verified le 0 USER eq commander
+ACTION SUCCESS Verified +1
+ACTION ERROR Verified -1
+Which is translated as: include all changes with at least a +2 Code Review, no -2 Code Reviews, no Verifications by anyone other than the Commander user, no Verifications greater than 0 from the Commander user. When you complete the build, set the Verified label
 to +1 if the build succeeded and -1 if the build failed.
 </pre></td></tr>
 <tr>
@@ -380,12 +380,12 @@ Note: If no args are specified, the default config is used </td>
 
 <tr>
 <td>gr_insertApprovalCategory</td>
-<td>Adds a new aproval category to Gerrit, and sets the rights. Can be used to specify new categories for custom approval bits</td>
+<td>Adds a new aproval category to Gerrit, and sets the rights. Can be used to specify new categories for custom approval bits. <b>Note:</b><u>Not supported with Gerrit version 2.6 and above.</u></td>
 <td>
 -name
 -abb_name
 -position
--function_name 
+-function_name
 -copy_min_score
 -category_id
 </td>
@@ -412,7 +412,7 @@ Note: If no args are specified, the default config is used </td>
 
 <tr>
 <td>gr_insertApprovalCategoryValue</td>
-<td>Inserts a new category value to be used like a new approval bit</td>
+<td>Inserts a new category value to be used like a new approval bit. <b>Note:</b><u>Not supported with Gerrit version 2.6 and above.</u></td>
 <td>
 -name
 -category_id

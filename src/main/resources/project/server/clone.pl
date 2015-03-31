@@ -15,9 +15,10 @@ my $updateCmd = $gt->replace_strings("$updateCmd",$map);
 my $magicDir  = $gt->replace_strings("$opts->{cmd_magic_dir}",$map);
 my $magicDir  = $gt->replace_strings("$magicDir",$map);
 
+
 ### If working directory is blank
 if ("$opts->{gerrit_working_dir}" eq "") {
-    print "Working directory not specified.  Set the directory in a property"
+    print "Error: Working directory not specified.  Set the directory in a property"
         . " named gerrit_working_dir on the resource.\n";
     exit 1;
 }
@@ -30,14 +31,10 @@ if (! -d $opts->{gerrit_working_dir}) {
 
 ### Do we have an initialized dir?
 if (!-d "$opts->{gerrit_working_dir}/$magicDir") {
-    print "$opts->{gerrit_working_dir} missing directory $magicDir.\n";
+    print "Error: $opts->{gerrit_working_dir} missing directory $magicDir.\n";
     exit 1;
 }
 
 ### Sync to head
 print "Updating the repository to latest head.\n";
-eval  "$updateCmd" ;
-
-
-
-
+eval "$updateCmd";
