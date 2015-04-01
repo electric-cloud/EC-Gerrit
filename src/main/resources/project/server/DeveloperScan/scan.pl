@@ -30,12 +30,13 @@ foreach my $cfgName (keys %cfgs) {
     my $opts = \%vals;
 
     if (!defined $opts->{gerrit_server} || $opts->{gerrit_server} eq "") {
-            print "configuration [$cfgName] does not contain a gerrit server name\n";
-                exit 1;
+            print "Skipping scan for configuration [$cfgName]. It does not contain the Gerrit server name.\n";
+            next;
     }
 
     # only process if scan enabled
     if ($opts->{devbuild_mode} eq "off") {
+        print "Skipping scan for configuration [$cfgName]. 'Developer Build Mode' is 'OFF' for the configuration.\n";
         next;
     }
 
@@ -62,5 +63,8 @@ foreach my $cfgName (keys %cfgs) {
 
     #  cleanup old jobs
     $gt->cleanup($opts);
+
+    print "Completed scan for configuration [$cfgName].\n";
 }
 
+print "Scan completed for all configurations.\n";

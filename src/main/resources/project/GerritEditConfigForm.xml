@@ -78,7 +78,7 @@
         <type>entry</type>
         <label>Project/branches manifest file:</label>
         <property>teambuild_project_branches</property>
-        <documentation>The file that contains the name of the projects and branches to be included in the verification. In addition you can specify in here individual changes to be verified. (Required)</documentation>       
+        <documentation>The file that contains the name of the projects and branches to be included in the verification by the DeveloperScan procedure. In addition you can specify in here individual changes to be verified. (Required)</documentation>
         <required>1</required>
     </formElement>
     <formElement>

@@ -487,7 +487,7 @@
 			<formalParameter>
 				<formalParameterName>teambuild_project_branches</formalParameterName>
 				<defaultValue/>
-				<description>The file that contains the name of the projects and branches to be included in the verification. In addition you can specify in here individual changes to be verified. (Required)</description>
+				<description>The file that contains the name of the projects and branches to be included in the verification by the DeveloperScan procedure. In addition you can specify in here individual changes to be verified. (Required)</description>
 				<required>1</required>
 				<type>entry</type>
 			</formalParameter>
@@ -1637,8 +1637,6 @@
 			<description>Scan the Gerrit server for any new changes and process them</description>
 			<jobNameTemplate>gerrit-developerScan-$[jobId]</jobNameTemplate>
 			<projectName>@PLUGIN_KEY@-@PLUGIN_VERSION@</projectName>
-			<propertySheet>
-      </propertySheet>
 			<step>
 				<stepName>scan</stepName>
 				<alwaysRun>0</alwaysRun>
@@ -1660,7 +1658,7 @@
 				<workingDirectory/>
 				<workspaceName/>
 				<procedureName>DeveloperScan</procedureName>
-				<projectName>EC-Gerrit-1.1.1.0</projectName>
+				<projectName>@PLUGIN_KEY@-@PLUGIN_VERSION@</projectName>
 				<propertySheet>
 					<property>
 						<propertyName>ec_customEditorData</propertyName>
@@ -2434,7 +2432,7 @@
 			<stopTime/>
 			<timeZone>America/Los_Angeles</timeZone>
 			<weekDays/>
-			<projectName>EC-Gerrit-1.2.0.0</projectName>
+			<projectName>@PLUGIN_KEY@-@PLUGIN_VERSION@</projectName>
 			<propertySheet>
 				<property>
 					<propertyName>ec_customEditorData</propertyName>
