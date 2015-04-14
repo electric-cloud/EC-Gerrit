@@ -24,6 +24,8 @@ if ($outcome eq "success") {
         . "https://$opts->{cmdr_webserver}/commander/link/jobDetails/jobs/$jobId";
 }
 
+# mark job as done
+$gt->getCmdr()->setProperty("/jobs/$jobId/processed_by_gerrit","done");
 $gt->setECState( "$opts->{project}", "$opts->{changeid}", 
     "$opts->{patchid}","jobComplete",$msg, $cat,$value);
 

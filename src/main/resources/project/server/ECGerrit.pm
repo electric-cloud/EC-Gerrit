@@ -1507,9 +1507,11 @@ sub processSingleProject{
                 . "&parameters3_value=$project"
                 . "&parameters4_name=patchid"
                 . "&parameters4_value=$patchid";
+            # DevBuildPrepare::annotate does this for the 'auto' Dev Build Mode.
+            # For manual mode, we set the comments here
+            $self->setECState($project,$changeid, $patchid, $state, $msg, "","");
         }
-        # DevBuildPrepare::annotate should do this...
-        $self->setECState($project,$changeid, $patchid, $state, $msg, "","");
+
     }
 }
 
@@ -1605,6 +1607,8 @@ sub processSingleChanges{
 				. "&parameters3_value=$project"
 				. "&parameters4_name=patchid"
 				. "&parameters4_value=$patchid";
+
+			$self->setECState($project,$changeid, $patchid, $state, $msg, "","");
 			} 
 	}else {
 		if (defined $changeid) {
