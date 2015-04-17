@@ -504,7 +504,7 @@
 				<parallel>0</parallel>
 				<postProcessor>postp</postProcessor>
 				<releaseExclusive>0</releaseExclusive>
-				<resourceName>local</resourceName>
+				<resourceName/>
 				<retries>0</retries>
 				<shell>ec-perl</shell>
 				<timeLimit>5</timeLimit>
@@ -805,7 +805,9 @@
 				<condition>$[/javascript myJob.gerrit_changes]</condition>
 				<description/>
 				<errorHandling>failProcedure</errorHandling>
-				<exclusive>0</exclusive>
+                <!--Tie this resource to this job at this step as we start to
+                make changes to the gerrit_working_dir in this step-->
+				<exclusive>1</exclusive>
 				<logFileName/>
 				<parallel>0</parallel>
                 <postProcessor>postp --loadProperty "/myProject/postpMatchers"</postProcessor>
@@ -950,7 +952,7 @@
 				<parallel>0</parallel>
 				<postProcessor>postp</postProcessor>
 				<releaseExclusive>0</releaseExclusive>
-				<resourceName>local</resourceName>
+				<resourceName/>
 				<retries>0</retries>
 				<shell>ec-perl</shell>
 				<timeLimit>5</timeLimit>

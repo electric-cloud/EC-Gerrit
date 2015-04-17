@@ -26,7 +26,7 @@ if ("$opts->{gerrit_working_dir}" eq "") {
 ### Examine working directory and see if it needs to be created from scratch
 if (! -d $opts->{gerrit_working_dir}) {
     print "Creating a clone of remote repository\n";
-    eval "$cloneCmd";
+    eval "$cloneCmd" or exit 1;
 }
 
 ### Do we have an initialized dir?

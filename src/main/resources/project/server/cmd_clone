@@ -1,5 +1,10 @@
+use File::Path;
+
+my $createdGerritWorkingDir;
 if (!-d "{gerrit_working_dir}") {
-    mkdir "{gerrit_working_dir}";
+    print "Creating directory {gerrit_working_dir}\n";
+    mkpath("{gerrit_working_dir}");
+    $createdGerritWorkingDir = 1;
 }
 chdir "{gerrit_working_dir}";
 
@@ -22,8 +27,11 @@ my $ec = $?;
 print "$out\n";
 
 if ($ec ne 0) {
+    if ($createdGerritWorkingDir) {
+        rmdir "{gerrit_working_dir}";
+    }
     exit $ec;
 }
-
+1;
 
 
