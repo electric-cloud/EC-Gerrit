@@ -572,7 +572,7 @@
 				<broadcast>0</broadcast>
 				<condition/>
 				<description/>
-				<errorHandling>failProcedure</errorHandling>
+				<errorHandling>abortProcedure</errorHandling>
 				<exclusive>0</exclusive>
 				<parallel>0</parallel>
 				<releaseExclusive>0</releaseExclusive>
@@ -734,7 +734,7 @@
 				<command>##########################&#10;# allocate.pl&#10;##########################&#10;use ElectricCommander;&#10;use File::Basename;&#10;use ElectricCommander::PropDB;&#10;use ElectricCommander::PropMod;&#10;&#10;$|=1;&#10;&#10;my $ec = new ElectricCommander();&#10;$ec-&gt;abortOnError(0);&#10;&#10;my $cfgName = "$[gerrit_cfg]";&#10;my $proj = "$[/myProject/projectName]";&#10;my $cfg = new ElectricCommander::PropDB($ec,"/projects/$proj/gerrit_cfgs");&#10;my %vals = $cfg-&gt;getRow($cfgName);&#10;my $opts = \%vals;&#10;&#10;if ("$opts-&gt;{ResourcePool}" eq "") {&#10;    print "Error: no resource pool specified.\n";&#10;    exit 1;&#10;}&#10;&#10;$ec-&gt;setProperty("/myJob/git_resource",$opts-&gt;{ResourcePool});&#10;exit 0;&#10;</command>
 				<condition/>
 				<description>Pick a resource for this run</description>
-				<errorHandling>failProcedure</errorHandling>
+				<errorHandling>abortProcedure</errorHandling>
 				<exclusive>0</exclusive>
 				<logFileName/>
 				<parallel>0</parallel>
@@ -769,7 +769,7 @@
 				<command>##########################&#10;# changes.pl&#10;##########################&#10;$[/plugins/EC-Gerrit-1.1.1.0/project/procedure_helpers/api]&#10;&#10;gr_scanChanges($prop, $opts-&gt;{team_build_rules});</command>
 				<condition/>
 				<description>Get the list of changes to be processed and save for rest of procedure.</description>
-				<errorHandling>failProcedure</errorHandling>
+				<errorHandling>abortProcedure</errorHandling>
 				<exclusive>0</exclusive>
 				<logFileName/>
 				<parallel>0</parallel>
@@ -804,7 +804,7 @@
 				<command>##########################&#10;# clone.pl&#10;##########################&#10;$[/myProject/procedure_helpers/preamble]&#10;&#10;my $map = $gt-&gt;makeReplacementMap();&#10;&#10;# get values from configuration&#10;# run through replacement twice to allow double indirection&#10;#     i.e.   a-&gt;b-&gt;c&#10;my $cloneCmd  = $gt-&gt;replace_strings("$opts-&gt;{cmd_clone}",$map);&#10;my $cloneCmd  = $gt-&gt;replace_strings("$cloneCmd",$map);&#10;my $updateCmd = $gt-&gt;replace_strings("$opts-&gt;{cmd_update}",$map);&#10;my $updateCmd = $gt-&gt;replace_strings("$updateCmd",$map);&#10;my $magicDir  = $gt-&gt;replace_strings("$opts-&gt;{cmd_magic_dir}",$map);&#10;my $magicDir  = $gt-&gt;replace_strings("$magicDir",$map);&#10;&#10;&#10;### If working directory is blank&#10;if ("$opts-&gt;{gerrit_working_dir}" eq "") {&#10;    print "Working directory not specified.  Set the directory in a property"&#10;        . " named gerrit_working_dir on the resource.\n";&#10;    exit 1;&#10;}&#10;&#10;### Examine working directory and see if it needs to be created from scratch&#10;if (! -d $opts-&gt;{gerrit_working_dir}) {&#10;    print "Creating a clone of remote repository\n";&#10;    eval "$cloneCmd";&#10;}&#10;&#10;### Do we have an initialized dir?&#10;if (!-d "$opts-&gt;{gerrit_working_dir}/$magicDir") {&#10;    print "$opts-&gt;{gerrit_working_dir} missing directory $magicDir.\n";&#10;    exit 1;&#10;}&#10;&#10;### Sync to head&#10;print "Updating the repository to latest head.\n";&#10;eval  "$updateCmd" ;&#10;&#10;&#10;&#10;&#10;</command>
 				<condition>$[/javascript myJob.gerrit_changes]</condition>
 				<description/>
-				<errorHandling>failProcedure</errorHandling>
+				<errorHandling>abortProcedure</errorHandling>
                 <!--Tie this resource to this job at this step as we start to
                 make changes to the gerrit_working_dir in this step-->
 				<exclusive>1</exclusive>
@@ -841,7 +841,7 @@
 				<command>##########################&#10;# revert.pl&#10;##########################&#10;$[/myProject/procedure_helpers/preamble]&#10;&#10;my $map = $gt-&gt;makeReplacementMap();&#10;&#10;my $magicDir  = $gt-&gt;replace_strings("$opts-&gt;{cmd_magic_dir}",$map);&#10;my $magicDir  = $gt-&gt;replace_strings("$magicDir",$map);&#10;&#10;my $revertCmd = $gt-&gt;replace_strings("$opts-&gt;{cmd_revert}",$map);&#10;my $revertCmd = $gt-&gt;replace_strings("$revertCmd",$map);&#10;&#10;if (!-d "$opts-&gt;{gerrit_working_dir}/$magicDir") {&#10;    print "$opts-&gt;{gerrit_working_dir} not a git repostitory.\n";&#10;    exit 1;&#10;}&#10;&#10;chdir $opts-&gt;{gerrit_working_dir};&#10;&#10;print "Revert repository to latest head.\n";&#10;eval "$revertCmd" ;&#10;&#10;</command>
 				<condition>$[/javascript myJob.gerrit_changes]</condition>
 				<description>Get tree in clean state before overlaying files</description>
-				<errorHandling>failProcedure</errorHandling>
+				<errorHandling>abortProcedure</errorHandling>
 				<exclusive>0</exclusive>
 				<logFileName/>
 				<parallel>0</parallel>
@@ -876,7 +876,7 @@
 				<command>##########################&#10;# apply.pl&#10;##########################&#10;$[/myProject/procedure_helpers/preamble]&#10;&#10;my $map = $gt-&gt;makeReplacementMap();&#10;&#10;# get values from configuration&#10;# run through replacement twice to allow double indirection&#10;#     i.e.   a-&gt;b-&gt;c&#10;&#10;my $magicDir  = $gt-&gt;replace_strings("$opts-&gt;{cmd_magic_dir}",$map);&#10;my $magicDir  = $gt-&gt;replace_strings("$magicDir",$map);&#10;&#10;if (!-d "$opts-&gt;{gerrit_working_dir}/$magicDir") {&#10;    print "$opts-&gt;{gerrit_working_dir} missing directory $magicDir.\n";&#10;    exit 1;&#10;}&#10;&#10;my $rawOverlayCmd = "$opts-&gt;{cmd_overlay}";&#10;&#10;chdir $opts-&gt;{gerrit_working_dir};&#10;&#10;my @changes = $gt-&gt;getChanges();&#10;&#10;foreach my $str (@changes) {&#10;    my ($changeid, $patchid,$project) = split (/:/,$str);&#10;    $opts-&gt;{changeid} = $changeid;&#10;    $opts-&gt;{patchid} = $patchid;&#10;    $opts-&gt;{gerrit_project} = $project;&#10;    my $newmap = $gt-&gt;makeReplacementMap();&#10;    my $overlayCmd = $gt-&gt;replace_strings("$rawOverlayCmd",$newmap);&#10;    my $overlayCmd = $gt-&gt;replace_strings("$overlayCmd",$newmap);&#10;    print "overlay cmd\n$overlayCmd\n";&#10;&#10;    print "Get updates\n";&#10;    # create pull command&#10;    eval "$overlayCmd";&#10;}&#10;&#10;&#10;&#10;&#10;&#10;</command>
 				<condition>$[/javascript myJob.gerrit_changes]</condition>
 				<description>Get the changes from Gerrit and overlay on top of  local repository</description>
-				<errorHandling>failProcedure</errorHandling>
+				<errorHandling>abortProcedure</errorHandling>
 				<exclusive>0</exclusive>
 				<logFileName/>
 				<parallel>0</parallel>
@@ -2008,7 +2008,7 @@
 				<broadcast>0</broadcast>
 				<condition/>
 				<description>Run a test of Gerrit changes</description>
-				<errorHandling>failProcedure</errorHandling>
+				<errorHandling>abortProcedure</errorHandling>
 				<exclusive>0</exclusive>
 				<parallel>0</parallel>
 				<releaseExclusive>0</releaseExclusive>

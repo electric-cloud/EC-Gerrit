@@ -34,7 +34,7 @@ foreach my $str (@changes) {
 
     print "Get updates for $str\n";
     # create pull command
-    eval "$overlayCmd";	
+    eval "$overlayCmd" or die "Error encountered: $@";
 }
 
 

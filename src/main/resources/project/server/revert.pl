@@ -18,6 +18,6 @@ if (!-d "$opts->{gerrit_working_dir}/$magicDir") {
 
 chdir $opts->{gerrit_working_dir};
 
-print "Revert repository to latest head.\n";
-eval "$revertCmd" ;
+print "Reverting repository to latest head.\n";
+eval "$revertCmd" or die "Error encountered: $@";
 

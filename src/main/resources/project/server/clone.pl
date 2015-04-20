@@ -26,7 +26,7 @@ if ("$opts->{gerrit_working_dir}" eq "") {
 ### Examine working directory and see if it needs to be created from scratch
 if (! -d $opts->{gerrit_working_dir}) {
     print "Creating a clone of remote repository\n";
-    eval "$cloneCmd" or exit 1;
+    eval "$cloneCmd" or die "Error encountered: $@";
 }
 
 ### Do we have an initialized dir?
@@ -37,4 +37,4 @@ if (!-d "$opts->{gerrit_working_dir}/$magicDir") {
 
 ### Sync to head
 print "Updating the repository to latest head.\n";
-eval "$updateCmd";
+eval "$updateCmd" or die "Error encountered: $@";

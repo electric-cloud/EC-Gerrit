@@ -24,7 +24,7 @@ chdir $opts->{gerrit_working_dir};
 
 print "Get updates\n";
 # create pull command
-eval "$overlayCmd";
+eval "$overlayCmd" or die "Error encountered: $@";
 
   
 

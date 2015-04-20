@@ -3,13 +3,20 @@ print "Setting tree back to commited changes only\n";
 my $cmd = "{repo_cmd} forall -c \"git reset --hard m/{gerrit_branch}\"";
 print "$cmd\n";
 my $out = `$cmd 2>&1`;
-my $ec = $?;
-print "$out\n";
+my $ec = $? >> 8;
+if (!$ec) {
+    print "$out\n";
+} else {
+    die "$out";
+}
 
 $cmd = "{repo_cmd} forall -c \"git clean -xfd\"";
 print "$cmd\n";
-my $out = `$cmd 2>&1`;
-my $ec = $?;
-print "$out\n";
-exit $ec;
-
+$out = `$cmd 2>&1`;
+$ec = $? >> 8;
+if (!$ec) {
+    print "$out\n";
+} else {
+    die "$out";
+}
+1;

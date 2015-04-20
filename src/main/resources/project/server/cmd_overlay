@@ -10,11 +10,10 @@ my $cmd = "{repo_cmd} download " . qw({project}) . " " . qw({changeid}) . "/" . 
 print "Executing $cmd\n";
 
 my $out = `$cmd 2>&1`;
-my $ec = $?;
-print "$out\n";
-
-if ($ec ne 0) {
-    exit $ec;
+my $ec = $? >> 8;
+if (!$ec) {
+    print "$out\n";
+} else {
+    die "$out";
 }
-
-
+1;
