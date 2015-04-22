@@ -1,1508 +1,1167 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
-    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 
 <html xmlns="http://www.w3.org/1999/xhtml">
+
 <head>
     <meta name="generator"
           content="HTML Tidy for Windows (vers 14 February 2006), see www.w3.org" />
-    <meta content="text/html; charset=us-ascii"
-          http-equiv="content-type" />
-
+    <meta content="text/html; charset=us-ascii" http-equiv="content-type" />
     <title>ElectricCommander Plugin for Gerrit</title>
-    <link rel="stylesheet"
-          href="../../plugins/@PLUGIN_KEY@/pluginhelp.css"
-          type="text/css"
-          media="screen" />
+    <link rel="stylesheet" href="../../plugins/@PLUGIN_KEY@/pluginhelp.css" type="text/css" media="screen" />
 </head>
 
 <body>
+
     <div class="help">
+
         <h1>Gerrit</h1>
 
         <p>Plugin Version @PLUGIN_VERSION@</p>
-        <hr style="margin-left: -10px; margin-top: 10px; height: 1px; width: 100%; color: #5981BD;"
-            noshade="noshade" />
-        <!-- The tool description should answer these kinds of questions:
-            What is the tool itself is used for in the development
-            process? Who would use this tool? What is the general use-case or
-            problem that this tool solves? Look at the tool's documentation or
-            website(s) to get their own descriptions. Look at Wikipedia or other
-            outside websites. If there is a Hudson plugin, read their
-            documentation for ideas, examples, etc. It's OK to copy word-for-word
-            only if appropriate, such as FOSS - but not commercial software.
+
+        <hr style="margin-left: -10px; margin-top: 10px; height: 1px; width: 100%; color: #5981BD;" noshade="noshade" />
+
+        <!-- The tool description should answer these kinds of questions: What is the tool itself is used for in the development
+            process? Who would use this tool? What is the general use-case or problem that this tool solves? Look at the tool's documentation or
+            website(s) to get their own descriptions. Look at Wikipedia or other outside websites. If there is a Hudson plugin, read their
+            documentation for ideas, examples, etc. It's OK to copy word-for-word only if appropriate, such as FOSS - but not commercial software.
             -->
-        <p>Gerrit is a web based code review system, facilitating online
-        code reviews for projects using the Git version control system.
-        It provides a systematic process for evaluating and approving
-        source code changes before they are committed. Gerrit provides
-        facilities to park changes until they are approved by
-        appropriate engineers. Engineers are notified of a change
-        (or they sign into the Gerrit server to find new changes)
-        and must decide if the change should be accepted into the
-        code base. This process is typically implemented by manual
-        code review and/or pulling changes into a local workspace,
-        building the changes, and running some tests.</p>
 
-        <h2>Gerrit Links</h2>
+        <p>Revised on April 22, 2015</p>
+				
+				<h1>Contents</h1>
+				
+				<ul>
+				<li><p><a href="#overview">Overview</a></p></li>
+				<li><p><a href="#setupconfig">Setting Up the Plugin Configuration</a></p></li>
+				<li><p><a href="#ElectricFlow">Setting Up ElectricCommander</a></p></li>
+				<li><p><a href="#procedures">Plugin Procedures</a></p></li>
+				<ul>
+				<li><a href="#CustomBuildPrepare">CustomBuildPrepare</a></li>
+				<li><a href="#DevBuildCleanup">DevBuildCleanup</a></li>
+				<li><a href="#DevBuildPrepare">DevBuildPrepare</a></li>
+				<li><a href="#DeveloperScan">DeveloperScan</a></li>
+				<li><a href="#SetupGerritServer">SetupGerritServer</a></li>
+				<li><a href="#TeamBuildCleanup">TeamBuildCleanup</a></li>
+				<li><a href="#TeamBuildPrepare">TeamBuildPrepare</a></li>
+				</ul>
+				<li><p><a href="#example">Examples and Use Cases</a></p></li>
+				<ul>
+				<li><a href="#CustomBuildExample">CustomBuildExample</a></li>
+				<li><a href="#DevBuildExample">DevBuildExample</a></li>
+				<li><a href="#TeamBuildExample">TeamBuildExample</a></li>
+				</ul>
+				<li><p><a href="#rns">Release Notes</a></p></li>
+				</ul>
+					
+		    <h1 id="overview">Overview</h1>
+						
+        <p>Gerrit is a web-based code review system, facilitating online code reviews for projects using the Git version control system. 
+				It provides a systematic process for evaluating and approving source code changes before they are committed. Gerrit provides 
+				facilities to park changes until they are approved by appropriate engineers. Engineers are notified of a change (or they sign 
+				into the Gerrit server to find new changes) and must decide if the change should be accepted into the code base. This process is 
+				typically implemented by manual code review and/or by pulling changes into a local workspace, building the changes, and running 
+				some tests.</p>
 
-        <p><a href="http://code.google.com/p/gerrit/">Gerrit Home
-        Page</a>.</p>
+        <p>For more information about Gerrit, go to the <a href="http://code.google.com/p/gerrit/">Gerrit Home Page</a>.</p>
 
         <h2>ElectricCommander Integration to Gerrit</h2>
-        <!-- The integration description should answer the questions:
-            How deep does our integration go? Why should I care? What general
-            functionality does the plugin include? What functionality does
-            the plugin omit?
-            -->
 
-        <p>The ElectricCommander Gerrit plugin simplifies the
-        build/test approval process. The goal is to run tests
-        automatically before the reviewer looks at the change,
-        although a setting is available to run builds on demand
-        only. The Android team published a
-        <a href="http://source.android.com/submit-patches/workflow">
-        diagram</a> that describes the workflow for submitting
-        changes (see link). Note the step after "A" titled
-        "Verifier patches the commit to their local client, then
-        builds and tests the change". This is the step
-        ElectricCommander automates for you. The plugin works
-        closely with Gerrit by adding links to run builds and to
-        finished builds directly in Gerrit change comments. Also,
-        ElectricCommander can act as a reviewer by automatically
-        setting a Gerrit category to a value based on the build
-        success or failure. The plugin communicates with the Gerrit
-        server to retrieve information about the change, including
-        the commands used to pull down files in a patch set. First,
-        a full repository is initialized to the head of a specified
-        branch. Second, changes submitted to Gerrit
-        (adds/deletes/modifies) are overlaid. Third, a build you
-        create is run. This build can do whatever you need from
-        running a simple "make" to running complicated automatic
-        test suites involving physical hardware. You decide what
-        determines test success or failure and ElectricCommander
-        annotates Gerrit with your build results.</p>
+        <!-- The integration description should answer the questions: How deep does our integration go? Why should I care? 
+				What general functionality does the plugin include? What functionality does the plugin omit? -->
 
-        <h2>Integrated Version</h2>
+        <p>The ElectricCommander Gerrit plugin simplifies the build/test approval process. The goal is to run tests automatically 
+				before the reviewer looks at the change, although a setting is available to run builds on demand only. The Android team 
+				published a <a href="http://source.android.com/submit-patches/workflow">diagram</a> that describes the workflow for 
+				submitting changes. </p> 
+				<p>ElectricCommander automates the step after "A" titled "Verifier patches the commit to their local client, then builds and 
+				tests the change" for you. The plugin works closely with Gerrit by adding links to run builds and to finished builds directly 
+				in Gerrit change comments. ElectricCommander can also act as a reviewer by automatically setting a Gerrit category to a value 
+				based on the build success or failure. The plugin communicates with the Gerrit server to retrieve information about the change, 
+				including the commands used to pull files in a patch set. </p>
+				<ol>
+				<li>A full repository is initialized to the head of a specified branch.</li>
+				<li>Changes submitted to Gerrit (adds/deletes/modifies) are overlaid.</li>
+				<li>A build that you create runs. This build can do whatever you need, from running a simple "make" operation to running 
+				complicated automatic test suites with physical hardware. You decide what determines test success or failure, and ElectricCommander 
+				annotates Gerrit with your build results.</li>
+				</ol>
+			
+			  <h2>Integrated Version</h2>
 
-        <p>This plugin was tested with Gerrit v2.8.5.</p>
+        <p>This plugin was tested against Gerrit 2.8.5.</p>
 
         <h2 id="gerrit-setup">Setup</h2>
-        <p>The following steps should be followed to setup Gerrit for use with the ElectricCommander Gerrit plugin.
+
+        <p>To use this plugin with Gerrit, configure Gerrit as follows:
             <ol>
                 <li>Add the repo tool to the PATH environment variable for the resource where the plugin will run.
-                    If the path cannot be updated for the resource, then update the plugin property "pseudo_code/repo_cmd"
-                    to point to the repo tool. The ElectricCommander Gerrit plugin uses the Repo tool for syncing to the Git repositories and
-                    downloading changes from the repositories.</li>
-                <li>Grant 'Access Database' capability to the Gerrit user configured for the plugin to communicate with the Gerrit server.
-                    Since Gerrit v2.6, by default Gerrit administrators no longer have the 'Access Database' capability.
-                    This capability is required by the plugin to access the Gerrit database using the gsql command.</li>
+                    If the path cannot be updated for the resource, update the plugin property called <i>pseudo_code/repo_cmd</i> to point 
+										to the repo tool. This plugin uses the repo tool for synchronizing with the Git repositories and downloading changes from the 
+										repositories.</li>
+                <li>Grant <b>Access Database</b> capability to the Gerrit user configured to communicate with the Gerrit server.
+                    Since Gerrit 2.6, Gerrit administrators no longer have the <b>Access Database</b> capability by default. This 
+										capability is required by the plugin for access to the Gerrit database using the <b>gsql</b> command.</li>
                 <li id="gerrit-verified-label">
-                    Setup the 'Verified' review label in Gerrit for use with the plugin by following the steps below.
-                    Starting with Gerrit version 2.6, the 'Verified' label is no longer installed by default.
+                    Set the <b>Verified</b> review label in Gerrit, which is used by the plugin:<br />
+                    Starting with Gerrit 2.6, the <b>Verified</b> label is no longer installed by default.
                     <ol type="a">
-                        <li>
-                            Follow the steps documented <a href="https://gerrit-documentation.storage.googleapis.com/Documentation/2.8.5/config-labels.html#label_Verified">here</a>
-                            to install the 'Verified' review label in Gerrit.
-                        </li>
-                        <li>
-                            Re-start the Gerrit server for the changes to take effect.
-                        </li>
-                        <li>
-                            Grant 'Label Verified' capability on 'refs/heads/*' to the Gerrit user configured for the plugin to communicate with the Gerrit server.
-                        </li>
+                        <li>Follow the steps documented <a href="https://gerrit-documentation.storage.googleapis.com/Documentation/2.8.5/config-labels.html#label_Verified">here</a>
+                            to install the <b>Verified</b> review label in Gerrit.</li>
+                        <li>Restart the Gerrit server.</li>
+                        <li>Grant <b>Label Verified</b> capability on <i>refs/heads/*</i> to the Gerrit user configured to communicate 
+												with the Gerrit server.</li>
                     </ol>
                 </li>
             </ol>
-
         </p>
 
-        <h1>Plugin Procedures</h1>
+    <h1 id="setupconfig">Setting Up the Plugin Configuration</h1>
 
-        <p>IMPORTANT: For all parameter descriptions below,
-        required parameters are shown in
-        <span class='required'>bold italics</span>.</p>
+    <p>Plugin configurations are sets of parameters that apply across some or all of the plugin procedures. 
+		They reduce repetition of common values, create predefined sets of parameters for end users, and store 
+		credentials securely. Each configuration has a unique name that is automatically entered in designated 
+		parameters in the procedures.</p>
+						
+		<h2>Input</h2>
+  
+    <ol>
+		  <li>Go to <b>Administration</b> > <b>Plugins</b> to open the Plugin Manager.</li>
+		  <li>Find the EC-Gerrit row.</li>
+		  <li>Click <b>Configure</b> to open the Gerrit Configurations page.</li> 	
+		  <li>Click <b>Create Configuration</b>.</li>
+		  <li>To create a Gerrit configuration, enter the following information and click <b>OK</b>. 
+			<br /> Remember that you may need to create additional configurations later.</li>
 
-        <div class="procedure"
-             id="CreateConfiguration">
-            <a name='CreateConfiguration'
-                 id="CreateConfiguration"></a> 
-
-            <h3>Plugin Configuration</h3>
-            <!-- If the plugin has separate configurations then include this section,
-                                                                                                                                                                                                                                                otherwise omit this whole section. We don't need to have a configuration
-                                                                                                                                                                                                                                                section that just says "There is no configuration for this plugin."
-                                                                                                                                                                                                                                                -->
-
-            <div class="sectionnote">
-                Plugin configurations are sets of parameters that
-                apply across some or all of the plugin's
-                procedures. They are intended to reduce repetition
-                of common values, create predefined sets of
-                parameters for end users, and to securely store
-                credentials where needed. Each configuration is
-                given a unique name that is entered in designated
-                parameters on procedures that use them.<br />
-                 Plugin configurations are created by going to the
-                ElectricCommander "Administration" tab, then to
-                the "Plugins" sub-tab. On the right side of the
-                line for the specific plugin, there is a
-                "Configure" link which will open the Configuration
-                page.
-            </div>
-
-            <p>You can create one or more Gerrit plugin
-            configurations to specify how you want the plugin to
-            work. To manage your Gerrit plugin configurations, go
-            to the Administration | Plugins page and select the
-            "Configure" link to the right of the EC-Gerrit plugin.
-            This link provides a list of configurations with menu
-            options to edit/delete existing configurations.</p>
-
-            <table class="grid">
+                  <table class="grid">
                 <thead>
                     <tr>
                         <th>Parameter</th>
-
                         <th>Description</th>
                     </tr>
                 </thead>
-
                 <tbody>
+								    <tr>
+                        <td class='required'>Configuration Name</td>
+                        <td>Name of the Gerrit configuration.</td>
+                    </tr>
                     <tr>
                         <td>Description</td>
-
-                        <td>A description for this
-                        configuration.</td>
+                        <td>A description for this configuration.</td>
                     </tr>
-
                     <tr>
                         <td>Repository Server</td>
-
-                        <td>The server where the repository is
-                        located. If not provided, the "Gerrit
-                        Server" is used. e.g., in this url
-                        "git://github.com/ecGerrit/ecGerritTest.git",
-                        the repository server is "github.com". The server can be specified with the protocol it is using, e.g., "ssh://my_gerrit_server.my_domain.com". If no protocol is specified, by default, the server is assumed to be using 'git' protocol.</td>
+                        <td>The server where the repository is located. If you do not specify a server, the default Gerrit server is used. 
+												For example, in the <i>git://github.com/ecGerrit/ecGerritTest.git</i> URL, the repository server is <i>github.com</i>. 
+												You can specify the server with the protocol that it uses, such as Secure Shell (SSH) in <i>ssh://my_gerrit_server.my_domain.com</i>. 
+												If no protocol is specified, the default protocol is <i>Git</i>.</td>		
                     </tr>
-
                     <tr>
                         <td class='required'>Repository Path</td>
-
-                        <td>The path associated to the "Repository
-                        Server". E.g., in this url
-                        "git://github.com/ecGerrit/ecGerritTest.git",
-                        the repository path is
-                        "ecGerrit/ecGerritTest.git".</td>
+                        <td>The path associated to the <b>Repository Server</b>. For example, the repository path is <i>ecGerrit/ecGerritTest.git</i> in the 
+												<i>git://github.com/ecGerrit/ecGerritTest.git</i> URL.</td>
                     </tr>
-
                     <tr>
                         <td class='required'>Gerrit Server</td>
-
-                        <td>The hostname or IP address of the
-                        Gerrit server. E.g., "localhost",
-                        "github.com".</td>
+                        <td>The hostname or IP address of the Gerrit server, such as <i>localhost</i> or <i>github.com</i>.</td>
                     </tr>
-
                     <tr>
                         <td class='required'>Gerrit User</td>
-
-                        <td>The gerrit user. E.g.,
-                        "usergerrit".</td>
+                        <td>The gerrit user, such as <i>usergerrit</i>.</td>
                     </tr>
-
                     <tr>
                         <td class='required'>Gerrit Port</td>
-
-                        <td>The gerrit ssh port. Default is
-                        29418.</td>
+                        <td>The gerrit SSH port. The default is 29418.</td>
                     </tr>
-
                     <tr>
-                        <td class='required'>Gerrit Public Key
-                        File</td>
-
-                        <td>The full path of the public key for ssh
-                        connection to gerrit. E.g.,
-                        "home/usergerrit/.ssh/id_rsa.pub".</td>
+                        <td class='required'>Gerrit Public Key File</td>
+                        <td>The full path of the public key for SSH connection to Gerrit, such as <i>home/usergerrit/.ssh/id_rsa.pub</i>.</td>
                     </tr>
-
                     <tr>
-                        <td class='required'>Gerrit Private Key
-                        File</td>
-
-                        <td>The full path of the private key for
-                        ssh connection to gerrit. E.g.,
-                        "home/usergerrit/.ssh/id_rsa".</td>
+                        <td class='required'>Gerrit Private Key File</td>
+                        <td>The full path of the private key for SSH connection to Gerrit, such as <i>home/usergerrit/.ssh/id_rsa</i>.</td>
                     </tr>
-
                     <tr>
-                        <td class='required'>ElectricCommander
-                        Server</td>
-
-                        <td>The ElectricCommander server name.</td>
+                        <td class='required'>ElectricCommander Server</td>
+                        <td>The Commander server name.</td>
                     </tr>
-
                     <tr>
-                        <td class='required'>Project for Developer
-                        Builds</td>
-
-                        <td>The Commander project that contains
-                        the procedure for developer builds. E.g.,
-                        "EC-Gerrit-2.0.1.0".</td>
+                        <td class='required'>Project for Developer Builds</td>
+                        <td>The ElectricCommander project that contains the procedure for developer builds, such as <i>EC-Gerrit-2.0.1.0</i>.</td>
                     </tr>
-
                     <tr>
-                        <td class='required'>Procedure for
-                        Developer Builds</td>
-
-                        <td>The Commander procedure that will be
-                        called for developer builds. E.g.,
-                        "DevBuildExample".</td>
+                        <td class='required'>Procedure for Developer Builds</td>
+                        <td>The Commander procedure that will be called for developer builds, such as <i>DevBuildExample</i>.</td>
                     </tr>
-
                     <tr>
-                        <td class='required'>Project/branches
-                        manifest file</td>
-
-                        <td>
-                            The file that contains the name of the
-                            projects and branches to be included in
-                            the verification by the DeveloperScan procedure. In addition you can
-                            specify in here individual changes to
-                            be verified. A valid example of this
-                            file is shown in the <a href="#project-manifest-file">
-                            "Project/branches manifest file" image</a>.
-                            The format used to create this
-                            configuration file is described below: 
-
-                            <p><b>Example1</b></p>
-
+                        <td class='required'>Project/branches manifest file</td>
+                        <td>The file that contains the name of the projects and branches to be included in the verification by the 
+												DeveloperScan procedure. You can also specify the individual changes to be verified. A valid example 
+												of this file is shown in the <a href="#project-manifest-file">Project/branches manifest file</a> image.
+                        This is the format used to create this configuration file: 
+                            
+														<p><b>Example1</b></p>
                             <p>ectest:master<br />
                              platform/build:master<br />
                             <br />
-                             Which is translated as: include all
-                            the changes of the project "ectest"
-                            with the branch "master". Include the
-                            project "platform/build" with the
-                            branch "master".</p>
-
-                            <p><b>Example 2</b></p>
-
+                             Meaning: include all the changes of the project "ectest" with the branch "master". 
+														 Include the project "platform/build" with the branch "master".</p>
+                           
+													  <p><b>Example 2</b></p>
                             <p>33:ectest:experimental<br />
                              10:platform/build:master<br />
                             <br />
-                             Which is translated as: include change
-                            "33" from project "ectest" branch
-                            "experimental", change "10" from
+                             Meaning: include change "33" from project "ectest" branch "experimental", change "10" from
                             "platform/build" branch "master".</p>
                         </td>
                     </tr>
-
                     <tr>
                         <td class='required'>Resource Pool</td>
-
                         <td>The resource pool to use.</td>
                     </tr>
-
                     <tr>
-                        <td class='required'>Developer Build
-                        Mode</td>
-
-                        <td>
-                            <p><b>auto:</b> Builds run
-                            automatically.</p>
-
-                            <p><b>manual:</b> Builds must be
-                            initiated by clicking links in
-                            Gerrit.</p>
-
-                            <p><b>off:</b> Do not run scan for this
-                            configuration.</p>
+                        <td class='required'>Developer Build Mode</td>
+                        <td><p><b>Auto</b> - Builds run automatically.</p>
+                            <p><b>Manual</b> - Builds must be initiated by clicking links in Gerrit.</p>
+                            <p><b>Off</b> - Do not run scan for this configuration.</p>
                         </td>
                     </tr>
-
                     <tr>
                         <td class='required'>Branch</td>
-
                         <td>The branch to watch.</td>
                     </tr>
-
                     <tr>
                         <td class='required'>Manifest</td>
-
-                        <td>The manifest file to use. This is a
-                        .xml file used by repo tool that includes
-                        the projects and branches from the original
-                        repository to download. The standard used
-                        to configure this file can be found in this
-                        external
-                        <a href="http://www.androidenea.com/2010/06/using-localmanifestxml-file-in-repo-to.html">
-                        link</a>. A valid example of this file is
-                        shown in the <a href="#project-manifest">"Manifest file" image</a>.
-                        i.e: "/home/usergerrit/default.xml".</td>
+                        <td>The manifest file to use. This is a .xml file used by repo tool that includes the projects and branches 
+												from the original repository to download. The standard used to configure this file can be found 
+                        <a href="http://www.androidenea.com/2010/06/using-localmanifestxml-file-in-repo-to.html">here</a>. A valid 
+												example of this file is in the <a href="#project-manifest">Manifest file</a> image, such as <i>/home/usergerrit/default.xml</i>.</td>
                     </tr>
-
                     <tr>
-                        <td class='required'>Developer Build
-                        Rules</td>
-
-                        <td>
-                            The list of actions for category/value
-                            to approve when the build finishes. 
-
+                        <td class='required'>Developer Build Rules</td>
+                        <td>The list of actions for category/value to approve when the build finishes. 
                             <p><b>Example</b></p>
-
                             <p>ACTION SUCCESS Verified +1<br />
                              ACTION ERROR Verified -1<br />
                             <br />
-                             Which is translated as: when you
-                            complete the build, set the
-                            Verified label to +1 if the build
-                            succeeded and -1 if the build
-                            failed.</p>
+                            Meaning: when you complete the build, set the >Verified label to +1 if the build 
+														 succeeds and -1 if the build fails.</p>
                         </td>
                     </tr>
-
                     <tr>
                         <td class='required'>Team Build Rules</td>
-
-                        <td>
-                            The list of filters that determine
-                            which changes are included in a team
-                            build (multiple changes) and the actions
-                            to take in terms of Gerrit review label
-                            values to set, when the build
-                            finishes. 
+                        <td>The list of filters that determine the changes to include in a team build (multiple changes) and the 
+												actions to take in terms of the Gerrit review label values to set when the build finishes. 
 
                             <p><b>Example</b></p>
-
                             <p>FILTER MAX Code-Review ge +2<br />
                              FILTER MIN Code-Review gt -2<br />
-                             FILTER COUNT Verified eq 0 USER ne
-                            commander<br />
-                             FILTER MAX Verified le 0 USER eq
-                            commander<br />
+                             FILTER COUNT Verified eq 0 USER ne commander<br />
+                             FILTER MAX Verified le 0 USER eq commander<br />
                              ACTION SUCCESS Verified +1<br />
                              ACTION ERROR Verified -1<br />
                             <br />
-                             Which is translated as: include all
-                            changes with at least a +2 Code Review,
-                            no -2 Code Reviews, no Verifications by
-                            anyone other than the Commander user,
-                            no Verifications greater than 0 from
-                            the Commander user. When you complete
-                            the build, set the Verified label to +1
-                            if the build succeeded and -1 if the
-                            build failed.</p>
-                        </td>
+                             Meaning: include all changes with at least a +2 Code Review, no -2 Code Reviews, 
+														 no Verifications by anyone other than the Commander user, no Verifications greater than 0 from the 
+														 Commander user. When you complete the build, set the Verified label to +1 if the build succeeded and -1 
+														 if the build failed.</p>
+                       </td>
                     </tr>
-
                     <tr>
                         <td>Debug</td>
-
-                        <td>The debug level for output [0 | 1 | 2 |
-                        3].</td>
+                        <td>The debug level for output [0 | 1 | 2 | 3].</td>
                     </tr>
                 </tbody>
             </table>
+		
+		<img src="../../plugins/EC-Gerrit/images/Config/EC-Gerrit_config1.png" />
+		
+		<p id="project-manifest-file">Project/branches manifest file:</p><img src="../../plugins/EC-Gerrit/images/Config/EC-Gerrit_config2.png" />
 
-            <p>Configuration
-            parameters:</p><img src="../../plugins/EC-Gerrit/images/Config/EC-Gerrit_config1.png" />
+    <p id="project-manifest">Manifest file:</p><img src="../../plugins/EC-Gerrit/images/Config/EC-Gerrit_config3.png" />
 
+		</ol>
+						
+	  <h2>Output</h2>	 
+		
+		<p>The Gerrit Configurations page now shows the new configuration.</p>
+		
+		<p>You can also manage your Gerrit configurations in this page. Click <b>Edit</b> to modify an existing configuration or 
+		<b>Delete</b> to remove an existing configuration.</p>
+						
+		</div>
+		
+		<h1>Setting Up ElectricCommander</h1>
+		
+		<div class="procedure" id="ElectricFlow">
 
-            <p id="project-manifest-file">Project/branches manifest
-            file:</p><img src="../../plugins/EC-Gerrit/images/Config/EC-Gerrit_config2.png" />
+            <a name='ElectricFlow' id="ElectricFlow"></a> 
 
+           	<p>You perform these procedures in the ElectricCommander UI.</p>
+				
+				    <h2>Creating ElectricCommander Resources</h2>
+						
+            <p>Create one or more resources where your builds will run. Group these resources in one or more pools. When you create the 
+						Gerrit plugin configuration later, you can specify a pool name for the resources to use.</p>
+						
+						<p>You can also set a special property called <i>gerrit_working_dir</i> for each resource. The value of this property is the directory 
+						where you want to put build sources. This directory can be relative to the current directory (the standard ElectricCommander workspace 
+						created for the build) or absolute.</p>
+						
+						<p>When the plugin runs, it checks if the directory exists. If the directory is found, ElectricCommander assumes there is a 
+						repository and only synchronizes changes. If the directory is not found, the plugin creates one and does a full initialization and 
+						synchronization of the repository. Because this process can be time consuming, the plugin also supports using cached directories.<br /> 
+						You can setup one or more locations where builds can be run. Directory contents are not deleted after a build so the plugin 
+						only needs to reset and synchronize to the head of the branch at the start of each build. Assuming you build the same branch many 
+						times, each reset and synchronization will run much faster than a full initialization and synchronization. Changes are applied as before.</p>
 
-            <p id="project-manifest">Manifest
-            file:</p><img src="../../plugins/EC-Gerrit/images/Config/EC-Gerrit_config3.png" />
-             
+            <p>This example shows how to create resource.</p>
+						<ol>
+						<li>Go to the <b>Cloud</b> tab in the ElectricCommander UI. <br />
+						You can create the resource using the Gerrit tool or edit an existing one:
+						<img src="../../plugins/EC-Gerrit/images/Resource/EC-Gerrit_Resource1.png" /></li>
+						<li>Provide the parameters to create the resource.</li>
+						<li>Add the required <i>gerrit_working_dir</i> property by clicking <b>Create Property</b> in the <b>Custom Resource Properties</b> section:<br /><img src="../../plugins/EC-Gerrit/images/Resource/EC-Gerrit_Resource2.png" /></li>
+						<li>Provide the name of the property and the value. In this example, the <b>Name</b> is <i>gerrit_working_dir</i> with the property value: <br /><img src="../../plugins/EC-Gerrit/images/Resource/EC-Gerrit_Resource3.png" /></li>
+						</ol>
 
-            <h4>IMPORTANT NOTES:</h4>
+						<h2>Scheduling When The Gerrit Server is Scanned</h2>
+						
+			      <p>The plugin scans your Gerrit server for changes every 15 minutes. based on an ElectricCommander schedule. If you want to 
+						change this frequency, modify the "Gerrit New Change Scanner" schedule in the <b>Administration</b> > <b>Plugins</b> > 
+						<b>EC-Gerrit</b> > <b>Schedules</b> page in ElectricCommander.</p>
 
-            <p><b>Creating ElectricCommander Resources:</b> create
-            one or more ElectricCommander resources where your
-            builds will run. Group these resources in one or more
-            pools. Later, when you create the Gerrit plugin
-            configuration, you can specify a pool name for the
-            resources to use. Also, set the special property
-            "gerrit_working_dir" on each resource. The value of
-            this property is the directory where you want to put
-            build sources. This directory can be relative to the
-            current directory (which is the normal
-            ElectricCommander workspace created for the build) or
-            absolute. When the plugin runs, it checks if the
-            directory exists. If the directory is found,
-            ElectricCommander assumes there is a repository and
-            only syncs changes. If the directory is not found, the
-            plugin creates one and does a full init and sync of the
-            repository. Because this process can be time consuming,
-            the plugin also supports using cached directories. You
-            can setup one or more locations where builds can be
-            run. Directory contents are not deleted after a build
-            so the plugin only needs to reset and sync to the head
-            of the branch at the start of each build. Assuming you
-            build the same branch many times, each reset and sync
-            will run much faster than a full init and sync. Changes
-            are applied as before.</p>
+            <h2>Changing Resources in Procedures</h2>
+					  <p>The resource for some procedures is set to <i>local</i> for your convenience. However, if you need to change the resource, 
+						do the following: <br />
+						<ol>
+						<li>Click on the procedure name to view the details.</li>
+						<li>Click <b>Edit</b>.</li>
+						<li>Change the <b>Default Resource</b>.</li>
+            </ol>
+            </p>
+		 </div>
+
+        <h1 id="procedures">Plugin Procedures</h1>
+
+        <p>IMPORTANT: For all parameter descriptions in this document, required parameters are shown in <span class='required'>bold italics</span>.</p>
+
+     <div class="procedure" id="CustomBuildPrepare">
+
+     <a name='CustomBuildPrepare' id="CustomBuildPrepare"></a> 
+
+     <h2>CustomBuildPrepare</h2>
+
+            <p>All the other Gerrit methods (procedures) in this plugin are references for how to use the EC-Gerrit plugin. Custom builds use several helper methods 
+						located in a property called <i>API</i>. With these helper methods, you can access some Gerrit functions and create new ones by querying the 
+						Gerrit database directly, which provides additional flexibility.</p>
+
+            <p>The CustomBuildPrepare procedure uses the new helper methods to prepare an environment to test all the open changes in 
+						the Gerrit server and those that were scanned previously, which can include changes from one or more projects.</p>
+	    
+			<h3>Input</h3>
 			
-            <p>Here is an example of how to create the resource.</p>
-			<p>First, navigate to the "Cloud" tab in the ElectricCommander. Here you can create the resource to use with the Gerrit tool, or edit an existing one:</p><img src="../../plugins/EC-Gerrit/images/Resource/EC-Gerrit_Resource1.png" />
-			<p>Then, provide the parameters for the creation of the Resource. Now, to add the "gerrit_working_dir" required property, navigate to "Create Property" in the "Custom Resource Properties":</p><img src="../../plugins/EC-Gerrit/images/Resource/EC-Gerrit_Resource2.png" />
-			<p>Provide the name of the property, in our case must be called "gerrit_working_dir", and provide the value:</p><img src="../../plugins/EC-Gerrit/images/Resource/EC-Gerrit_Resource3.png" />
-             
-			
-            <p><b>Customizations to Schedule:</b> the plugin scans
-            your Gerrit server for changes every 15 minutes. This
-            is an ElectricCommander schedule. If you want to change
-            the frequency, modify the "Gerrit New Change Scanner"
-            schedule, which you can find under the "Administration"
-            tab, navigate to "Plugins", select the "EC-Gerrit" plugin
-            and then navigate to the "Schedules" tab.</p>
-
-            <p><b>Changing the resource for procedures:</b> the
-            resource for some procedures is set to local for your
-            convenience. However, if you need to change the
-            resource, take these steps: click the procedure to see
-            its details, then click Edit, and change the Default
-            Resource to suit your needs.</p>
-        </div>
-
-        <div class="procedure"
-             id="SetupGerritServer">
-            <a name='SetupGerritServer'
-                 id="SetupGerritServer"></a> 
-
-            <h3>SetupGerritServer</h3>
-
-            <p>[Deprecated] The SetupGerritServer procedure sets up the default settings
-            into Gerrit to be used with the ElectricCommander.
-            This sets the Commander user in Gerrit and also the
-            approval bits needed for the integration. Note that
-            this is the default method, if you want to include
-            different categories of approval bits please refer to
-            the Gerrit Official Site for more information. Note that this procedure is no longer supported with Gerrit version 2.6 and above.
-            Please follow the steps documented <a href="#gerrit-setup">here</a> to setup Gerrit for
-            use with ElectricCommander.</p>
-
-            <table class="grid">
+      <ol>
+			<li>Go to the CustomBuildPrepare procedure.</li>
+			<li>Enter the following parameters:<br />
+     <table class="grid">
                 <thead>
                     <tr>
                         <th>Parameter</th>
-
                         <th>Description</th>
                     </tr>
                 </thead>
-
                 <tbody>
-                    <tr>
-                        <td class='required'>Gerrit Config</td>
-
-                        <td>The name of the config which holds all
-                        the connection information for Gerrit.</td>
+                   <tr>
+                         <td class='required'>Gerrit Config</td>
+                        <td>The name of the configuration that has the connection information for Gerrit.</td>
                     </tr>
                 </tbody>
             </table>
 
-            <p>To run the SetupGerritServer, select the following
-            highlighted
-            step:</p><img src="../../plugins/EC-Gerrit/images/SetupGerritServer/EC-Gerrit_SetupGerritServer1.png" />
-             
+				</li>
+						
+		<br />
+		<img src="../../plugins/EC-Gerrit/images/CustomBuildPrepare/EC-Gerrit_CustomBuildPrepare2.png" />
+		<br />
 
-            <p>Then, enter the following
-            parameters:</p><img src="../../plugins/EC-Gerrit/images/SetupGerritServer/EC-Gerrit_SetupGerritServer2.png" />
-             
+		</ol>   
+						
+		<h3>Output</h3>
+						
+		<p>After the job runs, you can view the results on the Job Details page in ElectricCommander. Every job step was completed successfully.</p>
+		<img src="../../plugins/EC-Gerrit/images/CustomBuildPrepare/EC-Gerrit_CustomBuildPrepare3.png" />
+		
+		<p>In the <b>CustomBuildPrepare</b> step, click the Log button to see the diagnostic information. 
+		The output is similar to the following diagnostic report:</p>	
+		
+		        <ul>
+		        <li><b>allocate:</b> This step checks that the required parameters in the configuration are correct. It has no output 
+						if the job is successful. If an error occurs, it shows the error details.</li>
 
-            <p>When the job is executed, you should see the
-            following job detail, note the output indicating the
-            procedure was completed
-            successfully:</p><img src="../../plugins/EC-Gerrit/images/SetupGerritServer/EC-Gerrit_SetupGerritServer3.png" />
-             
+            <li><b>changes:</b> The step gets the list of changes to be processed and saves them for the rest of procedure. Because this procedure 
+						has no project parameter, the plugin search for changes in all the Gerrit projects, such as <i>ectest</i> and <i>ECGerritTest</i> 
+						projects:<br />
+						<img src="../../plugins/EC-Gerrit/images/CustomBuildPrepare/EC-Gerrit_CustomBuildPrepare4.png" /> </li>
 
-            <p>In the <b>Setup</b> step, click the Log icon to see
-            the diagnostic info. The output is similar to the
-            following diagnostic
-            report:</p><img src="../../plugins/EC-Gerrit/images/SetupGerritServer/EC-Gerrit_SetupGerritServer4.png" />
-            </div>
+            <li><b>clone:</b> The step creates a clone of the remote repository:<br />
+						<img src="../../plugins/EC-Gerrit/images/CustomBuildPrepare/EC-Gerrit_CustomBuildPrepare5.png" /> </li>
 
-        <div class="procedure"
-             id="DeveloperScan">
-            <a name='DeveloperScan'
-                 id="DeveloperScan"></a> 
+            <li><b>revert:</b> The step gets the tree in the clean state before overlaying files:<br />
+						<img src="../../plugins/EC-Gerrit/images/CustomBuildPrepare/EC-Gerrit_CustomBuildPrepare6.png" /> </li>
 
-            <h3>DeveloperScan</h3>
+            <li><b>apply:</b> The step gets the changes from Gerrit and overlays them on top of local repository:<br />
+						<img src="../../plugins/EC-Gerrit/images/CustomBuildPrepare/EC-Gerrit_CustomBuildPrepare7.png" /> </li>
+						</ul>
 
-            <p>The DeveloperScan procedure scan the Gerrit server
-            for any new changes and process them. In the
-            configuration of the gerrit plugin, there is a
-            parameter called "Developer Build Mode" related with
-            this procedure.</p>
+     </div>
+		 
+		 <div class="procedure" id="DevBuildCleanup">
 
-            <p>To run the DeveloperScan procedure, select the
-            following highlighted
-            step:</p><img src="../../plugins/EC-Gerrit/images/DeveloperScan/EC-Gerrit_DeveloperScan1.png" />
-             
+           <a name='DevBuildCleanup' id="DevBuildCleanup"></a> 
 
-            <p>This procedure has no parameters.</p>
+            <h2>DevBuildCleanup</h2>
 
-            <p>When the job is executed, you should see the
-            following job detail, note the output indicating the
-            procedure was completed
-            successfully:</p><img src="../../plugins/EC-Gerrit/images/DeveloperScan/EC-Gerrit_DeveloperScan2.png" />
-             
+            <p>This procedure cleans up after one developer build. The working tree is cleaned up (runtime artifacts are removed, and 
+						changes are backed out). This also marks the job as complete in the Gerrit comments.</p>
 
-            <p>In the <b>scan</b> step, click the Log icon to see
-            the diagnostic info. The output is similar to the
-            following diagnostic
-            report:</p><img src="../../plugins/EC-Gerrit/images/DeveloperScan/EC-Gerrit_DeveloperScan3.png" />
-            </div>
-
-        <div class="procedure"
-             id="DevBuildPrepare">
-            <a name='DevBuildPrepare'
-                 id="DevBuildPrepare"></a> 
-
-            <h3>DevBuildPrepare</h3>
-
-            <p>Developer builds are used to build a single patchset
-            submitted by a developer. ElectricCommander scans
-            Gerrit on a regular basis to find new patchsets to
-            process. What the plugin does depends on the value you
-            set for "Developer Build Mode" in your plugin
-            configuration.</p>
-
-            <p>The DevBuildPrepare prepare for a developer build.
-            This will be one change. The working tree will be
-            adjusted to be the head of the branch plus changes in
-            the change.</p>
-
-            <table class="grid">
+			<h3>Input</h3>
+						
+			<ol>
+			<li>Go to the DevBuildCleanup procedure.</li>
+			<li>Enter the following parameters:<br />
+       <table class="grid">
                 <thead>
                     <tr>
                         <th>Parameter</th>
-
                         <th>Description</th>
                     </tr>
                 </thead>
-
                 <tbody>
                     <tr>
                         <td class='required'>Change ID</td>
-
-                        <td>The short change id to be built. E.g.,
-                        "5".</td>
+                        <td>The short change ID to build, such as <i>5</i>.</td>
                     </tr>
-
                     <tr>
                         <td class='required'>Gerrit Config</td>
-
-                        <td>The name of the config which holds all
-                        the connection information for Gerrit.</td>
+                        <td>The name of the configuration that has the connection information for Gerrit.</td>
                     </tr>
-
                     <tr>
                         <td class='required'>Patch ID</td>
-
-                        <td>The short patch set id to be built.
-                        i.e: "1".</td>
+                        <td>The short patch set ID to build, such as <i>1</i>.</td>
                     </tr>
-
                     <tr>
                         <td class='required'>Project</td>
-
-                        <td>The project that contains the change to
-                        build.</td>
+                        <td>The project that contains the change to build.</td>
                     </tr>
                 </tbody>
             </table>
 
-            <p>To prepare the developer build, select the following
-            highlighted
-            step:</p><img src="../../plugins/EC-Gerrit/images/DevBuildPrepare/EC-Gerrit_DevBuildPrepare1.png" />
-             
+				</li>
+						
+		<br />
+		<img src="../../plugins/EC-Gerrit/images/DevBuildCleanup/EC-Gerrit_DevBuildCleanup2.png" />
+		<br />
 
-            <p>Then, enter the following
-            parameters:</p><img src="../../plugins/EC-Gerrit/images/DevBuildPrepare/EC-Gerrit_DevBuildPrepare2.png" />
-             
+		</ol>   
+						
+		<h3>Output</h3>
+						
+		<p>After the job runs, you can view the results on the Job Details page in ElectricCommander. The procedure was completed successfully.</p>
+		<img src="../../plugins/EC-Gerrit/images/DevBuildCleanup/EC-Gerrit_DevBuildCleanup3.png" />
+		
+		<p>In the <b>DevBuildCleanup</b> step, click the Log button to see the diagnostic information. 
+		The output is similar to the following diagnostic report:</p>	
+		<img src="../../plugins/EC-Gerrit/images/DevBuildCleanup/EC-Gerrit_DevBuildCleanup4.png" />			
+						
+    </div>
 
-            <p>When the job is executed, you should see the
-            following job detail, note the output indicating the
-            job was completed in every
-            step:</p><img src="../../plugins/EC-Gerrit/images/DevBuildPrepare/EC-Gerrit_DevBuildPrepare3.png" />
-             
+		<div class="procedure" id="DevBuildPrepare">
 
-            <p>The output of any step must be similar to the
-            following diagnostic report:</p>
+            <a name='DevBuildPrepare' id="DevBuildPrepare"></a> 
 
-            <p><b>allocate:</b> this steps checks that the required
-            parameters in the configuration are correct. Has no
-            output if success, and if an error occurs, show the
-            detail of the error.</p>
+            <h2>DevBuildPrepare</h2>
 
-            <p><b>annotate:</b> if this job was launched manually,
-            annotate Gerrit so it knows about the
-            job:</p><img src="../../plugins/EC-Gerrit/images/DevBuildPrepare/EC-Gerrit_DevBuildPrepare4.png" />
-             
+            <p>Developer builds are used to build a single patch set submitted by a developer. ElectricCommander scans Gerrit on a 
+						regular basis to find new patch sets to process. What the plugin does depends on the value you set for the <b>Developer Build Mode</b> 
+						in your plugin configuration.</p>
 
-            <p><b>clone:</b> create a clone of the remote
-            repository:</p><img src="../../plugins/EC-Gerrit/images/DevBuildPrepare/EC-Gerrit_DevBuildPrepare5.png" />
-             
+            <p>The DevBuildPrepare procedure prepares for a developer build. This will be one change. The working tree is adjusted to be the 
+						head of the branch and updated with the changes.</p>
 
-            <p><b>revert:</b> get tree in clean state before
-            overlaying
-            files:</p><img src="../../plugins/EC-Gerrit/images/DevBuildPrepare/EC-Gerrit_DevBuildPrepare6.png" />
-             
-
-            <p><b>apply:</b> get the changes from Gerrit and
-            overlay on top of local
-            repostory:</p><img src="../../plugins/EC-Gerrit/images/DevBuildPrepare/EC-Gerrit_DevBuildPrepare7.png" />
-            </div>
-
-        <div class="procedure"
-             id="DevBuildCleanup">
-            <a name='DevBuildCleanup'
-                 id="DevBuildCleanup"></a> 
-
-            <h3>DevBuildCleanup</h3>
-
-            <p>This procedure cleanup after one developer build.
-            The working tree is cleaned up (runtime artifacts
-            removed, change backed out). This also marks the job as
-            complete in Gerrit comments.</p>
-
-            <table class="grid">
+      <h3>Input</h3>
+						
+			<ol>
+			<li>Go to the DevBuildPrepare procedure.</li>
+			<li>Enter the following parameters:<br />
+      <table class="grid">
                 <thead>
                     <tr>
                         <th>Parameter</th>
-
                         <th>Description</th>
                     </tr>
                 </thead>
-
                 <tbody>
                     <tr>
                         <td class='required'>Change ID</td>
-
-                        <td>The short change id to be built. E.g.,
-                        "5".</td>
+                        <td>The short change ID to be built, such as <i>5</i>.</td>
                     </tr>
-
                     <tr>
                         <td class='required'>Gerrit Config</td>
-
-                        <td>The name of the config which holds all
-                        the connection information for Gerrit.</td>
+                        <td>The name of the configuration that has the connection information for Gerrit.</td>
                     </tr>
-
                     <tr>
                         <td class='required'>Patch ID</td>
-
-                        <td>The short patch set id to be built.
-                        i.e: "1".</td>
+                        <td>The short patch set ID to be built, such as <i>1</i>.</td>
                     </tr>
-
                     <tr>
                         <td class='required'>Project</td>
-
-                        <td>The project that contains the change to
-                        build.</td>
+                        <td>The project that contains the change to build.</td>
                     </tr>
                 </tbody>
             </table>
+				</li>
+						
+		<br />
+		<img src="../../plugins/EC-Gerrit/images/DevBuildPrepare/EC-Gerrit_DevBuildPrepare2.png" />
+		<br />
 
-            <p>To run the DevBuildCleanup procedure, select the
-            following highlighted
-            step:</p><img src="../../plugins/EC-Gerrit/images/DevBuildCleanup/EC-Gerrit_DevBuildCleanup1.png" />
-             
+		</ol>   
+						
+		<h3>Output</h3>
+						
+		<p>After the job runs, you can view the results on the Job Details page in ElectricCommander. The procedure was completed 
+		successfully.</p>
+		<img src="../../plugins/EC-Gerrit/images/DevBuildPrepare/EC-Gerrit_DevBuildPrepare3.png" />
+		
+		<p>In the <b>DevBuildPrepare</b> step, click the Log button to see the diagnostic information. 
+		The output is similar to the following diagnostic report:</p>	
+		<img src="../../plugins/EC-Gerrit/images/SetupGerritServer/EC-Gerrit_SetupGerritServer4.png" />
 
-            <p>Then, enter the following
-            parameters:</p><img src="../../plugins/EC-Gerrit/images/DevBuildCleanup/EC-Gerrit_DevBuildCleanup2.png" />
-             
+    <p>The output of any step must be similar to the following diagnostic report:</p>
+		
+    <ul>
+    <li><b>allocate:</b> This step checks that the required parameters in the configuration are correct. 
+		It has no output if the job was successful, and if an error occurs, the output shows the error details.</li>
 
-            <p>When the job is executed, you should see the
-            following job detail, note the output indicating the
-            step was successfully
-            completed:</p><img src="../../plugins/EC-Gerrit/images/DevBuildCleanup/EC-Gerrit_DevBuildCleanup3.png" />
-             
+    <li><b>annotate:</b> If this job was launched manually, annotate Gerrit so it knows about the job:<br />
+	  <img src="../../plugins/EC-Gerrit/images/DevBuildPrepare/EC-Gerrit_DevBuildPrepare4.png" /> </li>
 
-            <p>In the <b>annotate</b> step, click the Log icon to
-            see the diagnostic info. The output is similar to the
-            following diagnostic
-            report:</p><img src="../../plugins/EC-Gerrit/images/DevBuildCleanup/EC-Gerrit_DevBuildCleanup4.png" />
-            </div>
+    <li><b>clone:</b> The output shows that a clone of the remote repository was created:<br />
+	  <img src="../../plugins/EC-Gerrit/images/DevBuildPrepare/EC-Gerrit_DevBuildPrepare5.png" /> </li>
 
-        <div class="procedure"
-             id="TeamBuildPrepare">
-            <a name='TeamBuildPrepare'
-                 id="TeamBuildPrepare"></a> 
+   <li><b>revert:</b> The output shows that the tree is put in the clean state before the files are overlaid:<br />
+	 <img src="../../plugins/EC-Gerrit/images/DevBuildPrepare/EC-Gerrit_DevBuildPrepare6.png" /> </li>
 
-            <h3>TeamBuildPrepare</h3>
+   <li><b>apply:</b> The output shows that changes are retrieved from Gerrit and overlaid on top of local repostory:<br />
+	 <img src="../../plugins/EC-Gerrit/images/DevBuildPrepare/EC-Gerrit_DevBuildPrepare7.png" /> </li>   
+	 </ul>   
 
-            <p>The TeamBuildPrepare create a tree in
-            /myResource/gerrit_working_dir with the head of the
-            branch and an overlay of all open Gerrit changes which
-            match the configuration filters.</p>
+   </div>
 
-            <table class="grid">
+	 <div class="procedure" id="DeveloperScan">
+
+            <a name='DeveloperScan' id="DeveloperScan"></a> 
+
+            <h2>DeveloperScan</h2>
+
+            <p>This procedure scans the Gerrit server for any new changes and processes them. The Gerrit plugin configuration has a 
+						parameter called <i>Developer Build Mode</i> that is related to this procedure.</p>
+
+            <h3>Input</h3>
+						
+			<ol>
+			<li>Go to the DeveloperScan procedure.<br />
+			This procedure has no parameters.</li>
+			<li>Run the DeveloperScan procedure.</li>
+						
+		</ol>   
+						
+		<h3>Output</h3>
+						
+		<p>After the job runs, you can view the results on the Job Details page in ElectricCommander. The procedure was completed successfully.</p>
+		<img src="../../plugins/EC-Gerrit/images/DeveloperScan/EC-Gerrit_DeveloperScan2.png" />
+		
+		<p>In the <b>DeveloperScan</b> step, click the Log button to see the diagnostic information. 
+		The output is similar to the following diagnostic report:</p>	
+		<img src="../../plugins/EC-Gerrit/images/DeveloperScan/EC-Gerrit_DeveloperScan3.png" />
+
+    </div>
+	 
+	 <div class="procedure" id="SetupGerritServer">
+
+       <a name='SetupGerritServer' id="SetupGerritServer"></a> 
+						
+			 <h2>SetupGerritServer</h2>
+
+			 <p>[Deprecated] The SetupGerritServer procedure sets the default settings into Gerrit used with the ElectricCommander. 
+						This is the default method in Gerrit 2.6 and earlier. It sets the Commander user in Gerrit and also the approval bits needed for the integration.	
+						If you want to include different categories of approval bits, go to the <a href="http://code.google.com/p/gerrit/">Gerrit Home Page</a> for more information. 
+            Follow the steps <a href="#gerrit-setup">here</a> to set up Gerrit to be used with ElectricCommander.</p>
+		
+		  <h3>Input</h3>
+						
+			<ol>
+			<li>Go to the SetupGerritServer procedure.</li>
+			<li>Enter the following parameters:<br />
+      <table class="grid">
                 <thead>
                     <tr>
                         <th>Parameter</th>
-
                         <th>Description</th>
                     </tr>
                 </thead>
-
                 <tbody>
                     <tr>
                         <td class='required'>Gerrit Config</td>
-
-                        <td>The name of the config which holds all
-                        the connection information for Gerrit.</td>
+                        <td>The name of the configuration that has the connection information for Gerrit.</td>
                     </tr>
+                </tbody>
+            </table>
+				</li>
+						
+		<br />
+		 <img src="../../plugins/EC-Gerrit/images/SetupGerritServer/EC-Gerrit_SetupGerritServer2.png" />
+		<br />
 
+		</ol>   
+						
+		<h3>Output</h3>
+						
+		<p>After the job runs, you can view the results on the Job Details page in ElectricCommander. The procedure was completed successfully.</p>
+		<img src="../../plugins/EC-Gerrit/images/SetupGerritServer/EC-Gerrit_SetupGerritServer3.png" />
+		
+		<p>In the <b>SetupGerritServer</b> step, click the Log button to see the diagnostic information. 
+		The output is similar to the following diagnostic report:</p>	
+		<img src="../../plugins/EC-Gerrit/images/SetupGerritServer/EC-Gerrit_SetupGerritServer4.png" />
+		
+		</div>
+    
+    <div class="procedure" id="TeamBuildCleanup">
+
+            <a name='TeamBuildCleanup' id="TeamBuildCleanup"></a> 
+
+            <h2>TeamBuildCleanup</h2>
+
+            <p>Team builds are designed for the build and release team. These builds combine changes of one or more patch sets to test 
+						how multiple changes will work together. The plugin finds patch sets based on rules provided in the <i>Team Build Rules</i> 
+						property in the plugin configuration. The plugin does not run team builds automatically. You must run team build procedures 
+						from ElectricCommander.</p>
+
+            <p>The TeamBuildCleanup procedure marks the changes as approved if the job is successful. It also reverts any uncommitted changes from 
+						the working directory.</p>
+
+						<h3>Input</h3>
+						
+			<ol>
+			<li>Go to the TeamBuildCleanup procedure.</li>
+			<li>Enter the following parameters:<br />
+      <table class="grid">
+                <thead>
                     <tr>
-                        <td class='required'>Group Build
-                        Changes</td>
-
-                        <td>
-                            List of the changes in the group. Any
-                            number of lines can be added. This
-                            parameter can be provided in 3
-                            different ways: 
-
-                            <p><b>Use the change id:</b> every
-                            change has 2 different ids. The first
-                            one is a short number and the second
-                            one is a SHA1 number. Any of this ids
-                            can be used. E.g., "2" or
-                            "Ib34fbd69fe52c43588d39f3804341c219d087ecf".</p>
-
-                            <p><b>Use the project and the
-                            branch:</b> provide the project and the
-                            branch separated by ":". E.g.,
-                            "ectest:master".</p>
-
-                            <p><b>Use the change, the project and
-                            the branch:</b> provide the change id,
-                            the project and the branch separated by
-                            ":". E.g., "2:ectest:master" or
-                            "Ib34fbd69fe52c43588d39f3804341c219d087ecf:ectest:master".</p>
-                        </td>
+                        <th>Parameter</th>
+                        <th>Description</th>
                     </tr>
-
+                </thead>
+                <tbody>
+                    <tr>
+                        <td class='required'>Gerrit Config</td>
+                        <td>Name of the configuration that has the connection information for Gerrit.</td>
+                    </tr>
+                    <tr>
+                        <td class='required'>Group Build Changes</td>
+                        <td>List of the changes in the group. Any number of lines can be added. Enter the information in one of these ways: 
+												    <ul>
+                            <li><b>Use the change ID:</b> Every change has two different IDs. The first is a short number and the second 
+														is a SHA1 number. You can either of these IDs: <i>2</i> or <i>Ib34fbd69fe52c43588d39f3804341c219d087ecf</i>.</li>
+                            <li><b>Use the project name and the branch name:</b> Enter the project name and the branch separated by a colon (:). An example 
+														is <i>ectest:master</i>.</li>
+                            <li><b>Use the change ID, the project name, and the the branch name:</b> Enter the change ID, project name, and the 
+														branch name separated by a colon (:). Examples are <i>2:ectest:master</i> or <i>Ib34fbd69fe52c43588d39f3804341c219d087ecf:ectest:master</i>.</li>
+                            </ul>
+										</td>
+                    </tr>
                     <tr>
                         <td class='required'>Project</td>
-
-                        <td>The project that contains the change to
-                        build.</td>
+                        <td>The project that contains the change to build.</td>
                     </tr>
                 </tbody>
             </table>
 
-            <p>To run the "TeamBuildPrepare" procedure, select the
-            following highlighted
-            step:</p><img src="../../plugins/EC-Gerrit/images/TeamBuildPrepare/EC-Gerrit_TeamBuildPrepare1.png" />
-             
+				</li>
+						
+		<br />
+		<img src="../../plugins/EC-Gerrit/images/TeamBuildCleanup/EC-Gerrit_TeamBuildCleanup2.png" />
+		<br />
 
-            <p>Then, enter the following
-            parameters:</p><img src="../../plugins/EC-Gerrit/images/TeamBuildPrepare/EC-Gerrit_TeamBuildPrepare2.png" />
-             
+		</ol>   
+						
+		<h3>Output</h3>
+						
+		<p>After the job runs, you can view the results on the Job Details page in ElectricCommander. Every job step was completed successfully.</p>
+		<img src="../../plugins/EC-Gerrit/images/TeamBuildCleanup/EC-Gerrit_TeamBuildCleanup3.png" />
+		
+		<p>In the <b>TeamBuildCleanup</b> step, click the Log button to see the diagnostic information. 
+		The output is similar to the following diagnostic report:</p>	
+		
+		        <ul>
+		        <li><b>allocate:</b> This step checks that the required parameters in the configuration are correct. It has no output 
+						if the job is successful. If an error occurs, it shows the error details.</li>
 
-            <p>When the job is executed, you should see the
-            following job detail, note the output indicating the
-            job was completed in every
-            step:</p><img src="../../plugins/EC-Gerrit/images/TeamBuildPrepare/EC-Gerrit_TeamBuildPrepare3.png" />
-             
+            <li><b>approve:</b> The step gets the changes from Gerrit and overlays them on top of local repostiory:<br />
+						<img src="../../plugins/EC-Gerrit/images/TeamBuildCleanup/EC-Gerrit_TeamBuildCleanup4.png" /></li>
+						</ul>
 
-            <p>The output of any step must be similar to the
-            following diagnostic report:</p>
+   </div>
 
-            <p><b>allocate:</b> this steps checks that the required
-            parameters in the configuration are correct. Has no
-            output if success, and if an error occurs, show the
-            detail of the error.</p>
+    <div class="procedure" id="TeamBuildPrepare">
 
-            <p><b>changes:</b> get the list of changes to be
-            processed and save for rest of
-            procedure:</p><img src="../../plugins/EC-Gerrit/images/TeamBuildPrepare/EC-Gerrit_TeamBuildPrepare4.png" />
-             
+    <a name='TeamBuildPrepare' id="TeamBuildPrepare"></a> 
 
-            <p><b>annotate:</b> Get the list of changes to be
-            processed and save for rest of
-            procedure:</p><img src="../../plugins/EC-Gerrit/images/TeamBuildPrepare/EC-Gerrit_TeamBuildPrepare5.png" />
-             
+    <h2>TeamBuildPrepare</h2>
 
-            <p><b>clone:</b> if needed, clone the remote repo in
-            gerrit to a working directory then fetch contents. The
-            tree should now be in sync with the head of the
-            master:</p><img src="../../plugins/EC-Gerrit/images/TeamBuildPrepare/EC-Gerrit_TeamBuildPrepare6.png" />
-             
+    <p>This procedure creates a tree in <i>/myResource/gerrit_working_dir</i> with the head of the branch and an overlay of all 
+		open Gerrit changes that match the configuration filters.</p>
 
-            <p><b>revert:</b> get tree in clean state before
-            overlaying
-            files:</p><img src="../../plugins/EC-Gerrit/images/TeamBuildPrepare/EC-Gerrit_TeamBuildPrepare7.png" />
-             
-
-            <p><b>apply:</b> get the changes from Gerrit and
-            overlay on top of local
-            repository:</p><img src="../../plugins/EC-Gerrit/images/TeamBuildPrepare/EC-Gerrit_TeamBuildPrepare8.png" />
-            </div>
-
-        <div class="procedure"
-             id="TeamBuildCleanup">
-            <a name='TeamBuildCleanup'
-                 id="TeamBuildCleanup"></a> 
-
-            <h3>TeamBuildCleanup</h3>
-
-            <p>Team builds are designed for the build and release
-            team. These builds combine changes of one or more
-            patchsets to test how multiple changes will work
-            together. The plugin finds patchsets based on rules
-            provided in the configuration "Team Build Rules"
-            property. The plugin does not run team builds
-            automatically. You must run team build procedures from
-            ElectricCommander.</p>
-
-            <p>The TeamBuildCleanup mark the changes as approved if
-            success.</p>
-
-            <table class="grid">
+		<h3>Input</h3>
+						
+			<ol>
+			<li>Go to the TeamBuildPrepare procedure.</li>
+			<li>Enter the following parameters:<br />
+      <table class="grid">
                 <thead>
                     <tr>
                         <th>Parameter</th>
-
                         <th>Description</th>
                     </tr>
                 </thead>
-
                 <tbody>
                     <tr>
-                        <td class='required'>Branch</td>
-
-                        <td>The branch to use. E.g., "master".</td>
+                        <td class='required'>Gerrit Config</td>
+                        <td>Name of the configuration that has the connection information for Gerrit.</td>
                     </tr>
+                    <tr>
+                        <td class='required'>Group Build Changes</td>
+                        <td>List of the changes in the group. Any number of lines can be added. Enter the information in one of these ways: 
+												    <ul>
+                            <li><b>Use the change ID:</b> Every change has two different IDs. The first is a short number and the second 
+														is a SHA1 number. You can either of these IDs: <i>2</i> or <i>Ib34fbd69fe52c43588d39f3804341c219d087ecf</i>.</li>
+                            <li><b>Use the project name and the branch name:</b> Enter the project name and the branch separated by a colon (:). An example 
+														is <i>ectest:master</i>.</li>
+                            <li><b>Use the change ID, the project name, and the the branch name:</b> Enter  the change ID, project name, and the 
+														branch name separated by a colon (:). Examples are <i>2:ectest:master</i> or <i>Ib34fbd69fe52c43588d39f3804341c219d087ecf:ectest:master</i>.</li>
+                            </ul>
+											  </td>
+                    </tr>
+                    <tr>
+                        <td class='required'>Project</td>
+                        <td>The project that contains the change to build.</td>
+                    </tr>
+                </tbody>
+            </table>
 
+				</li>
+						
+		<br />
+		<img src="../../plugins/EC-Gerrit/images/TeamBuildPrepare/EC-Gerrit_TeamBuildPrepare2.png" />
+		<br />
+
+		</ol>   
+						
+		<h3>Output</h3>
+						
+		<p>After the job runs, you can view the results on the Job Details page in ElectricCommander. Every job step was completed successfully.</p>
+		<img src="../../plugins/EC-Gerrit/images/TeamBuildPrepare/EC-Gerrit_TeamBuildPrepare3.png" />
+		
+		<p>In the <b>TeamBuildPrepare</b> step, click the Log button to see the diagnostic information. 
+		The output is similar to the following diagnostic report:</p>	
+		
+		        <ul> 
+		        <li><b>allocate:</b> This step checks that the required parameters in the configuration are correct. It has no output if the job
+						is successful. If an error occurs, it shows the error details.</li>
+
+            <li><b>changes:</b> This step gets the list of changes to be processed and saves for rest of procedure:<br />
+						<img src="../../plugins/EC-Gerrit/images/TeamBuildPrepare/EC-Gerrit_TeamBuildPrepare4.png" /> </li>
+   
+            <li><b>annotate:</b> The step gets the list of changes to be processed and saves for rest of procedure:<br />
+						<img src="../../plugins/EC-Gerrit/images/TeamBuildPrepare/EC-Gerrit_TeamBuildPrepare5.png" /> </li>
+
+            <li><b>clone:</b> If needed, the step clones the remote repository in Gerrit to a working directory and then gets the contents. 
+						The tree should now be synchronized with the head of the master:<br />
+						<img src="../../plugins/EC-Gerrit/images/TeamBuildPrepare/EC-Gerrit_TeamBuildPrepare6.png" /> </li>
+
+            <li><b>revert:</b> The step gets the tree in the clean state before overlaying files:<br />
+						<img src="../../plugins/EC-Gerrit/images/TeamBuildPrepare/EC-Gerrit_TeamBuildPrepare7.png" /> </li>
+
+            <li><b>apply:</b> The step gets the changes from Gerrit and overlays on top of local repository:<br />
+						<img src="../../plugins/EC-Gerrit/images/TeamBuildPrepare/EC-Gerrit_TeamBuildPrepare8.png" />	</li>
+            </ul>
+						
+            </div>
+   
+        <h1 id="example">Examples and Use Cases</h1><br />
+
+        <p>This plugin has preconfigured example procedures that include the basic process to do the following:</p>
+				<ul>
+				<li>Clone the repository.</li>
+				<li>Get specific changes.</li>
+				<li>Run user-defined builds and tests.</li>
+				<li>Review and approve changes.</li>
+				<li>Reject changes.</li>
+				</ul>
+
+        <h2>CustomBuildExample</h2>
+
+        <div class="procedure" id="CustomBuildExample">
+
+            <a name='CustomBuildExample' id="CustomBuildExample"></a> 
+
+            <p>This procedure runs a sample custom build using the helper methods. This procedure runs the CustomBuildPrepare, DoWork, and TeamBuildCleanup 
+						procedures as steps. The DoWork step is where the builds and tests steps are run until TeamBuildCleanup step approves or rejects the changes.</p>
+
+						<h3>Input</h3>
+						
+			<ol>
+			<li>Go to the CustomBuildExample procedure.</li>
+			<li>Enter the following parameters:<br />
+      <table class="grid">
+                <thead>
+                    <tr>
+                        <th>Parameter</th>
+                        <th>Description</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td class='required'>Gerrit Config</td>
+                        <td>The name of the configuration that has the connection information for Gerrit.</td>
+                    </tr>
+                </tbody>
+            </table>
+				</li>
+						
+		<br />
+		<img src="../../plugins/EC-Gerrit/images/CustomBuildExample/EC-Gerrit_CustomBuildExample2.png" />
+		<br />
+
+		</ol>   
+						
+		<h3>Output</h3>
+						
+		<p>After the job runs, you can view the results on the Job Details page in ElectricCommander. Every job step was completed successfully.</p>
+		<img src="../../plugins/EC-Gerrit/images/CustomBuildExample/EC-Gerrit_CustomBuildExample3.png" />
+		
+		<p>In the <b>CustomBuildExample</b> step, click the Log button to see the diagnostic information. 
+		The output is similar to the following diagnostic report:</p>	
+		
+		        <p><b>GetCodeFromGerrit:</b> This prepares the custom build using the CustomBuildPrepare procedure:</p>
+						<ul>
+						<li><b>allocate:</b>  This step checks that the required parameters in the configuration are correct. It has no output if the job
+						is successful. If an error occurs, it shows the error details.</li>
+						<li><b>change:</b>  It gets the list of changes to be processed and saves them for the rest of procedure. Because this procedure has no project 
+						parameter, the plugin searches for changes in all of the Gerrit projects. In this example, it searches in the ectest and ECGerritTest projects:<br />
+						<img src="../../plugins/EC-Gerrit/images/CustomBuildExample/EC-Gerrit_CustomBuildExample4.png" /></li>
+						<li><b>clone:</b> This creates a clone of the remote repository: <br />
+						<img src="../../plugins/EC-Gerrit/images/CustomBuildExample/EC-Gerrit_CustomBuildExample5.png" /></li>
+						<li><b>revert:</b> This gets the tree in a clean state before overlaying the files:<br />
+						<img src="../../plugins/EC-Gerrit/images/CustomBuildExample/EC-Gerrit_CustomBuildExample6.png" /> </li>
+						<li><b>apply:</b> This gets the changes from Gerrit and overlays them on top of local repostory:<br />
+						<img src="../../plugins/EC-Gerrit/images/CustomBuildExample/EC-Gerrit_CustomBuildExample7.png" /> </li>
+						</ul> 
+						
+						<p><b>DoWork:</b> This step runs the builds and tests:</p>
+						<img src="../../plugins/EC-Gerrit/images/CustomBuildExample/EC-Gerrit_CustomBuildExample8.png" />
+            
+						<p><b>GerritCleanup:</b>This step marks the changes as approved if the job is successful:</p>
+            <ul>
+						<li><b>allocate:</b> This step checks that the required parameters in the configuration are correct. It has no output if the job
+						is successful. If an error occurs, it shows the error details.</li>
+						<li><b>approve:</b> This gets the changes from Gerrit and overlays them on top of local repostory:<br />
+						<img src="../../plugins/EC-Gerrit/images/CustomBuildExample/EC-Gerrit_CustomBuildExample9.png" /></li>
+						</ul>
+				
+				<h2>DevBuildExample</h2>
+
+        <div class="procedure" id="DevBuildExample">
+            <a name='DevBuildExample' id="DevBuildExample"></a> 
+
+            <p>The DevBuildExample procedure runs a sample developer build procedure.</p>
+						
+						<h3>Input</h3>
+						
+			<ol>
+			<li>Go to the DevBuildExample procedure.</li>
+			<li>Enter the following parameters:<br />
+      <table class="grid">
+                <thead>
+                    <tr>
+                        <th>Parameter</th>
+                        <th>Description</th>
+                    </tr>
+                </thead>
+                <tbody>
                     <tr>
                         <td class='required'>Change ID</td>
-
-                        <td>The short change id to be built. E.g.,
-                        "2".</td>
+                        <td>The short change ID to build, such as <i>2</i>.</td>
                     </tr>
-
                     <tr>
                         <td class='required'>Gerrit Config</td>
-
-                        <td>The name of the config which holds all
-                        the connection information for Gerrit.</td>
+                        <td>The name of the configuration that has the connection information for Gerrit.</td>
                     </tr>
-
                     <tr>
                         <td class='required'>Patch ID</td>
-
-                        <td>The patch set id to be built. E.g.,
-                        "1".</td>
+                        <td>The patchset ID to build, such as <i>1</i>.</td>
                     </tr>
-
                     <tr>
                         <td class='required'>Project</td>
-
-                        <td>The project that contains the change to
-                        build.</td>
-                    </tr>
-
-                    <tr>
-                        <td class='required'>Resource</td>
-
-                        <td>The name of the resource to use.</td>
+                        <td>The project that contains the change to build.</td>
                     </tr>
                 </tbody>
             </table>
+				</li>
+						
+		<br />
+		<img src="../../plugins/EC-Gerrit/images/DevBuildExample/EC-Gerrit_DevBuildExample2.png" />
+		<br />
 
-            <p>To run the TeamBuildCleanup procedure, select the
-            following highlighted
-            step:</p><img src="../../plugins/EC-Gerrit/images/TeamBuildCleanup/EC-Gerrit_TeamBuildCleanup1.png" />
-             
+		</ol>   
+						
+		<h3>Output</h3>
+						
+		<p>After the job runs, you can view the results on the Job Details page in ElectricCommander. The procedure was completed successfully.</p>
+		<img src="../../plugins/EC-Gerrit/images/DevBuildExample/EC-Gerrit_DevBuildExample3.png" />
+		
+		<p>In the <b>DevBuildExample</b> step, click the Log button to see the diagnostic information. 
+		The output is similar to the following diagnostic report:</p>	
+		
+		        <p><b>GetCodeFromGerrit:</b> This step of the example runs the DevBuildPrepare procedure to take the selected change 
+						 in the parameters and download a copy to work with it:
+						<ul>
+						<li><b>allocate:</b>  This step checks that the required parameters in the configuration are correct. It has no output if the job
+						is successful. If an error occurs, it shows the error details.</li>
+						<li><b>annotate:</b>  If this job was launched manually, annotate Gerrit so it knows about the job:<br />
+						<img src="../../plugins/EC-Gerrit/images/DevBuildExample/EC-Gerrit_DevBuildExample4.png" /></li>
+						<li><b>clone:</b> This creates a clone of the remote repository:<br />
+						<img src="../../plugins/EC-Gerrit/images/DevBuildExample/EC-Gerrit_DevBuildExample5.png" /></li>
+						<li><b>revert:</b> This gets the tree in the clean state before overlaying files:<br />
+						<img src="../../plugins/EC-Gerrit/images/DevBuildExample/EC-Gerrit_DevBuildExample6.png" /> </li>
+						<li><b>apply:</b> This gets the changes from Gerrit and overlays them on top of local repostory:<br />
+						<img src="../../plugins/EC-Gerrit/images/DevBuildExample/EC-Gerrit_DevBuildExample7.png" /> </li>
+						</ul> 
+						
+						<p><b>DoWork:</b> This step does the build and test procedures. In this example, the job only prints a message:</p>
+						<img src="../../plugins/EC-Gerrit/images/DevBuildExample/EC-Gerrit_DevBuildExample8.png" />
+            
+						<p><b>GerritCleanup:</b>This step cleans up the Gerrit environment, uploading the changes if the DoWork step is successfully 
+						completed or rejecting the change if the step fails:</p>
+            <ul>
+						<li><b>annotate:</b> This step approves or rejects the change and adds a comment to the change in Gerrit:<br />
+						<img src="../../plugins/EC-Gerrit/images/DevBuildExample/EC-Gerrit_DevBuildExample9.png" /> </li>
+						</ul>
+            </p>						
 
-            <p>Then, enter the following
-            parameters:</p><img src="../../plugins/EC-Gerrit/images/TeamBuildCleanup/EC-Gerrit_TeamBuildCleanup2.png" />
-             
-
-            <p>When the job is executed, you should see the
-            following job detail, note the output indicating the
-            job was completed in every
-            step:</p><img src="../../plugins/EC-Gerrit/images/TeamBuildCleanup/EC-Gerrit_TeamBuildCleanup3.png" />
-             
-
-            <p>The output of any step must be similar to the
-            following diagnostic report:</p>
-
-            <p><b>allocate:</b> this steps checks that the required
-            parameters in the configuration are correct. Has no
-            output if success, and if an error occurs, show the
-            detail of the error.</p>
-
-            <p><b>approve:</b> Get the changes from Gerrit and
-            overlay on top of local
-            repostiory:</p><img src="../../plugins/EC-Gerrit/images/TeamBuildCleanup/EC-Gerrit_TeamBuildCleanup4.png" />
-            </div>
-
-        <div class="procedure"
-             id="CustomBuildPrepare">
-            <a name='CustomBuildPrepare'
-                 id="CustomBuildPrepare"></a> 
-
-            <h3>CustomBuildPrepare</h3>
-
-            <p>All previous methods are references for how to use
-            the plugin. Custom builds use several helper methods
-            located in a property called API. With these helper
-            methods, you can access some Gerrit functions and
-            create new ones by querying the Gerrit database
-            directly, which provides additional flexibility.</p>
-
-            <p>The CustomBuildPrepare use the new helper methods to
-            prepare a environment to test all the changes open in
-            the gerrit server and which were scanned previously,
-            this can include changes from more than one
-            project.</p>
-
-            <table class="grid">
-                <thead>
-                    <tr>
-                        <th>Parameter</th>
-
-                        <th>Description</th>
-                    </tr>
-                </thead>
-
-                <tbody>
-                    <tr>
-                        <td class='required'>Gerrit Config</td>
-
-                        <td>The name of the config which holds all
-                        the connection information for Gerrit.</td>
-                    </tr>
-                </tbody>
-            </table>
-
-            <p>To prepare the custom build, select the following
-            highlighted
-            step:</p><img src="../../plugins/EC-Gerrit/images/CustomBuildPrepare/EC-Gerrit_CustomBuildPrepare1.png" />
-             
-
-            <p>Then, enter the following
-            parameters:</p><img src="../../plugins/EC-Gerrit/images/CustomBuildPrepare/EC-Gerrit_CustomBuildPrepare2.png" />
-             
-
-            <p>When the job is executed, you should see the
-            following job detail, note the output indicating the
-            job was completed in every
-            step:</p><img src="../../plugins/EC-Gerrit/images/CustomBuildPrepare/EC-Gerrit_CustomBuildPrepare3.png" />
-             
-
-            <p>The output of any step must be similar to the
-            following diagnostic report:</p>
-
-            <p><b>allocate:</b> this steps checks that the required
-            parameters in the configuration are correct. Has no
-            output if success, and if an error occurs, show the
-            detail of the error.</p>
-
-            <p><b>changes:</b> get the list of changes to be
-            processed and save for rest of procedure. Because this
-            procedure has no project parameter, the plugin search
-            for changes in all the gerrit projects, in this case
-            "ectest" and "ECGerritTest"
-            projects:</p><img src="../../plugins/EC-Gerrit/images/CustomBuildPrepare/EC-Gerrit_CustomBuildPrepare4.png" />
-             
-
-            <p><b>clone:</b> create a clone of the remote
-            repository:</p><img src="../../plugins/EC-Gerrit/images/CustomBuildPrepare/EC-Gerrit_CustomBuildPrepare5.png" />
-             
-
-            <p><b>revert:</b> get tree in clean state before
-            overlaying
-            files:</p><img src="../../plugins/EC-Gerrit/images/CustomBuildPrepare/EC-Gerrit_CustomBuildPrepare6.png" />
-             
-
-            <p><b>apply:</b> get the changes from Gerrit and
-            overlay on top of local
-            repository:</p><img src="../../plugins/EC-Gerrit/images/CustomBuildPrepare/EC-Gerrit_CustomBuildPrepare7.png" />
-            </div>
-
-        <h1>Examples and Use Cases</h1><br />
-         
-
-        <p>The ElectricCommander Gerrit Plugin provides a set of
-        preconfigured "example" procedures that involve the basic
-        process to clone the repository, get the selected changes,
-        run user defined builds and tests, and finally review and
-        approve or reject changes.</p>
-
-        <h2>DevBuildExample</h2>
-
-        <div class="procedure"
-             id="DevBuildExample">
-            <a name='DevBuildExample'
-                 id="DevBuildExample"></a> 
-
-            <p>The DevBuildExample procedure runs an example of a
-            developer build procedure.</p>
-
-            <table class="grid">
-                <thead>
-                    <tr>
-                        <th>Parameter</th>
-
-                        <th>Description</th>
-                    </tr>
-                </thead>
-
-                <tbody>
-                    <tr>
-                        <td class='required'>Change ID</td>
-
-                        <td>The short change id to be built. E.g.,
-                        "2".</td>
-                    </tr>
-
-                    <tr>
-                        <td class='required'>Gerrit Config</td>
-
-                        <td>The name of the config which holds all
-                        the connection information for Gerrit.</td>
-                    </tr>
-
-                    <tr>
-                        <td class='required'>Patch ID</td>
-
-                        <td>The patch set id to be built. E.g.,
-                        "1".</td>
-                    </tr>
-
-                    <tr>
-                        <td class='required'>Project</td>
-
-                        <td>The project that contains the change to
-                        build.</td>
-                    </tr>
-                </tbody>
-            </table>
-
-            <p>To run the DevBuildExample procedure, select the
-            following highlighted
-            step:</p><img src="../../plugins/EC-Gerrit/images/DevBuildExample/EC-Gerrit_DevBuildExample1.png" />
-             
-
-            <p>Then, enter the following
-            parameters:</p><img src="../../plugins/EC-Gerrit/images/DevBuildExample/EC-Gerrit_DevBuildExample2.png" />
-             
-
-            <p>When the job is executed, you should see the
-            following job detail, note the output indicating the
-            procedure was completed
-            successfully:</p><img src="../../plugins/EC-Gerrit/images/DevBuildExample/EC-Gerrit_DevBuildExample3.png" />
-             
-
-            <p>The output of any step must be similar to the
-            following diagnostic report:</p>
-
-            <p><b>GetCodeFromGerrit:</b> this step of the example
-            runs the DevBuildPrepare procedure to take the selected
-            change in the parameters and download a copy to work
-            with it:</p>
-
-            <p><b>- allocate:</b> this steps checks that the
-            required parameters in the configuration are correct.
-            Has no output if success, and if an error occurs, show
-            the detail of the error.</p>
-
-            <p><b>- annotate:</b> if this job was launched
-            manually, annotate Gerrit so it knows about the
-            job:</p><img src="../../plugins/EC-Gerrit/images/DevBuildExample/EC-Gerrit_DevBuildExample4.png" />
-             
-
-            <p><b>- clone:</b> create a clone of the remote
-            repository:</p><img src="../../plugins/EC-Gerrit/images/DevBuildExample/EC-Gerrit_DevBuildExample5.png" />
-             
-
-            <p><b>- revert:</b> get tree in clean state before
-            overlaying
-            files:</p><img src="../../plugins/EC-Gerrit/images/DevBuildExample/EC-Gerrit_DevBuildExample6.png" />
-             
-
-            <p><b>- apply:</b> get the changes from Gerrit and
-            overlay on top of local
-            repostory:</p><img src="../../plugins/EC-Gerrit/images/DevBuildExample/EC-Gerrit_DevBuildExample7.png" />
-             
-
-            <p><b>DoWork:</b> this step is used to do the build and
-            test procedures. In this example, the job only prints a
-            message:</p><img src="../../plugins/EC-Gerrit/images/DevBuildExample/EC-Gerrit_DevBuildExample8.png" />
-             
-
-            <p><b>GerritCleanup:</b> cleanup the Gerrit environment
-            uploading the changes if the "DoWork" is successfully
-            completed, or rejecting the change otherwise:</p>
-
-            <p><b>- annotate:</b> this step approve or reject the
-            change and add a comment to the change in
-            Gerrit:</p><img src="../../plugins/EC-Gerrit/images/DevBuildExample/EC-Gerrit_DevBuildExample9.png" />
             </div>
 
         <h2>TeamBuildExample</h2>
 
-        <div class="procedure"
-             id="TeamBuildExample">
-            <a name='TeamBuildExample'
-                 id="TeamBuildExample"></a> 
+        <div class="procedure" id="TeamBuildExample">
 
-            <p>The TeamBuildExample run a sample Team Build.</p>
+            <a name='TeamBuildExample' id="TeamBuildExample"></a> 
 
-            <table class="grid">
+            <p>The TeamBuildExample run a sample team build.</p>
+
+      <h3>Input</h3>
+						
+			<ol>
+			<li>Go to the TeamBuildExample procedure.</li>
+			<li>Enter the following parameters:<br />
+      <table class="grid">
                 <thead>
                     <tr>
-                        <th>Parameter</th>
-
+                       <th>Parameter</th>
                         <th>Description</th>
                     </tr>
                 </thead>
-
                 <tbody>
                     <tr>
                         <td class='required'>Branch</td>
-
-                        <td>The branch to use. E.g., "master".</td>
+                        <td>The branch to use, such as <i>master</i>.</td>
                     </tr>
-
                     <tr>
                         <td class='required'>Change ID</td>
-
-                        <td>The short change id to be built. E.g.,
-                        "5".</td>
+                        <td>The short change ID to build, such as <i>5</i>.</td>
                     </tr>
-
                     <tr>
                         <td class='required'>Gerrit Config</td>
-
-                        <td>The name of the config which holds all
-                        the connection information for Gerrit.</td>
+                        <td>The name of the configuration that has the connection information for Gerrit.</td>
                     </tr>
-
                     <tr>
                         <td class='required'>Patch ID</td>
-
-                        <td>The patch set id to be built. E.g.,
-                        "1".</td>
+                        <td>The patch set ID to build, such as <i>1</i>.</td>
                     </tr>
-
                     <tr>
                         <td class='required'>Project</td>
-
-                        <td>The project that contains the change to
-                        build.</td>
+                        <td>The project that contains the change to build.</td>
                     </tr>
-
                     <tr>
                         <td class='required'>Resource</td>
-
                         <td>The name of the resource to use.</td>
                     </tr>
                 </tbody>
             </table>
+				</li>
+						
+		<br />
+		<img src="../../plugins/EC-Gerrit/images/TeamBuildExample/EC-Gerrit_TeamBuildExample2.png" />
+		<br />
 
-            <p>To run the TeamBuildExample procedure, select the
-            following highlighted
-            step:</p><img src="../../plugins/EC-Gerrit/images/TeamBuildExample/EC-Gerrit_TeamBuildExample1.png" />
-             
-
-            <p>Then, enter the following
-            parameters:</p><img src="../../plugins/EC-Gerrit/images/TeamBuildExample/EC-Gerrit_TeamBuildExample2.png" />
-             
-
-            <p>When the job is executed, you should see the
-            following job detail, note the output indicating the
-            procedure was completed
-            successfully:</p><img src="../../plugins/EC-Gerrit/images/TeamBuildExample/EC-Gerrit_TeamBuildExample3.png" />
-             
-
-            <p>The output of any step must be similar to the
-            following diagnostic report:</p>
-
-            <p>GetCodeFromGerrit: run a test of Gerrit changes:</p>
-
-            <p><b>- allocate:</b> this steps checks that the
-            required parameters in the configuration are correct.
-            Has no output if success, and if an error occurs, show
-            the detail of the error.</p>
-
-            <p><b>- changes:</b> get the list of changes to be
-            processed and save for rest of
-            procedure:</p><img src="../../plugins/EC-Gerrit/images/TeamBuildExample/EC-Gerrit_TeamBuildExample4.png" />
-             
-
-            <p><b>- annotate:</b> Get the list of changes to be
-            processed and save for rest of
-            procedure:</p><img src="../../plugins/EC-Gerrit/images/TeamBuildExample/EC-Gerrit_TeamBuildExample5.png" />
-             
-
-            <p><b>- clone:</b> if needed, clone the remote repo in
-            gerrit to a working directory then fetch contents. The
-            tree should now be in sync with the head of the
-            master:</p><img src="../../plugins/EC-Gerrit/images/TeamBuildExample/EC-Gerrit_TeamBuildExample6.png" />
-             
-
-            <p><b>- revert:</b> get tree in clean state before
-            overlaying
-            files:</p><img src="../../plugins/EC-Gerrit/images/TeamBuildExample/EC-Gerrit_TeamBuildExample7.png" />
-             
-
-            <p><b>- apply:</b> get the changes from Gerrit and
-            overlay on top of local
-            repository:</p><img src="../../plugins/EC-Gerrit/images/TeamBuildExample/EC-Gerrit_TeamBuildExample8.png" />
-             
-
-            <p>DoWork: do the build and test
-            procedures:</p><img src="../../plugins/EC-Gerrit/images/TeamBuildExample/EC-Gerrit_TeamBuildExample9.png" />
-             
-
-            <p>GerritCleanup: cleanup the Gerrit environment:</p>
-
-            <p><b>- allocate:</b> this steps checks that the
-            required parameters in the configuration are correct.
-            Has no output if success, and if an error occurs, show
-            the detail of the error.</p>
-
-            <p><b>- approve:</b> Get the changes from Gerrit and
-            overlay on top of local
-            repostiory:</p><img src="../../plugins/EC-Gerrit/images/TeamBuildExample/EC-Gerrit_TeamBuildExample10.png" />
+		</ol>   
+						
+		<h3>Output</h3>
+						
+		<p>After the job runs, you can view the results on the Job Details page in ElectricCommander. The procedure was completed successfully.</p>
+		<img src="../../plugins/EC-Gerrit/images/TeamBuildExample/EC-Gerrit_TeamBuildExample3.png" />
+		
+		<p>In the <b>TeamBuildExample</b> step, click the Log button to see the diagnostic information. 
+		The output is similar to the following diagnostic report:</p>	
+		
+		        <p><b>GetCodeFromGerrit:</b> This runs a test of Gerrit changes:</p>
+						<ul>
+						<li><b>allocate:</b>  This step checks that the required parameters in the configuration are correct. It has no output if the job
+						is successful. If an error occurs, it shows the error details.</li>
+						<li><b>change:</b>  This gets the list of changes to be processed and saves them for the rest of procedure<br />
+						<img src="../../plugins/EC-Gerrit/images/TeamBuildExample/EC-Gerrit_TeamBuildExample4.png" /></li>
+						<li><b>annotate:</b>  This gets the list of changes to be processed and saves them for the rest of procedure:<br />
+						<img src="../../plugins/EC-Gerrit/images/TeamBuildExample/EC-Gerrit_TeamBuildExample5.png" /></li>
+						<li><b>clone:</b> If needed, this clones the remote repository in Gerrit to a working directory and gets the contents. 
+						The tree should now be synchronized with the head of the master:<br />
+						<img src="../../plugins/EC-Gerrit/images/TeamBuildExample/EC-Gerrit_TeamBuildExample6.png" /></li>
+						<li><b>revert:</b> This gets the tree in the clean state before overlaying files:<br />
+						<img src="../../plugins/EC-Gerrit/images/TeamBuildExample/EC-Gerrit_TeamBuildExample7.png" /> </li>
+						<li><b>apply:</b> This gets the changes from Gerrit and overlays them on top of local repostory:<br />
+						<img src="../../plugins/EC-Gerrit/images/TeamBuildExample/EC-Gerrit_TeamBuildExample8.png" /> </li>
+						</ul> 
+						
+						<p><b>DoWork:</b> This step does the build and test procedures. In this example, the job only prints a message:</p>
+						<img src="../../plugins/EC-Gerrit/images/TeamBuildExample/EC-Gerrit_TeamBuildExample9.png" />
+            
+						<p><b>GerritCleanup:</b>This step cleans up the Gerrit environment:</p>
+            <ul>
+						<li><b>allocate:</b> This step checks that the required parameters in the configuration are correct. It has no output if the job
+						is successful. If an error occurs, it shows the error details.</li>
+						<li><b>approve:</b> This gets the changes from Gerrit and overlays them on top of local repostory:<br />
+						<img src="../../plugins/EC-Gerrit/images/TeamBuildExample/EC-Gerrit_TeamBuildExample10.png" /> </li>
+						</ul>
+        		
             </div>
-
-        <h2>CustomBuildExample</h2>
-
-        <div class="procedure"
-             id="CustomBuildExample">
-            <a name='CustomBuildExample'
-                 id="CustomBuildExample"></a> 
-
-            <p>This procedures runs a sample Custom Build using the
-            helper methods. The execution of this procedure runs
-            the "CustomBuildPrepare", "DoWork" and
-            "TeamBuildCleanup" procedures as steps. The "DoWork"
-            step is the section where the builds and tests steps
-            must be runned until the "TeamBuildCleanup" to approve
-            or reject the changes.</p>
-
-            <table class="grid">
-                <thead>
-                    <tr>
-                        <th>Parameter</th>
-
-                        <th>Description</th>
-                    </tr>
-                </thead>
-
-                <tbody>
-                    <tr>
-                        <td class='required'>Gerrit Config</td>
-
-                        <td>The name of the config which holds all
-                        the connection information for Gerrit.</td>
-                    </tr>
-                </tbody>
-            </table>
-
-            <p>To run the custom build example, select the
-            following highlighted
-            step:</p><img src="../../plugins/EC-Gerrit/images/CustomBuildExample/EC-Gerrit_CustomBuildExample1.png" />
-             
-
-            <p>Then, enter the following
-            parameters:</p><img src="../../plugins/EC-Gerrit/images/CustomBuildExample/EC-Gerrit_CustomBuildExample2.png" />
-             
-
-            <p>When the job is executed, you should see the
-            following job detail, note the output indicating the
-            job was completed in every
-            step:</p><img src="../../plugins/EC-Gerrit/images/CustomBuildExample/EC-Gerrit_CustomBuildExample3.png" />
-             
-
-            <p>The output of any step must be similar to the
-            following diagnostic report:</p>
-
-            <p><b>GetCodeFromGerrit:</b> prepare the custom build
-            using the CustomBuildPrepare procedure:</p>
-
-            <p><b>- allocate:</b> this steps checks that the
-            required parameters in the configuration are correct.
-            Has no output if success, and if an error occurs, show
-            the detail of the error.</p>
-
-            <p><b>- changes:</b> get the list of changes to be
-            processed and save for rest of procedure. Because this
-            procedure has no project parameter, the plugin search
-            for changes in all the gerrit projects, in this case
-            "ectest" and "ECGerritTest"
-            projects:</p><img src="../../plugins/EC-Gerrit/images/CustomBuildExample/EC-Gerrit_CustomBuildExample4.png" />
-             
-
-            <p><b>- clone:</b> create a clone of the remote
-            repository:</p><img src="../../plugins/EC-Gerrit/images/CustomBuildExample/EC-Gerrit_CustomBuildExample5.png" />
-             
-
-            <p><b>- revert:</b> get tree in clean state before
-            overlaying
-            files:</p><img src="../../plugins/EC-Gerrit/images/CustomBuildExample/EC-Gerrit_CustomBuildExample6.png" />
-             
-
-            <p><b>- apply:</b> get the changes from Gerrit and
-            overlay on top of local
-            repository:</p><img src="../../plugins/EC-Gerrit/images/CustomBuildExample/EC-Gerrit_CustomBuildExample7.png" />
-             
-
-            <p><b>DoWork:</b> used to run builds and the
-            tests:</p><img src="../../plugins/EC-Gerrit/images/CustomBuildExample/EC-Gerrit_CustomBuildExample8.png" />
-             
-
-            <p><b>GerritCleanup:</b> mark the changes as approved
-            if success:</p>
-
-            <p><b>- allocate:</b> this steps checks that the
-            required parameters in the configuration are correct.
-            Has no output if success, and if an error occurs, show
-            the detail of the error.</p>
-
-            <p><b>- approve:</b> Get the changes from Gerrit and
-            overlay on top of local
-            repostiory:</p><img src="../../plugins/EC-Gerrit/images/CustomBuildExample/EC-Gerrit_CustomBuildExample9.png" />
-            </div>
+						
+        </div>
 
         <h1>Release Notes</h1>
 
         <h2>EC-Gerrit-2.1.0</h2>
 
         <ul>
-            <li>Added support for Gerrit v2.8.5</li>
-            <li>Updated plugin logic to support Gerrit review labels 'Code-Review' and 'Verified'.
-                Starting with Gerrit version 2.6, the 'Verified' label is no longer installed by default.
-                Please follow the steps documented <a href="#gerrit-verified-label">here</a> to install the
-                label for use with ElectricCommander.</li>
+
+            <li>Added support for Gerrit 2.8.5.</li>
+            <li>Updated the plugin logic to support the Gerrit review labels called <i>Code-Review</i> and <i>Verified</i>. Starting with 
+						Gerrit 2.6, the Verified label is no longer installed by default. Follow the steps <a href="#gerrit-verified-label">here</a> to install 
+						the label that can be used with ElectricCommander.</li>
             <li>Updated the plugin logic to handle user names specified in build rule filters.</li>
-            <li>Allowed the 'Repository Server' configuration parameter to optionally accept the protocol it
-                uses for data transfer as part of the parameter value. So now, the 'Repository Server'
-                value can now be set as "ssh://my_gerrit_server.my_domain.com" if "my_gerrit_server.my_domain.com"
-                is using Secure Shell. In order to maintain backward-compatibility, if the value is specified
-                without any protocol as "my_gerrit_server.my_domain.com", 'git' will be assumed to be the protocol
-                being used by default.</li>
-            <li>Deprecated 'SetupGerritServer' procedure. This procedure is no longer supported with Gerrit version 2.6
-                and above. Please follow the steps documented <a href="#gerrit-setup">here</a> to help setup Gerrit for
-                use with ElectricCommander.</li>
-            <li>Added a 'revert' step to 'DevBuildCleanup' and 'TeamBuildCleanup' procedures to revert any uncommitted
-                changes from the working directory as part of the cleanup.</li>
-            <li>Added 'postProcessor's to track the progress of the plugin procedures.</li>
+            <li>Allowed the <i>Repository Server</i> configuration parameter to optionally accept the protocol it uses for data transfer as part 
+						of the parameter value. The <i>Repository Server</i> value can now be set as <i>ssh://my_gerrit_server.my_domain.com</i> if 
+						<i>my_gerrit_server.my_domain.com</i> is using Secure Shell (SSH). To maintain backward-compatibility, if the value is specified without any protocol 
+						as <i>my_gerrit_server.my_domain.com</i>, <i>Git</i> is assumed to be the protocol by default.</li>
+            <li>Deprecated the SetupGerritServer procedure. This procedure is no longer supported in Gerrit 2.6 and later. Follow the steps 
+						<a href="#gerrit-setup">here</a> to configure Gerrit to work with ElectricCommander.</li>
+            <li>Added a <i>revert</i> step to the DevBuildCleanup and TeamBuildCleanup procedures to revert any uncommitted changes from the working directory 
+						as part of the cleanup.</li>
+            <li>Added postProcessors to track the progress of the plugin procedures.</li>
         </ul>
 
         <h2>EC-Gerrit-2.0.4</h2>
-
-        <ul>
-            <li>Fixed manifest file.</li>
+       
+			  <ul>
+            <li>Fixed the manifest file.</li>
         </ul>
 
         <h2 class="help">EC-Gerrit-2.0.3</h2>
-
-        <ul>
-            <li>Updated the logic for applying eligible pending changes to honor project paths defined in the repo manifest.</li>
+   
+	      <ul>
+            <li>Updated the logic for applying eligible pending changes to honor project paths defined in the repository manifest.</li>
         </ul>
 
         <h2 class="help">EC-Gerrit-2.0.2.0</h2>
 
         <ul>
-            <li>Small bug fixes</li>
+            <li>Fixed minor bugs.</li>
         </ul>
-		
-        <h2 class="help">EC-Gerrit-2.0.1.0</h2>
+
+	      <h2 class="help">EC-Gerrit-2.0.1.0</h2>
 
         <ul>
-            <li>New xml parameter panels</li>
-
-            <li>Improvements to the help page</li>
-
-            <li>Steps added to the step chooser</li>
-
-            <li>Bug fix related to the cloning of the
-            repositories</li>
+            <li>Added new XML parameter panels.</li>
+            <li>Made improvements to the Help page.</li>
+            <li>Added steps to the step chooser.</li>
+            <li>Fixed a bug related to the cloning of the repositories.</li>
         </ul>
 
         <h2 class="help">EC-Gerrit-1.3.6.0</h2>
 
         <ul>
-            <li>Minor API improvements</li>
+            <li>Made minor API improvements.</li>
         </ul>
 
         <h2 class="help">EC-Gerrit-1.3.5.0</h2>
 
         <ul>
-            <li>Support for mySQL</li>
+            <li>Added support for mySQL.</li>
         </ul>
 
         <h2 class="help">EC-Gerrit-1.3.4.0</h2>
 
         <ul>
-            <li>Fix a bug with the pseudo code snippet
-            execution</li>
+            <li>Fixed a bug with the pseudo code snippet execution.</li>
         </ul>
 
         <h2 class="help">EC-Gerrit-1.3.3.0</h2>
 
         <ul>
-            <li>Small bug fixes</li>
+            <li>Made minor bug fixes.</li>
         </ul>
 
         <h2 class="help">EC-Gerrit-1.3.2.0</h2>
 
         <ul>
-            <li>Small bug fixes</li>
+            <li>Made minor bug fixes.</li>
         </ul>
 
         <h2 class="help">EC-Gerrit-1.3.1.0</h2>
 
         <ul>
-            <li>Download changes</li>
-
-            <li>Multiscope properties</li>
+            <li>Downloaded changes.</li>
+            <li>Added multiscope properties.</li>
         </ul>
 
         <h2 class="help">EC-Gerrit-1.2.0.0</h2>
 
         <ul>
-            <li>Grouping features</li>
-
-            <li>Support for scanning single changes</li>
+            <li>Added grouping features.</li>
+            <li>Added support for scanning single changes.</li>
         </ul>
 
         <h2 class="help">EC-Gerrit-1.1.1.0</h2>
 
         <ul>
-            <li>Support Gerrit v2.1.3</li>
-
-            <li>Use the command line "review" command instead of
-            "approve"</li>
-
-            <li>Use perl Net:SSH2 library for SSH commands instead
-            of shelling to SSH command</li>
-
-            <li>Break up configuration of the Gerrit server into
-            three parts (server/user/port)</li>
-
-            <li>Add configuration for SSH key locations (will not
-            search ~/.ssh)</li>
-
-            <li>Add new helper methods</li>
-
-            <li>Project/branches manifest file can be used to
-            filter the changes</li>
+            <li>Added support Gerrit 2.1.3.</li>
+            <li>Now use the <b>review</b> command instead of <b>approve</b> on the command line.</li>
+            <li>Now use perl Net:SSH2 library for SSH commands instead of shelling to SSH command.</li>
+            <li>Separated the configuration of the Gerrit server into three parts (server, user, and port).</li>
+            <li>Added SSH key locations in the plugin configuration (no longer searching ~/.ssh for them).</li>
+            <li>Added new helper methods.</li>
+            <li>The project/branches manifest file can now be used to filter the changes.</li>
         </ul>
-    </div>
+		    
 </body>
+
 </html>
+
