@@ -185,12 +185,10 @@ sub gerrit_db_query {
 
     my $input = "$operation\n\\q\n";
     #my $input = "$operation";
-    if (($::gTableCase ne '') && ($::gTableCase ne 'checking'))
-    {
-        $self->debugMsg(3,"========command =========");
-        $self->debugMsg(3, $operation);
-        $self->debugMsg(3,"========raw output ======");
-    }
+    $self->debugMsg(3,"========command =========");
+    $self->debugMsg(3, $operation);
+    $self->debugMsg(3,"========raw output ======");
+
     my ($exit,$out) = $self->runCmd("$gcmd","$input");
     if ($exit != 0 ) {
         # if command did not succeed we should exit
@@ -199,9 +197,7 @@ sub gerrit_db_query {
         $self->showMsg("$out");
         $self->showError("error running command $gcmd ($exit)");
     }
-    if (($::gTableCase ne '') && ($::gTableCase ne 'checking')) {
-        $self->debugMsg(3, $out) 
-    }
+    $self->debugMsg(3, $out);
 
     my $row = 0;
     my (@lines) = split(/\n/,$out);
@@ -984,7 +980,7 @@ sub check_count {
 sub get_user {
     my ($self,$id) = @_;
     #Reference: https://groups.google.com/forum/#!topic/repo-discuss/b_enE_dXrOI
-    my @accounts = $self->gerrit_db_query("SELECT external_id FROM ". $self->t('account_external_ids')." WHERE ACCOUNT_ID = '$id' AND EXTERNAL_ID LIKE 'username:%';");
+    my @accounts = $self->gerrit_db_query("SELECT EXTERNAL_ID FROM ". $self->t('ACCOUNT_EXTERNAL_IDS')." WHERE ACCOUNT_ID = '$id' AND EXTERNAL_ID LIKE 'username:%';");
     if (scalar(@accounts) == 0 || !$accounts[0]->{columns}{external_id}) {
         $self->showError("No account found for user $id.");
         return "";
@@ -1292,9 +1288,7 @@ sub runCmd {
         $self->getSSHPvt,
         );
    
-   if (($::gTableCase ne '') && ($::gTableCase ne 'checking'))    {    
-        $self->debugMsg(4,"runCmd:$cmd\ninput:$input\n");
-    }
+    $self->debugMsg(4,"runCmd:$cmd\ninput:$input\n");
     my ($exit,$out) = $self->ssh_runCommand($c,$cmd,$input);
     return ($exit,$out);
 
@@ -1941,7 +1935,10 @@ sub debugMsg {
 #
 # could result in very large datasets
 # should only be used in development
-# on small gerrit dbs
+# on small gerrit dbs.
+# This sub-routine is not supported in production and
+# may only be used in development with either
+# H2 or MySql databases.
 ###############################################
 sub printAllTables {
     my $self = shift;
@@ -2288,28 +2285,19 @@ sub is_int{
 sub t {
    my ($self, $name) = @_;
   
-   if ($::gTableCase eq '') {  
-      $self->set_table_case();
+   if (!$::gTableCase) {
+        my $useUpper = $self->getCmdr()->getPropertyValue("/myProject/use_upper_case_table_names");
+        if ($useUpper) {
+            $::gTableCase = "upper";
+        } else {
+            $::gTableCase = "lower";
+        }
    }   
-   if ($::gTableCase eq 'lower') {      
+   if ($::gTableCase eq "lower") {
       return lc($name);        
-   }elsif ($::gTableCase eq 'upper') {   
+   }elsif ($::gTableCase eq "upper") {
       return uc($name);
    }
 }
 
-sub set_table_case {
-    my ($self, $opts) = @_;   
-    my $query =  'SHOW TABLES;';    
-    $::gTableCase = "checking";    
-    my @tables = $self->gerrit_db_query($query); 
-    my $table = @tables[0]->{columns}{table_name};
-
-    if ($table !~ m/[A-Z]/) {
-       $::gTableCase = 'lower';
-    } else {
-        $::gTableCase = 'upper';
-    }    
-    return 1;
-}
 1;

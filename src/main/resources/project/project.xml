@@ -107,6 +107,12 @@
                 <expandable>1</expandable>
                 <value/>
             </property>
+            <property>
+                <propertyName>use_upper_case_table_names</propertyName>
+                <description>Whether gsql queries should use upper-case table names. Set to 0 by default to have the gsql queries use lower-case table names. This property can be set to 1 to have gsql queries use upper-case table names.</description>
+                <expandable>1</expandable>
+                <value>0</value>
+            </property>
 		</propertySheet>
 		<procedure>
 			<procedureName>CreateConfiguration</procedureName>

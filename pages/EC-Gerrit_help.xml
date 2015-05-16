@@ -1057,6 +1057,17 @@
         </div>
 
         <h1>Release Notes</h1>
+        <h2>EC-Gerrit-2.1.1</h2>
+
+        <ul>
+            <li>Updated the plugin to support PostgresSQL database with Gerrit.</li>
+            <li>Added a plugin property <i>use_upper_case_table_names</i> to determine whether gsql queries
+                should use upper-case table names. The property is set to 0 by default to have the gsql
+                queries use lower-case table names. Queries to PostgresSQL and Oracle databases are not
+                impacted by this setting. For MySQL database, if the default case-sensitivity for table names
+                was changed by explicitly setting the MySQL system variable lower_case_table_names,
+                the plugin property <i>use_upper_case_table_names</i> should be updated accordingly.</li>
+        </ul>
 
         <h2>EC-Gerrit-2.1.0</h2>
 
