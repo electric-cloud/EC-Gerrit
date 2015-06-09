@@ -6,7 +6,7 @@
     <meta name="generator"
           content="HTML Tidy for Windows (vers 14 February 2006), see www.w3.org" />
     <meta content="text/html; charset=us-ascii" http-equiv="content-type" />
-    <title>ElectricCommander Plugin for Gerrit</title>
+    <title>ElectricFlow Plugin for Gerrit</title>
     <link rel="stylesheet" href="../../plugins/@PLUGIN_KEY@/pluginhelp.css" type="text/css" media="screen" />
 </head>
 
@@ -33,7 +33,7 @@
 				<ul>
 				<li><p><a href="#overview">Overview</a></p></li>
 				<li><p><a href="#setupconfig">Setting Up the Plugin Configuration</a></p></li>
-				<li><p><a href="#ElectricFlow">Setting Up ElectricCommander</a></p></li>
+				<li><p><a href="#ElectricFlow">Setting Up ElectricFlow</a></p></li>
 				<li><p><a href="#procedures">Plugin Procedures</a></p></li>
 				<ul>
 				<li><a href="#CustomBuildPrepare">CustomBuildPrepare</a></li>
@@ -64,25 +64,25 @@
 
         <p>For more information about Gerrit, go to the <a href="http://code.google.com/p/gerrit/">Gerrit Home Page</a>.</p>
 
-        <h2>ElectricCommander Integration to Gerrit</h2>
+        <h2>ElectricFlow Integration to Gerrit</h2>
 
         <!-- The integration description should answer the questions: How deep does our integration go? Why should I care? 
 				What general functionality does the plugin include? What functionality does the plugin omit? -->
 
-        <p>The ElectricCommander Gerrit plugin simplifies the build/test approval process. The goal is to run tests automatically 
+        <p>The ElectricFlow Gerrit plugin simplifies the build/test approval process. The goal is to run tests automatically 
 				before the reviewer looks at the change, although a setting is available to run builds on demand only. The Android team 
 				published a <a href="http://source.android.com/submit-patches/workflow">diagram</a> that describes the workflow for 
 				submitting changes. </p> 
-				<p>ElectricCommander automates the step after "A" titled "Verifier patches the commit to their local client, then builds and 
+				<p>ElectricFlow automates the step after "A" titled "Verifier patches the commit to their local client, then builds and 
 				tests the change" for you. The plugin works closely with Gerrit by adding links to run builds and to finished builds directly 
-				in Gerrit change comments. ElectricCommander can also act as a reviewer by automatically setting a Gerrit category to a value 
+				in Gerrit change comments. ElectricFlow can also act as a reviewer by automatically setting a Gerrit category to a value 
 				based on the build success or failure. The plugin communicates with the Gerrit server to retrieve information about the change, 
 				including the commands used to pull files in a patch set. </p>
 				<ol>
 				<li>A full repository is initialized to the head of a specified branch.</li>
 				<li>Changes submitted to Gerrit (adds/deletes/modifies) are overlaid.</li>
 				<li>A build that you create runs. This build can do whatever you need, from running a simple "make" operation to running 
-				complicated automatic test suites with physical hardware. You decide what determines test success or failure, and ElectricCommander 
+				complicated automatic test suites with physical hardware. You decide what determines test success or failure, and ElectricFlow 
 				annotates Gerrit with your build results.</li>
 				</ol>
 			
@@ -181,16 +181,16 @@
                         <td>The full path of the private key for SSH connection to Gerrit, such as <i>home/usergerrit/.ssh/id_rsa</i>.</td>
                     </tr>
                     <tr>
-                        <td class='required'>ElectricCommander Server</td>
-                        <td>The Commander server name.</td>
+                        <td class='required'>ElectricFlow Server</td>
+                        <td>The ElectricFlow server name.</td>
                     </tr>
                     <tr>
                         <td class='required'>Project for Developer Builds</td>
-                        <td>The ElectricCommander project that contains the procedure for developer builds, such as <i>EC-Gerrit-2.0.1.0</i>.</td>
+                        <td>The ElectricFlow project that contains the procedure for developer builds, such as <i>EC-Gerrit-2.0.1.0</i>.</td>
                     </tr>
                     <tr>
                         <td class='required'>Procedure for Developer Builds</td>
-                        <td>The Commander procedure that will be called for developer builds, such as <i>DevBuildExample</i>.</td>
+                        <td>The ElectricFlow procedure that will be called for developer builds, such as <i>DevBuildExample</i>.</td>
                     </tr>
                     <tr>
                         <td class='required'>Project/branches manifest file</td>
@@ -255,14 +255,14 @@
                             <p><b>Example</b></p>
                             <p>FILTER MAX Code-Review ge +2<br />
                              FILTER MIN Code-Review gt -2<br />
-                             FILTER COUNT Verified eq 0 USER ne commander<br />
-                             FILTER MAX Verified le 0 USER eq commander<br />
+                             FILTER COUNT Verified eq 0 USER ne electricflow<br />
+                             FILTER MAX Verified le 0 USER eq electricflow<br />
                              ACTION SUCCESS Verified +1<br />
                              ACTION ERROR Verified -1<br />
                             <br />
                              Meaning: include all changes with at least a +2 Code Review, no -2 Code Reviews, 
-														 no Verifications by anyone other than the Commander user, no Verifications greater than 0 from the 
-														 Commander user. When you complete the build, set the Verified label to +1 if the build succeeded and -1 
+														 no Verifications by anyone other than the ElectricFlow user, no Verifications greater than 0 from the 
+														 ElectricFlow user. When you complete the build, set the Verified label to +1 if the build succeeded and -1 
 														 if the build failed.</p>
                        </td>
                     </tr>
@@ -290,24 +290,24 @@
 						
 		</div>
 		
-		<h1>Setting Up ElectricCommander</h1>
+		<h1>Setting Up ElectricFlow</h1>
 		
 		<div class="procedure" id="ElectricFlow">
 
             <a name='ElectricFlow' id="ElectricFlow"></a> 
 
-           	<p>You perform these procedures in the ElectricCommander UI.</p>
+           	<p>You perform these procedures in the ElectricFlow UI.</p>
 				
-				    <h2>Creating ElectricCommander Resources</h2>
+				    <h2>Creating ElectricFlow Resources</h2>
 						
             <p>Create one or more resources where your builds will run. Group these resources in one or more pools. When you create the 
 						Gerrit plugin configuration later, you can specify a pool name for the resources to use.</p>
 						
 						<p>You can also set a special property called <i>gerrit_working_dir</i> for each resource. The value of this property is the directory 
-						where you want to put build sources. This directory can be relative to the current directory (the standard ElectricCommander workspace 
+						where you want to put build sources. This directory can be relative to the current directory (the standard ElectricFlow workspace 
 						created for the build) or absolute.</p>
 						
-						<p>When the plugin runs, it checks if the directory exists. If the directory is found, ElectricCommander assumes there is a 
+						<p>When the plugin runs, it checks if the directory exists. If the directory is found, ElectricFlow assumes there is a 
 						repository and only synchronizes changes. If the directory is not found, the plugin creates one and does a full initialization and 
 						synchronization of the repository. Because this process can be time consuming, the plugin also supports using cached directories.<br /> 
 						You can setup one or more locations where builds can be run. Directory contents are not deleted after a build so the plugin 
@@ -316,7 +316,7 @@
 
             <p>This example shows how to create resource.</p>
 						<ol>
-						<li>Go to the <b>Cloud</b> tab in the ElectricCommander UI. <br />
+						<li>Go to the <b>Cloud</b> tab in the ElectricFlow UI. <br />
 						You can create the resource using the Gerrit tool or edit an existing one:
 						<img src="../../plugins/EC-Gerrit/images/Resource/EC-Gerrit_Resource1.png" /></li>
 						<li>Provide the parameters to create the resource.</li>
@@ -326,9 +326,9 @@
 
 						<h2>Scheduling When The Gerrit Server is Scanned</h2>
 						
-			      <p>The plugin scans your Gerrit server for changes every 15 minutes. based on an ElectricCommander schedule. If you want to 
+			      <p>The plugin scans your Gerrit server for changes every 15 minutes. based on an ElectricFlow schedule. If you want to 
 						change this frequency, modify the "Gerrit New Change Scanner" schedule in the <b>Administration</b> > <b>Plugins</b> > 
-						<b>EC-Gerrit</b> > <b>Schedules</b> page in ElectricCommander.</p>
+						<b>EC-Gerrit</b> > <b>Schedules</b> page in ElectricFlow.</p>
 
             <h2>Changing Resources in Procedures</h2>
 					  <p>The resource for some procedures is set to <i>local</i> for your convenience. However, if you need to change the resource, 
@@ -388,7 +388,7 @@
 						
 		<h3>Output</h3>
 						
-		<p>After the job runs, you can view the results on the Job Details page in ElectricCommander. Every job step was completed successfully.</p>
+		<p>After the job runs, you can view the results on the Job Details page in ElectricFlow. Every job step was completed successfully.</p>
 		<img src="../../plugins/EC-Gerrit/images/CustomBuildPrepare/EC-Gerrit_CustomBuildPrepare3.png" />
 		
 		<p>In the <b>CustomBuildPrepare</b> step, click the Log button to see the diagnostic information. 
@@ -466,7 +466,7 @@
 						
 		<h3>Output</h3>
 						
-		<p>After the job runs, you can view the results on the Job Details page in ElectricCommander. The procedure was completed successfully.</p>
+		<p>After the job runs, you can view the results on the Job Details page in ElectricFlow. The procedure was completed successfully.</p>
 		<img src="../../plugins/EC-Gerrit/images/DevBuildCleanup/EC-Gerrit_DevBuildCleanup3.png" />
 		
 		<p>In the <b>DevBuildCleanup</b> step, click the Log button to see the diagnostic information. 
@@ -481,7 +481,7 @@
 
             <h2>DevBuildPrepare</h2>
 
-            <p>Developer builds are used to build a single patch set submitted by a developer. ElectricCommander scans Gerrit on a 
+            <p>Developer builds are used to build a single patch set submitted by a developer. ElectricFlow scans Gerrit on a 
 						regular basis to find new patch sets to process. What the plugin does depends on the value you set for the <b>Developer Build Mode</b> 
 						in your plugin configuration.</p>
 
@@ -529,7 +529,7 @@
 						
 		<h3>Output</h3>
 						
-		<p>After the job runs, you can view the results on the Job Details page in ElectricCommander. The procedure was completed 
+		<p>After the job runs, you can view the results on the Job Details page in ElectricFlow. The procedure was completed 
 		successfully.</p>
 		<img src="../../plugins/EC-Gerrit/images/DevBuildPrepare/EC-Gerrit_DevBuildPrepare3.png" />
 		
@@ -578,7 +578,7 @@
 						
 		<h3>Output</h3>
 						
-		<p>After the job runs, you can view the results on the Job Details page in ElectricCommander. The procedure was completed successfully.</p>
+		<p>After the job runs, you can view the results on the Job Details page in ElectricFlow. The procedure was completed successfully.</p>
 		<img src="../../plugins/EC-Gerrit/images/DeveloperScan/EC-Gerrit_DeveloperScan2.png" />
 		
 		<p>In the <b>DeveloperScan</b> step, click the Log button to see the diagnostic information. 
@@ -593,10 +593,10 @@
 						
 			 <h2>SetupGerritServer</h2>
 
-			 <p>[Deprecated] The SetupGerritServer procedure sets the default settings into Gerrit used with the ElectricCommander. 
+			 <p>[Deprecated] The SetupGerritServer procedure sets the default settings into Gerrit used with the ElectricFlow. 
 						This is the default method in Gerrit 2.6 and earlier. It sets the Commander user in Gerrit and also the approval bits needed for the integration.	
 						If you want to include different categories of approval bits, go to the <a href="http://code.google.com/p/gerrit/">Gerrit Home Page</a> for more information. 
-            Follow the steps <a href="#gerrit-setup">here</a> to set up Gerrit to be used with ElectricCommander.</p>
+            Follow the steps <a href="#gerrit-setup">here</a> to set up Gerrit to be used with ElectricFlow.</p>
 		
 		  <h3>Input</h3>
 						
@@ -627,7 +627,7 @@
 						
 		<h3>Output</h3>
 						
-		<p>After the job runs, you can view the results on the Job Details page in ElectricCommander. The procedure was completed successfully.</p>
+		<p>After the job runs, you can view the results on the Job Details page in ElectricFlow. The procedure was completed successfully.</p>
 		<img src="../../plugins/EC-Gerrit/images/SetupGerritServer/EC-Gerrit_SetupGerritServer3.png" />
 		
 		<p>In the <b>SetupGerritServer</b> step, click the Log button to see the diagnostic information. 
@@ -645,7 +645,7 @@
             <p>Team builds are designed for the build and release team. These builds combine changes of one or more patch sets to test 
 						how multiple changes will work together. The plugin finds patch sets based on rules provided in the <i>Team Build Rules</i> 
 						property in the plugin configuration. The plugin does not run team builds automatically. You must run team build procedures 
-						from ElectricCommander.</p>
+						from ElectricFlow.</p>
 
             <p>The TeamBuildCleanup procedure marks the changes as approved if the job is successful. It also reverts any uncommitted changes from 
 						the working directory.</p>
@@ -697,7 +697,7 @@
 						
 		<h3>Output</h3>
 						
-		<p>After the job runs, you can view the results on the Job Details page in ElectricCommander. Every job step was completed successfully.</p>
+		<p>After the job runs, you can view the results on the Job Details page in ElectricFlow. Every job step was completed successfully.</p>
 		<img src="../../plugins/EC-Gerrit/images/TeamBuildCleanup/EC-Gerrit_TeamBuildCleanup3.png" />
 		
 		<p>In the <b>TeamBuildCleanup</b> step, click the Log button to see the diagnostic information. 
@@ -769,7 +769,7 @@
 						
 		<h3>Output</h3>
 						
-		<p>After the job runs, you can view the results on the Job Details page in ElectricCommander. Every job step was completed successfully.</p>
+		<p>After the job runs, you can view the results on the Job Details page in ElectricFlow. Every job step was completed successfully.</p>
 		<img src="../../plugins/EC-Gerrit/images/TeamBuildPrepare/EC-Gerrit_TeamBuildPrepare3.png" />
 		
 		<p>In the <b>TeamBuildPrepare</b> step, click the Log button to see the diagnostic information. 
@@ -847,7 +847,7 @@
 						
 		<h3>Output</h3>
 						
-		<p>After the job runs, you can view the results on the Job Details page in ElectricCommander. Every job step was completed successfully.</p>
+		<p>After the job runs, you can view the results on the Job Details page in ElectricFlow. Every job step was completed successfully.</p>
 		<img src="../../plugins/EC-Gerrit/images/CustomBuildExample/EC-Gerrit_CustomBuildExample3.png" />
 		
 		<p>In the <b>CustomBuildExample</b> step, click the Log button to see the diagnostic information. 
@@ -927,7 +927,7 @@
 						
 		<h3>Output</h3>
 						
-		<p>After the job runs, you can view the results on the Job Details page in ElectricCommander. The procedure was completed successfully.</p>
+		<p>After the job runs, you can view the results on the Job Details page in ElectricFlow. The procedure was completed successfully.</p>
 		<img src="../../plugins/EC-Gerrit/images/DevBuildExample/EC-Gerrit_DevBuildExample3.png" />
 		
 		<p>In the <b>DevBuildExample</b> step, click the Log button to see the diagnostic information. 
@@ -1018,7 +1018,7 @@
 						
 		<h3>Output</h3>
 						
-		<p>After the job runs, you can view the results on the Job Details page in ElectricCommander. The procedure was completed successfully.</p>
+		<p>After the job runs, you can view the results on the Job Details page in ElectricFlow. The procedure was completed successfully.</p>
 		<img src="../../plugins/EC-Gerrit/images/TeamBuildExample/EC-Gerrit_TeamBuildExample3.png" />
 		
 		<p>In the <b>TeamBuildExample</b> step, click the Log button to see the diagnostic information. 
@@ -1076,14 +1076,14 @@
             <li>Added support for Gerrit 2.8.5.</li>
             <li>Updated the plugin logic to support the Gerrit review labels called <i>Code-Review</i> and <i>Verified</i>. Starting with 
 						Gerrit 2.6, the Verified label is no longer installed by default. Follow the steps <a href="#gerrit-verified-label">here</a> to install 
-						the label that can be used with ElectricCommander.</li>
+						the label that can be used with ElectricFlow.</li>
             <li>Updated the plugin logic to handle user names specified in build rule filters.</li>
             <li>Allowed the <i>Repository Server</i> configuration parameter to optionally accept the protocol it uses for data transfer as part 
 						of the parameter value. The <i>Repository Server</i> value can now be set as <i>ssh://my_gerrit_server.my_domain.com</i> if 
 						<i>my_gerrit_server.my_domain.com</i> is using Secure Shell (SSH). To maintain backward-compatibility, if the value is specified without any protocol 
 						as <i>my_gerrit_server.my_domain.com</i>, <i>Git</i> is assumed to be the protocol by default.</li>
             <li>Deprecated the SetupGerritServer procedure. This procedure is no longer supported in Gerrit 2.6 and later. Follow the steps 
-						<a href="#gerrit-setup">here</a> to configure Gerrit to work with ElectricCommander.</li>
+						<a href="#gerrit-setup">here</a> to configure Gerrit to work with ElectricFlow.</li>
             <li>Added a <i>revert</i> step to the DevBuildCleanup and TeamBuildCleanup procedures to revert any uncommitted changes from the working directory 
 						as part of the cleanup.</li>
             <li>Added postProcessors to track the progress of the plugin procedures.</li>
