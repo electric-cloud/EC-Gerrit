@@ -1,7 +1,7 @@
 EC-Gerrit
 ============
 
-The ElectricCommander Gerrit integration
+The ElectricFlow Gerrit integration
 
 ## Compile ##
 
