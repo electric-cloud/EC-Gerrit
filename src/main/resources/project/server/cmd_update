@@ -1,0 +1,11 @@
+chdir "{gerrit_working_dir}";
+my $cmd = "{repo_cmd} sync 2>&1";
+print "$cmd\n";
+my $out = `$cmd 2>&1`;
+my $ec = $? >> 8;
+if (!$ec) {
+  print "$out\n";
+} else {
+  die "$out";
+}
+1;

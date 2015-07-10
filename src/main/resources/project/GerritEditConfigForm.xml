@@ -1,0 +1,138 @@
+<editor>
+    <formElement>
+        <type>entry</type>
+        <label>Description:</label>
+        <property>desc</property>
+        <documentation>A description for this configuration</documentation>
+    </formElement>
+    <formElement>
+        <type>entry</type>
+        <label>Repository Server:</label>
+        <property>repository_server</property>
+        <value></value>
+        <documentation>The server where the repository is located. If not provided, the "Gerrit Server" is used. i.e: in this url "git://github.com/ecGerrit/ecGerritTest.git", the repository server is "github.com".
+            The server can be specified with the protocol it is using, e.g., "ssh://my_gerrit_server.my_domain.com". If no protocol is specified, by default, the server is assumed to be using 'git' protocol.</documentation>
+        <required>0</required>
+    </formElement>
+    <formElement>
+        <type>entry</type>
+        <label>Repository Path:</label>
+        <property>repository_path</property>
+        <value></value>
+        <documentation>The path associated to the "Repository Server". i.e: in this url "git://github.com/ecGerrit/ecGerritTest.git", the repository path is "ecGerrit/ecGerritTest.git". (Required)</documentation>
+        <required>1</required>
+    </formElement>
+    <formElement>
+        <type>entry</type>
+        <label>Gerrit Server:</label>
+        <property>gerrit_server</property>
+        <documentation>The gerrit server</documentation>
+        <required>1</required>
+    </formElement>
+    <formElement>
+        <type>entry</type>
+        <label>Gerrit User:</label>
+        <property>gerrit_user</property>
+        <documentation>The gerrit user</documentation>
+        <required>1</required>
+    </formElement>
+    <formElement>
+        <type>entry</type>
+        <label>Gerrit Port:</label>
+        <property>gerrit_port</property>
+        <documentation>The gerrit ssh port</documentation>
+        <required>1</required>
+    </formElement>
+    <formElement>
+        <type>entry</type>
+        <label>Gerrit Public Key File:</label>
+        <property>gerrit_public_key</property>
+        <documentation>The public key for ssh connection to gerrit</documentation>
+        <required>1</required>
+    </formElement>
+    <formElement>
+        <type>entry</type>
+        <label>Gerrit Private Key File:</label>
+        <property>gerrit_private_key</property>
+        <documentation>The private key for ssh connection to gerrit</documentation>
+        <required>1</required>
+    </formElement>
+    <formElement>
+        <type>entry</type>
+        <label>ElectricCommander Server:</label>
+        <property>cmdr_webserver</property>
+    </formElement>  
+    <formElement>
+        <type>entry</type>
+        <label>Project for Developer Builds:</label>
+        <property>devbuild_cmdr_project</property>
+        <documentation>The Commander project that containst the procedure for developer builds.</documentation>
+    </formElement>
+    <formElement>
+        <type>entry</type>
+        <label>Procedure for Developer Builds:</label>
+        <property>devbuild_cmdr_procedure</property>
+        <documentation>The Commander procedure that will be called for developer builds.</documentation>
+    </formElement>
+    <formElement>
+        <type>entry</type>
+        <label>Project/branches manifest file:</label>
+        <property>teambuild_project_branches</property>
+        <documentation>The file that contains the name of the projects and branches to be included in the verification by the DeveloperScan procedure. In addition you can specify in here individual changes to be verified. (Required)</documentation>
+        <required>1</required>
+    </formElement>
+    <formElement>
+        <type>entry</type>
+        <label>Resource Pool</label>
+        <property>ResourcePool</property>
+        <documentation>Resource pool to use.</documentation>
+    </formElement>
+    <formElement>
+        <type>select</type>
+        <label>Developer Build Mode:</label>
+        <property>devbuild_mode</property>
+        <documentation>auto: Builds run automatically. manual: Builds must be initiated by clicking links in Gerrit. off: do not process this configuration for developer builds.</documentation>
+        <option>
+            <name>Auto</name>
+            <value>auto</value>
+        </option>
+        <option>
+            <name>Manual</name>
+            <value>manual</value>
+        </option>
+        <option>
+            <name>Off</name>
+            <value>off</value>
+        </option>
+    </formElement>
+    <formElement>
+        <type>entry</type>
+        <label>Branch:</label>
+        <property>gerrit_branch</property>
+        <documentation>The branch to watch.</documentation>
+    </formElement>
+    <formElement>
+        <type>entry</type>
+        <label>Manifest:</label>
+        <property>gerrit_manifest</property>
+        <documentation>The manifest file to use.</documentation>
+    </formElement>
+    <formElement>
+        <type>textarea</type>
+        <label>Developer Build Rules:</label>
+        <property>dev_build_rules</property>
+        <documentation>Rules for deciding what to do with developer build results.</documentation>
+    </formElement>
+    <formElement>
+        <type>textarea</type>
+        <label>Team Build Rules:</label>
+        <property>team_build_rules</property>
+        <documentation>Rules for deciding which change sets to include in a team build.</documentation>
+    </formElement>
+    <formElement>
+        <type>entry</type>
+        <label>Debug:</label>
+        <property>debug</property>
+        <documentation>Debug level for output.</documentation>
+    </formElement>
+</editor>

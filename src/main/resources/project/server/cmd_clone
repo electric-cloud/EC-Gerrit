@@ -1,0 +1,38 @@
+use File::Path;
+
+my $createdGerritWorkingDir;
+if (!-d "{gerrit_working_dir}") {
+    print "Creating directory {gerrit_working_dir}\n";
+    mkpath("{gerrit_working_dir}");
+    $createdGerritWorkingDir = 1;
+}
+chdir "{gerrit_working_dir}";
+
+#Default repository server to git protocol if none specified in the
+#server value itself. Gives the user the flexibility to use other
+#protocols supported by Git such as ssh and https
+my $repo_server_url;
+if ("{repository_server}" !~ /^\w+:\/\//) {
+    $repo_server_url = "git://" . "{repository_server}";
+} else {
+    $repo_server_url = "{repository_server}";
+}
+print "Connecting to repo server: $repo_server_url\n";
+
+my $cmd = "{repo_cmd} init -u $repo_server_url" . qw({repository_path}) . " -b " .
+    qw({gerrit_branch}) . " -m " . qw({gerrit_manifest});
+print "$cmd\n";
+my $out = `$cmd 2>&1`;
+my $ec = $? >> 8;
+#Capture the reason if the repo command itself fails to run
+my $sysErr = $!;
+
+if (!$ec) {
+    print "$out\n";
+} else {
+    if ($createdGerritWorkingDir) {
+        rmtree("{gerrit_working_dir}");
+    }
+    die "$sysErr$out";
+}
+1;

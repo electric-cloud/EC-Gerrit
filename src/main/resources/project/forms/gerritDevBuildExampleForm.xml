@@ -1,0 +1,31 @@
+<editor>
+    <help>/commander/pages/@PLUGIN_NAME@/@PLUGIN_KEY@_help?s=Administration&amp;ss=Plugins#DevBuildExample</help>
+    <formElement>
+        <type>entry</type>
+        <label>Change ID:</label>
+        <property>changeid</property>
+        <required>1</required>
+        <documentation>The change id to be built. i.e: 'Iada3f772'. (Required)</documentation>
+    </formElement>
+    <formElement>
+        <type>entry</type>
+        <label>Gerrit Config:</label>
+        <property>gerrit_cfg</property>
+        <required>1</required>
+        <documentation>The name of the config which holds all the connection information for Gerrit. (Required)</documentation>
+    </formElement>
+    <formElement>
+        <type>entry</type>
+        <label>Patch ID:</label>
+        <property>patchid</property>
+        <required>1</required>
+        <documentation>The patch set id to be built. i.e: '1'. (Required)</documentation>
+    </formElement>
+    <formElement>
+        <type>entry</type>
+        <label>Project:</label>
+        <property>project</property>
+        <required>1</required>
+        <documentation>The project that contains the change to build. (Required)</documentation>
+    </formElement>
+</editor>

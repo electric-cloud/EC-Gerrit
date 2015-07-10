@@ -1,0 +1,19 @@
+print "Overlaying change for project: {project} : changeid: {changeid} : patchid: {patchid}\n";
+
+chdir "{gerrit_working_dir}";
+
+my $current_dir = `pwd`;
+print "Overlaying pending changes in directory: $current_dir";
+
+print "Pulling proposed changes into tree\n";
+my $cmd = "{repo_cmd} download " . qw({project}) . " " . qw({changeid}) . "/" . qw({patchid});
+print "Executing $cmd\n";
+
+my $out = `$cmd 2>&1`;
+my $ec = $? >> 8;
+if (!$ec) {
+    print "$out\n";
+} else {
+    die "$out";
+}
+1;

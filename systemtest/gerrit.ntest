@@ -1,0 +1,843 @@
+# -*-Perl-*-
+
+# gerrit.ntest -
+#
+# Exercise basic components of EC-Gerrit plugin
+#
+# Copyright (c) 2005-2010 Electric Cloud, Inc.
+# All rights reserved
+
+use strict;
+use warnings;
+use ECTest;
+
+initCommander();
+
+$::gPlugin_name   = $::ENV{PLUGIN_NAME};
+$::gPlugin_key    = $::gPlugin_name;
+$::gPlugin_key    =~ s/-[^-]+$//;
+$::gPlugin_driver = $::gPlugin_key;
+$::gPlugin_driver =~ s/-/::/g;
+
+# win/lin matches the chronic3 procedure platform property
+$::gPlatform       = "lin";
+if ($^O eq "MSWin32") {
+    $::gPlatform = "win";
+}
+
+# from initCommander
+$::N = $adminSession;
+my $xpath = $::N->getPlugin($::gPlugin_key);
+$::gPlugin_name = $xpath->findvalue('//pluginName')->value;
+$::gPlugin_ver = $xpath->findvalue('//pluginVersion')->value;
+$::gCreatePrivateDirs = 1;
+
+# triggers fake data
+$::gRunCmdUseFakeOutput = 1;
+
+##############################################
+# saveOutErr
+#
+# redirect stdout/stderr to files so that any
+# spurious output from commands does not 
+# end up on the return to the cgi caller
+##############################################
+sub saveOutErr {
+    $::tmpOut = "";
+    $::tmpErr = "";
+    # temporarily save STDOUT/STDERR to files
+    open $::oldout, ">&STDOUT"  or die "Can't dup STDOUT: $!";
+    open $::olderr, ">&STDERR"  or die "Can't dup STDERR: $!";
+    close STDOUT;
+    open STDOUT, '>', \$::tmpOut or die "Can't open STDOUT: $!";
+    close STDERR;
+    open STDERR, '>', \$::tmpErr or die "Can't open STDOUT: $!";
+
+}
+
+##############################################
+# retrieveOutErr
+#
+# reset stdout/sterr back to normal and 
+# return the contents of the temp files
+##############################################
+sub retrieveOutErr {
+    # reconnect to normal STDOUT/STDERR
+    open STDOUT, ">&", $::oldout or die "can't reinstate $!";
+    open STDERR, ">&", $::olderr or die "can't reinstate $!";
+    return ($::tmpOut, $::tmpErr);
+}
+
+ntest "check-components-present", {}, sub {
+    # Check that the plugin contains required components
+
+    my $xpath;
+    $xpath = $::N->getSteps("$::gPlugin_name","CreateConfiguration");
+    assertOK($xpath,"CreateConfiguration");
+    assertEq("CreateConfiguration", $xpath->findvalue("//step[1]/stepName"), "step 1 is CreateConfiguration");
+
+    $xpath = $::N->getSteps("$::gPlugin_name","DeleteConfiguration");
+    assertOK($xpath,"DeleteConfiguration");
+    assertEq("DeleteConfiguration", $xpath->findvalue("//step[1]/stepName"), "step 1 is DeleteConfiguration");
+
+    $xpath = $::N->getSteps("$::gPlugin_name","DevBuildExample");
+    assertOK($xpath,"DevBuildExample");
+    assertEq("GetCodeFromGerrit", $xpath->findvalue("//step[1]/stepName"), "step 1 is GetCodeFromGerrit");
+    assertEq("DoWork", $xpath->findvalue("//step[2]/stepName"), "step 2 is DoWork");
+    assertEq("GerritCleanup", $xpath->findvalue("//step[3]/stepName"), "step 3 is GerritCleanup");
+
+    $xpath = $::N->getSteps("$::gPlugin_name","DevBuildCleanup");
+    assertOK($xpath,"DevBuildCleanup");
+    assertEq("annotate", $xpath->findvalue("//step[1]/stepName"), "step 1 is annotate");
+
+    $xpath = $::N->getSteps("$::gPlugin_name","DevBuildPrepare");
+    assertOK($xpath,"DevBuildPrepare");
+    assertEq("allocate", $xpath->findvalue("//step[1]/stepName"), "step 1 is allocate");
+    assertEq("annotate", $xpath->findvalue("//step[2]/stepName"), "step 2 is annotate");
+    assertEq("clone", $xpath->findvalue("//step[3]/stepName"), "step 3 is clone");
+    assertEq("revert", $xpath->findvalue("//step[4]/stepName"), "step 4 is revert");
+    assertEq("apply", $xpath->findvalue("//step[5]/stepName"), "step 5 is apply");
+
+    $xpath = $::N->getSteps("$::gPlugin_name","DeveloperScan");
+    assertOK($xpath,"DeveloperScan");
+    assertEq("scan", $xpath->findvalue("//step[1]/stepName"), "step 1 is scan");
+
+    $xpath = $::N->getSteps("$::gPlugin_name","TeamBuildCleanup");
+    assertOK($xpath,"TeamBuildCleanup");
+    assertEq("allocate", $xpath->findvalue("//step[1]/stepName"), "step 1 is allocate");
+    assertEq("approve", $xpath->findvalue("//step[2]/stepName"), "step 2 is approve");
+
+    $xpath = $::N->getSteps("$::gPlugin_name","TeamBuildExample");
+    assertOK($xpath,"TeamBuildExample");
+    assertEq("GetCodeFromGerrit", $xpath->findvalue("//step[1]/stepName"), "step 1 is GetCodeFromGerrit");
+    assertEq("DoWork", $xpath->findvalue("//step[2]/stepName"), "step 2 is DoWork");
+    assertEq("GerritCleanup", $xpath->findvalue("//step[3]/stepName"), "step 3 is GerritCleanup");
+
+    $xpath = $::N->getSteps("$::gPlugin_name","TeamBuildPrepare");
+    assertOK($xpath,"TeamBuildPrepare");
+    assertEq("allocate", $xpath->findvalue("//step[1]/stepName"), "step 1 is allocate");
+    assertEq("changes", $xpath->findvalue("//step[2]/stepName"), "step 2 is changes");
+    assertEq("annotate", $xpath->findvalue("//step[3]/stepName"), "step 3 is annotate");
+    assertEq("clone", $xpath->findvalue("//step[4]/stepName"), "step 4 is clone");
+    assertEq("revert", $xpath->findvalue("//step[5]/stepName"), "step 5 is revert");
+    assertEq("apply", $xpath->findvalue("//step[6]/stepName"), "step 6 is apply");
+};
+
+ntest "Eval Gerrit Driver", {}, sub {
+    use ElectricCommander::PropMod;
+
+    # Load perl code from running Commander
+    ElectricCommander::PropMod::loadPerlCodeFromProperty($::N,"/projects/$::gPlugin_name/scm_driver/ECGerrit");
+    my $gd = new ECGerrit();
+};
+
+
+# runCmd
+ntest "test fake data", {}, sub {
+    # fake command output
+    $::gFakeCmdOutput  = "3::hello world";
+
+    saveOutErr();
+    my $gd = new ECGerrit();
+    my ($exit,$text) = $gd->runCmd("fake command");
+    my ($out,$err) = retrieveOutErr();
+    assertEq(3, $exit,"exit code");
+    assertEq("hello world", $text,"output");
+    assertEq("", $out,"no output");
+    assertEq("", $err,"no output");
+};
+
+# test parse_manifest
+ntest "test parse_manifest", {}, sub {
+    # fake command output
+    $::gFakeCmdOutput  = "3::hello world";
+   
+    my $gd = new ECGerrit();
+    my @out = $gd->parseManifest("c:/projectbranches.txt");
+                
+    assertEq("platform/cts:master", $out[0],"output");    
+};
+
+# test parse_manifest_str
+ntest "test parse_manifest_str", {}, sub {
+
+    my $manifest = q(
+platform/cts:master
+);
+
+    # fake command output
+    $::gFakeCmdOutput  = "3::hello world";
+    saveOutErr();
+    my $gd = new ECGerrit();
+    my @out = $gd->parseManifestStr($manifest);
+    my ($sout,$err) = retrieveOutErr();
+                
+    assertEq("platform/cts:master", $out[0],"output");  
+    assertEq("", $sout,"no output");
+    assertEq("", $err,"no output");    
+};
+
+
+
+ntest "test fake data errors", {}, sub {
+    # fake command output
+    $::gFakeCmdOutput  = "";
+
+    saveOutErr();
+    my $gd = new ECGerrit();
+    my ($exit,$text) = $gd->runCmd("fake command");
+    my ($out,$err) = retrieveOutErr();
+    assertEq(99, $exit,"exit code on no fake data");
+    assertEq("no more output", $text,"no output");
+    assertEq("", $out,"no output");
+    assertEq("", $err,"no output");
+};
+
+# gerrit_db_query
+ntest "gerrit_db_query no results", {}, sub {
+    # fake command output
+    $::gFakeCmdOutput  = "0::||";
+
+
+    saveOutErr();
+    my $gd = new ECGerrit();
+    my @list = $gd->gerrit_db_query("SELECT * FROM ACOUNTS;");
+    my ($out,$err) = retrieveOutErr();
+    assertEq("0", scalar( @list),"no records");
+    assertEq("", $out,"no output");
+    assertEq("", $err,"no output");
+};
+
+ntest "gerrit_db_query multiple results", {}, sub {
+
+    # fake command output
+    $::gFakeCmdOutput  = `cat $::gTestFileDir/gerrit_db_query_1.log`;
+
+    saveOutErr();
+    my $gd = new ECGerrit();
+    my @list = $gd->gerrit_db_query("SELECT * FROM ACOUNTS;");
+    my ($out,$err) = retrieveOutErr();
+    assertEq("3", scalar( @list),"3 records");
+    assertEq("", $out,"no output");
+    assertEq("", $err,"no output");
+};
+
+ntest "gerrit_db_query error results", {}, sub {
+
+    # fake command output
+    $::gFakeCmdOutput  = "1::";
+
+    saveOutErr();
+    my $gd = new ECGerrit();
+    my @list = $gd->gerrit_db_query("SELECT * FROM ACOUNTS;");
+    my ($out,$err) = retrieveOutErr();
+    assertEq("Error: error running command gerrit gsql --format JSON (1)\n",
+        $err,"error output");
+    assertEq("\n", $out,"no output");
+};
+
+# getChangeComments
+ntest "getChangeComments normal", {}, sub {
+
+    # fake command output
+    $::gFakeCmdOutput  = `cat $::gTestFileDir/getChangeComments_1.log`;
+
+    saveOutErr();
+    my $gd = new ECGerrit();
+    my @list = $gd->getChangeComments('549');
+    my ($out,$err) = retrieveOutErr();
+    assertEq(5, scalar(@list), "records returned");
+    assertEq("AAAESX///5w=", $list[3]->{columns}{uuid}, "records returned");
+    assertEq("", $err,"error output");
+    assertEq("", $out,"no output");
+
+};
+
+# getAccountId
+ntest "getAccountId normal", {}, sub {
+
+    # fake command output
+    $::gFakeCmdOutput  = `cat $::gTestFileDir/getAccountId_1.log`;
+
+    saveOutErr();
+    my $gd = new ECGerrit();
+    my $id = $gd->getAccountId("commander");
+    my ($out,$err) = retrieveOutErr();
+    assertEq("1000032", $id, "records returned");
+    assertEq("", $err,"error output");
+    assertEq("", $out,"no output");
+
+};
+
+ntest "getAccountId no match", {}, sub {
+
+    # fake command output
+    $::gFakeCmdOutput  = q(0::);
+
+    saveOutErr();
+    my $gd = new ECGerrit();
+    my $id = $gd->getAccountId("commander");
+    my ($out,$err) = retrieveOutErr();
+    assertEq("", $id, "records returned");
+    assertEq("Error: No account found for user commander.\n", $err,"error output");
+    assertEq("", $out,"no output");
+
+};
+
+# getOpenChanges
+ntest "getOpenChanges normal", {}, sub {
+
+    # fake command output
+    $::gFakeCmdOutput  = `cat $::gTestFileDir/getOpenChanges_1.log`;
+
+    saveOutErr();
+    my $gd = new ECGerrit();
+    my @list = $gd->getOpenChanges("master","platform/cts");
+    my ($out,$err) = retrieveOutErr();
+    assertEq(2, scalar(@list), "records returned");
+    assertEq("I221d6d5dff32c13f8c2fe0944ae0e8c252c375d8", $list[0]->{columns}{change_key}, "records returned");
+    assertEq("", $err,"error output");
+    assertEq("", $out,"no output");
+
+};
+
+# getOpenChanges
+
+ntest "getOpenChanges no match", {}, sub {
+
+    # fake command output
+    $::gFakeCmdOutput  = q(0::);
+
+    saveOutErr();
+    my $gd = new ECGerrit();
+    my @list = $gd->getOpenChanges("master","platform/cts");
+    my ($out,$err) = retrieveOutErr();
+    assertEq(0, scalar(@list), "records returned");
+    assertEq("", $err,"error output");
+    assertEq("", $out,"no output");
+
+};
+
+ntest "getOpenChanges no project", {}, sub {
+
+    # fake command output
+    $::gFakeCmdOutput  = `cat $::gTestFileDir/getOpenChanges_2.log`;
+
+    saveOutErr();
+    my $gd = new ECGerrit();
+    my @list = $gd->getOpenChanges("master");
+    my ($out,$err) = retrieveOutErr();
+    assertEq(1, scalar(@list), "records returned");
+    assertEq("", $err,"error output");
+    assertEq("", $out,"no output");
+
+};
+
+
+ntest "getOpenChangesFromManifest normal", {}, sub {
+
+    # fake command output
+    $::gFakeCmdOutput  = `cat $::gTestFileDir/getOpenChanges_1.log`;
+    
+    my @project_branches = ("platform/cts:master");
+    
+    saveOutErr();
+    my $gd = new ECGerrit();
+    my @list = $gd->getOpenChangesFromManifest(@project_branches);
+    my ($out,$err) = retrieveOutErr();
+    assertEq(2, scalar(@list), "records returned");
+    assertEq("I221d6d5dff32c13f8c2fe0944ae0e8c252c375d8", $list[0]->{columns}{change_key}, "records returned");
+    assertEq("", $err,"error output");
+    assertEq("", $out,"no output");
+
+};
+
+ntest "getOpenChangesFromManifest no match", {}, sub {
+
+    # fake command output
+    $::gFakeCmdOutput  = q(0::);
+
+    my @project_branches = ("platform/cts:master");
+    
+    saveOutErr();
+    my $gd = new ECGerrit();
+    my @list = $gd->getOpenChangesFromManifest(@project_branches);
+    my ($out,$err) = retrieveOutErr();
+    assertEq(0, scalar(@list), "records returned");
+    assertEq("", $err,"error output");
+    assertEq("", $out,"no output");
+};
+
+ntest "getOpenChangesFromManifest no project", {}, sub {
+
+    # fake command output
+    $::gFakeCmdOutput  = `cat $::gTestFileDir/getOpenChanges_2.log`;
+    
+    my @project_branches = (":master");
+    
+    saveOutErr();
+    my $gd = new ECGerrit();
+    my @list = $gd->getOpenChangesFromManifest(@project_branches);
+    my ($out,$err) = retrieveOutErr();
+    assertEq(1, scalar(@list), "records returned");
+    assertEq("", $err,"error output");
+    assertEq("", $out,"no output");
+
+};
+
+ntest "getOpenChangesFromManifest no match", {}, sub {
+
+    # fake command output
+    $::gFakeCmdOutput  = q(0::);
+   
+    my @project_branches = ("platform/cts:master");   
+    saveOutErr();
+    my $gd = new ECGerrit();
+    my @list = $gd->getOpenChangesFromManifest(@project_branches);
+    my ($out,$err) = retrieveOutErr();
+    assertEq(0, scalar(@list), "records returned");
+    assertEq("", $err,"error output");
+    assertEq("", $out,"no output");
+
+};
+
+# testECState
+ntest "testECState jobRunning true", {}, sub {
+
+    # fake command output
+    $::gFakeCmdOutput  = `cat $::gTestFileDir/testECState_1.log`;
+
+    saveOutErr();
+    my $gd = new ECGerrit();
+    my $test = $gd->testECState("549","1","jobRunning");
+    my ($out,$err) = retrieveOutErr();
+    assertNe(0, $test, "success");
+    assertEq("", $err,"error output");
+    assertEq("", $out,"no output");
+
+};
+
+ntest "testECState jobRunning false", {}, sub {
+
+    # fake command output
+    $::gFakeCmdOutput  = `cat $::gTestFileDir/testECState_2.log`;
+
+    saveOutErr();
+    my $gd = new ECGerrit();
+    my $test = $gd->testECState("549","1","jobRunning");
+    my ($out,$err) = retrieveOutErr();
+    assertEq(0, $test, "success");
+    assertEq("", $err,"error output");
+    assertEq("", $out,"no output");
+
+};
+
+ntest "testECState jobRunning no recs", {}, sub {
+
+    # fake command output
+    $::gFakeCmdOutput  = q(0::);
+
+    saveOutErr();
+    my $gd = new ECGerrit();
+    my $test = $gd->testECState("549","1","jobRunning");
+    my ($out,$err) = retrieveOutErr();
+    assertEq(0, $test, "success");
+    assertEq("", $err,"error output");
+    assertEq("", $out,"no output");
+
+};
+
+# approve
+ntest "approve - with project,category - success", {}, sub {
+
+    # fake command output
+    $::gFakeCmdOutput  = `cat $::gTestFileDir/approve_1.log`;
+
+    saveOutErr();
+    my $gd = new ECGerrit();
+    my $test = $gd->approve("platform/cts", "549","1","msg","CMDR","+1");
+    my ($out,$err) = retrieveOutErr();
+    assertEq(0, $test, "success");
+    assertEq("", $err,"error output");
+    assertEq("\n\n", $out,"no output");
+
+};
+
+
+ntest "approve - with project - success", {}, sub {
+
+    # fake command output
+    $::gFakeCmdOutput  = q(0::||);
+
+    saveOutErr();
+    my $gd = new ECGerrit();
+    my $test = $gd->approve("platform/cts", "549","1","msg","","");
+    my ($out,$err) = retrieveOutErr();
+    assertEq(0, $test, "success");
+    assertEq("", $err,"error output");
+    assertEq("\n", $out,"no output");
+
+};
+
+ntest "approve - success", {}, sub {
+
+    # fake command output
+    $::gFakeCmdOutput  = q(0::||);
+
+    saveOutErr();
+    my $gd = new ECGerrit();
+    my $test = $gd->approve("", "549","1","msg","","");
+    my ($out,$err) = retrieveOutErr();
+    assertEq(0, $test, "success");
+    assertEq("", $err,"error output");
+    assertEq("\n", $out,"no output");
+
+};
+
+ntest "approve - error", {}, sub {
+
+    # fake command output
+    $::gFakeCmdOutput  = q(1::fatal: "--electriccommader" is not a valid option);
+
+    saveOutErr();
+    my $gd = new ECGerrit();
+    my $test = $gd->approve("", "549","1","msg","","");
+    my ($out,$err) = retrieveOutErr();
+    assertEq(1, $test, "error");
+    assertEq("fatal: \"--electriccommader\" is not a valid option\n", $out,"error output");
+    assertEq("", $err,"no output");
+
+};
+
+# setECState
+ntest "setECState jobRunning success", {}, sub {
+
+    # fake command output
+    $::gFakeCmdOutput  = `cat $::gTestFileDir/setECState_1.log`;
+
+    saveOutErr();
+    my $gd = new ECGerrit();
+    my $test = $gd->setECState("project","549","1","jobRunning","hello world", "CMDR","+1");
+    my ($out,$err) = retrieveOutErr();
+    assertEq(0, $test, "success");
+    assertEq("\n\n", $out,"no output");
+    assertEq("", $err,"error output");
+
+};
+
+# get_user
+ntest "get_user normal", {}, sub {
+
+    # fake command output
+    $::gFakeCmdOutput  = `cat $::gTestFileDir/get_user_1.log`;
+
+    saveOutErr();
+    my $gd = new ECGerrit();
+    my $user = $gd->get_user("1000032");
+    my ($out,$err) = retrieveOutErr();
+    assertEq("commander", $user, "user");
+    assertEq("", $err,"error output");
+    assertEq("", $out,"no output");
+
+};
+
+# get_category_name
+ntest "get_category_name normal", {}, sub {
+
+    # fake command output
+    $::gFakeCmdOutput  = `cat $::gTestFileDir/get_category_name_1.log`;
+
+    saveOutErr();
+    my $gd = new ECGerrit();
+    my $cat = $gd->get_category_name("CMDR");
+    my ($out,$err) = retrieveOutErr();
+    assertEq("electriccommander", $cat, "cat");
+    assertEq("", $err,"error output");
+    assertEq("", $out,"no output");
+
+};
+
+
+# parseRules
+ntest "parseRules normal", {}, sub {
+
+    my $config = q(
+# Rules for selecting patch sets for integration
+# team build
+#
+# rule syntax
+# FILTER [MAX | MIN | COUNT] <category_id> [ lt | le | eq | ne | gt | ge ] <integer> [USER [eq | ne ] <username>]
+# MAX will be the maximum value across all approvals for this CATEGORY_ID, MIN is the minimum
+# and COUNT is the number of approvals. CATEGORY_ID is a valid APPROVAL_CATEGORIES.CATEGORY_ID
+# value from gerrit DB. All approvals are considered unless restricted to a user with
+# USER username option. A specific user can be entered or the keyword {gerrit_user} to use
+# the gerrit_user specified in the integration configuration
+# If no records are entered, the value for min/max = 0
+#
+# ACTION SUCCESS <category_id> <integer>
+# if filters are met and a commander job is run, this is the rule
+# telling the integration what to do with the result.
+# Based on the success, an approval will be entered for the CATEGORY_ID and value
+# by the commander user. No action is taken if the job fails
+#
+# Multiple rules can be entered. They are combined with AND so order does not matter
+#
+
+# if at least one code review has been entered with +2
+# and
+# if no code reviews of -2 have been entered
+# and
+# if no verifications have been entered except by commander user
+# and
+# if commander has no verifications or verified with error
+FILTER MAX CRVW ge +2
+FILTER MIN CRVW gt -2
+FILTER COUNT VRIF eq 0 USER ne commander
+FILTER MAX VRIF le 0 USER eq commander
+
+# on success mark each patch set as verfied 
+ACTION SUCCESS VRIF +1
+);
+
+    saveOutErr();
+    my $gd = new ECGerrit();
+    my ($filters,$actions) =  $gd->parseRules($config);
+    my ($out,$err) = retrieveOutErr();
+    assertEq(4, keys % {$filters},"4 filters found");
+    assertEq(1, keys % {$actions},"1 actions found");
+    assertEq("", $err,"error output");
+    assertEq("", $out,"no output");
+
+};
+
+# parseRules
+ntest "parseRules errors", {}, sub {
+
+    my $config = q(
+# missing category
+FILTER MAX ge +2
+# ok
+FILTER MIN CRVW gt -2
+# missing keyword FILTER
+COUNT VRIF eq 0 USER ne commander
+# sum func missing
+FILTER VRIF le 0 USER eq commander
+# op missing 
+FILTER MAX VRIF 0 USER eq commander
+# op wrong
+FILTER MAX VRIF tt 0 USER eq commander
+# missing user op
+FILTER MAX VRIF le 0 USER commander
+# missing user 
+FILTER MAX VRIF le 0 USER eq
+# pure garbage
+FILTER the rain in spain falls mainly in the plain
+
+# OK 
+ACTION SUCCESS CMDR +1
+#missing category
+ACTION SUCCESS +1
+#missing value
+ACTION SUCCESS CMDR
+#missing op
+ACTION CMDR +1
+# pure garbage
+ACTION the rain in spain falls mainly in the plain
+);
+
+    saveOutErr();
+    my $gd = new ECGerrit();
+    my ($filters,$actions) =  $gd->parseRules($config);
+    my ($out,$err) = retrieveOutErr();
+    assertEq(1, keys % {$filters},"one good filter parsed");
+    assertEq(1, keys % {$actions},"one good action parsed");
+    assertEq(outdent("
+    |Error: FILTER operation (+2) must be one of:eq ne lt le gt ge
+     Error: FILTER MAX ge +2
+     Error: FILTER (VRIF) must be MAX, MIN, or COUNT
+     Error: FILTER VRIF le 0 USER eq commander
+     Error: FILTER operation (0) must be one of:eq ne lt le gt ge
+     Error: FILTER MAX VRIF 0 USER eq commander
+     Error: FILTER operation (tt) must be one of:eq ne lt le gt ge
+     Error: FILTER MAX VRIF tt 0 USER eq commander
+     Error: USER op (commander) must be one of:eq ne
+     Error: FILTER MAX VRIF le 0 USER commander
+     Error: user name not found
+     Error: FILTER MAX VRIF le 0 USER eq
+     Error: FILTER (the) must be MAX, MIN, or COUNT
+     Error: FILTER the rain in spain falls mainly in the plain
+     Error: ACTION category and value are required
+     Error: ACTION SUCCESS +1
+     Error: ACTION category and value are required
+     Error: ACTION SUCCESS CMDR
+     Error: ACTION (CMDR) must be SUCCESS or ERROR
+     Error: ACTION CMDR +1
+     Error: ACTION (the) must be SUCCESS or ERROR
+     Error: ACTION the rain in spain falls mainly in the plain\n"), $err,"error output");
+    
+
+    assertEq("", $out,"no output");
+
+};
+
+# get_team_build_metrics
+# get_eligible_changes
+ntest "get_team_build_metrics", {}, sub {
+
+    # fake command output
+    $::gFakeCmdOutput  = `cat $::gTestFileDir/getOpenChanges_1.log`;
+    $::gFakeCmdOutput  .= "||" . `cat $::gTestFileDir/get_team_build_metrics_1.log`;
+    $::gFakeCmdOutput  .= "||" . `cat $::gTestFileDir/get_team_build_metrics_2.log`;
+    $::gFakeCmdOutput  .= "||" . `cat $::gTestFileDir/get_user_1.log`;
+    $::gFakeCmdOutput  .= "||" . `cat $::gTestFileDir/get_user_1.log`;
+    $::gFakeCmdOutput  .= "||" . `cat $::gTestFileDir/get_user_1.log`;
+    $::gFakeCmdOutput  .= "||" . `cat $::gTestFileDir/get_user_1.log`;
+    $::gFakeCmdOutput  .= "||" . `cat $::gTestFileDir/get_user_1.log`;
+    $::gFakeCmdOutput  .= "||" . `cat $::gTestFileDir/get_user_1.log`;
+    $::gFakeCmdOutput  .= "||" . `cat $::gTestFileDir/get_team_build_metrics_1.log`;
+    $::gFakeCmdOutput  .= "||" . `cat $::gTestFileDir/get_team_build_metrics_2.log`;
+    $::gFakeCmdOutput  .= "||" . `cat $::gTestFileDir/get_user_1.log`;
+    $::gFakeCmdOutput  .= "||" . `cat $::gTestFileDir/get_user_1.log`;
+    $::gFakeCmdOutput  .= "||" . `cat $::gTestFileDir/get_user_1.log`;
+    $::gFakeCmdOutput  .= "||" . `cat $::gTestFileDir/get_user_1.log`;
+    $::gFakeCmdOutput  .= "||" . `cat $::gTestFileDir/get_user_1.log`;
+    $::gFakeCmdOutput  .= "||" . `cat $::gTestFileDir/get_user_1.log`;
+
+    saveOutErr();
+    my $gd = new ECGerrit();
+    my @changes = $gd->getOpenChanges("platform/cts","master");
+    my ($metrics, $idmap) = $gd->get_team_build_metrics(@changes);
+    my ($out,$err) = retrieveOutErr();
+    assertEq(2, keys % { $metrics }, "success");
+    #assertEq(1,$metrics->{549}{""}{CMDR}{MAX}, "max");
+    assertEq("", $out,"no output");
+    assertEq("", $err,"error output");
+
+};
+
+
+# team_build
+ntest "team_build", {}, sub {
+
+    my $rules = q(
+FILTER MAX CRVW ge +2
+FILTER MIN CRVW gt -2
+FILTER COUNT VRIF eq 0 USER ne commander
+FILTER MAX VRIF le 0 USER eq commander
+ACTION SUCCESS VRIF +1
+);
+    
+    # fake command output
+    $::gFakeCmdOutput  = `cat $::gTestFileDir/getOpenChanges_1.log`;
+    $::gFakeCmdOutput  .= "||" . `cat $::gTestFileDir/get_team_build_metrics_1.log`;
+    $::gFakeCmdOutput  .= "||" . `cat $::gTestFileDir/get_team_build_metrics_2.log`;
+    $::gFakeCmdOutput  .= "||" . `cat $::gTestFileDir/get_user_1.log`;
+    $::gFakeCmdOutput  .= "||" . `cat $::gTestFileDir/get_user_1.log`;
+    $::gFakeCmdOutput  .= "||" . `cat $::gTestFileDir/get_user_1.log`;
+    $::gFakeCmdOutput  .= "||" . `cat $::gTestFileDir/get_user_1.log`;
+    $::gFakeCmdOutput  .= "||" . `cat $::gTestFileDir/get_user_1.log`;
+    $::gFakeCmdOutput  .= "||" . `cat $::gTestFileDir/get_user_1.log`;
+    $::gFakeCmdOutput  .= "||" . `cat $::gTestFileDir/get_team_build_metrics_1.log`;
+    $::gFakeCmdOutput  .= "||" . `cat $::gTestFileDir/get_team_build_metrics_2.log`;
+    $::gFakeCmdOutput  .= "||" . `cat $::gTestFileDir/get_user_1.log`;
+    $::gFakeCmdOutput  .= "||" . `cat $::gTestFileDir/get_user_1.log`;
+    $::gFakeCmdOutput  .= "||" . `cat $::gTestFileDir/get_user_1.log`;
+    $::gFakeCmdOutput  .= "||" . `cat $::gTestFileDir/get_user_1.log`;
+    $::gFakeCmdOutput  .= "||" . `cat $::gTestFileDir/get_user_1.log`;
+    $::gFakeCmdOutput  .= "||" . `cat $::gTestFileDir/get_user_1.log`;
+        
+    saveOutErr();
+    my $gd = new ECGerrit();
+    my @eligible = $gd->team_build($rules,"c:/projectbranches.txt");
+     
+    my ($out,$err) = retrieveOutErr();
+    assertEq(1, scalar(@eligible), "success");
+    assertEq("", $out,"no output");
+    assertEq("", $err,"error output");
+};
+
+# custom_build
+ntest "custom_build", {}, sub {
+
+    my $rules = q(
+FILTER MAX CRVW ge +2
+FILTER MIN CRVW gt -2
+FILTER COUNT VRIF eq 0 USER ne commander
+FILTER MAX VRIF le 0 USER eq commander
+ACTION SUCCESS VRIF +1
+);
+
+    my $manifest = q(
+:master
+);
+    
+    # fake command output
+    $::gFakeCmdOutput  = `cat $::gTestFileDir/getOpenChanges_1.log`;
+    $::gFakeCmdOutput  .= "||" . `cat $::gTestFileDir/get_team_build_metrics_1.log`;
+    $::gFakeCmdOutput  .= "||" . `cat $::gTestFileDir/get_team_build_metrics_2.log`;
+    $::gFakeCmdOutput  .= "||" . `cat $::gTestFileDir/get_user_1.log`;
+    $::gFakeCmdOutput  .= "||" . `cat $::gTestFileDir/get_user_1.log`;
+    $::gFakeCmdOutput  .= "||" . `cat $::gTestFileDir/get_user_1.log`;
+    $::gFakeCmdOutput  .= "||" . `cat $::gTestFileDir/get_user_1.log`;
+    $::gFakeCmdOutput  .= "||" . `cat $::gTestFileDir/get_user_1.log`;
+    $::gFakeCmdOutput  .= "||" . `cat $::gTestFileDir/get_user_1.log`;
+    $::gFakeCmdOutput  .= "||" . `cat $::gTestFileDir/get_team_build_metrics_1.log`;
+    $::gFakeCmdOutput  .= "||" . `cat $::gTestFileDir/get_team_build_metrics_2.log`;
+    $::gFakeCmdOutput  .= "||" . `cat $::gTestFileDir/get_user_1.log`;
+    $::gFakeCmdOutput  .= "||" . `cat $::gTestFileDir/get_user_1.log`;
+    $::gFakeCmdOutput  .= "||" . `cat $::gTestFileDir/get_user_1.log`;
+    $::gFakeCmdOutput  .= "||" . `cat $::gTestFileDir/get_user_1.log`;
+    $::gFakeCmdOutput  .= "||" . `cat $::gTestFileDir/get_user_1.log`;
+    $::gFakeCmdOutput  .= "||" . `cat $::gTestFileDir/get_user_1.log`;
+
+    saveOutErr();
+    my $gd = new ECGerrit();
+    my @eligible = $gd->custom_build($rules, $manifest);
+    my ($out,$err) = retrieveOutErr();
+    assertEq(2, scalar(@eligible), "success");   
+    assertEq("", $err,"error output");
+    assertEq("", $out,"no output");    
+};
+
+
+# team_approve
+# team_disapprove
+# team_approve_base
+ntest "team_approve", {}, sub {
+
+    my $rules = q(
+FILTER MAX CRVW ge +2
+FILTER MIN CRVW gt -2
+FILTER COUNT VRIF eq 0 USER ne commander
+FILTER MAX VRIF le 0 USER eq commander
+ACTION SUCCESS VRIF +1
+);
+    
+    $::gFakeCmdOutput  = `cat $::gTestFileDir/approve_1.log`;
+    $::gFakeCmdOutput  .= "||" . `cat $::gTestFileDir/approve_1.log`;
+    saveOutErr();
+    my @changes;
+    push @changes, "548:1:platform/cts";
+    push @changes, "549:1:platform/cts";
+    my $gd = new ECGerrit();
+    $gd->team_approve(@changes,$rules,"hello world");
+    $gd->team_disapprove(@changes,$rules,"hello world");
+    my ($out,$err) = retrieveOutErr();
+    assertEq("", $out,"no output");
+    assertEq("", $err,"error output");
+};
+
+# the following are tested as a by product of
+# previous tests. May be nice to write individual
+# tests 
+#   check_filters
+#   check_max
+#   check_min
+#   check_count
+
+# processFinishedJobs
+# processNewChanges
+# processSingleProject
+
+
+
