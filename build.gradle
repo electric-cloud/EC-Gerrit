@@ -1,0 +1,40 @@
+// -*- Groovy -*-
+// build.gradle
+//
+// Gradle build script for EC-Gerrit plugin.
+//
+// Copyright (c) 2015 Electric Cloud, Inc.
+// All rights reserved
+
+buildscript {
+    repositories {
+	maven {
+		url 'http://dl.bintray.com/ecpluginsdev/maven'
+	}
+
+	jcenter()
+    }
+    dependencies {
+        classpath group: 'com.electriccloud.plugins', name: 'flow-gradle-plugin', version: '+'
+    }
+}
+
+repositories {
+	maven {
+		url "https://oss.sonatype.org/content/repositories/snapshots"
+	}
+}
+
+group = "com.electriccloud"
+description = "Plugins : EC-Gerrit"
+version = "2.1.1"
+
+apply plugin: 'flow-gradle-plugin'
+
+task wrapper(type: Wrapper) {
+	gradleVersion = '2.3'
+}
+
+gwt {
+	modules 'ecplugins.gerrit.ConfigurationManagement'
+}
