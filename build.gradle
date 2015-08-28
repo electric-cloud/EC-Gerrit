@@ -27,7 +27,7 @@ repositories {
 
 group = "com.electriccloud"
 description = "Plugins : EC-Gerrit"
-version = "2.1.1"
+version = "2.1.2"
 
 apply plugin: 'flow-gradle-plugin'
 

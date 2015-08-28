@@ -1,10 +1,9 @@
+<?xml version="1.0"?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-
 <html xmlns="http://www.w3.org/1999/xhtml">
 
 <head>
-    <meta name="generator"
-          content="HTML Tidy for Windows (vers 14 February 2006), see www.w3.org" />
+    <meta name="generator" content="HTML Tidy for Windows (vers 14 February 2006), see www.w3.org" />
     <meta content="text/html; charset=us-ascii" http-equiv="content-type" />
     <title>ElectricFlow Plugin for Gerrit</title>
     <link rel="stylesheet" href="../../plugins/@PLUGIN_KEY@/pluginhelp.css" type="text/css" media="screen" />
@@ -125,7 +124,7 @@
 		<h2>Input</h2>
   
     <ol>
-		  <li>Go to <b>Administration</b> > <b>Plugins</b> to open the Plugin Manager.</li>
+		  <li>Go to <b>Administration</b> &gt; <b>Plugins</b> to open the Plugin Manager.</li>
 		  <li>Find the EC-Gerrit row.</li>
 		  <li>Click <b>Configure</b> to open the Gerrit Configurations page.</li> 	
 		  <li>Click <b>Create Configuration</b>.</li>
@@ -141,7 +140,7 @@
                 </thead>
                 <tbody>
 								    <tr>
-                        <td class='required'>Configuration Name</td>
+                        <td class="required">Configuration Name</td>
                         <td>Name of the Gerrit configuration.</td>
                     </tr>
                     <tr>
@@ -156,44 +155,44 @@
 												If no protocol is specified, the default protocol is <i>Git</i>.</td>		
                     </tr>
                     <tr>
-                        <td class='required'>Repository Path</td>
+                        <td class="required">Repository Path</td>
                         <td>The path associated to the <b>Repository Server</b>. For example, the repository path is <i>ecGerrit/ecGerritTest.git</i> in the 
 												<i>git://github.com/ecGerrit/ecGerritTest.git</i> URL.</td>
                     </tr>
                     <tr>
-                        <td class='required'>Gerrit Server</td>
+                        <td class="required">Gerrit Server</td>
                         <td>The hostname or IP address of the Gerrit server, such as <i>localhost</i> or <i>github.com</i>.</td>
                     </tr>
                     <tr>
-                        <td class='required'>Gerrit User</td>
+                        <td class="required">Gerrit User</td>
                         <td>The gerrit user, such as <i>usergerrit</i>.</td>
                     </tr>
                     <tr>
-                        <td class='required'>Gerrit Port</td>
+                        <td class="required">Gerrit Port</td>
                         <td>The gerrit SSH port. The default is 29418.</td>
                     </tr>
                     <tr>
-                        <td class='required'>Gerrit Public Key File</td>
+                        <td class="required">Gerrit Public Key File</td>
                         <td>The full path of the public key for SSH connection to Gerrit, such as <i>home/usergerrit/.ssh/id_rsa.pub</i>.</td>
                     </tr>
                     <tr>
-                        <td class='required'>Gerrit Private Key File</td>
+                        <td class="required">Gerrit Private Key File</td>
                         <td>The full path of the private key for SSH connection to Gerrit, such as <i>home/usergerrit/.ssh/id_rsa</i>.</td>
                     </tr>
                     <tr>
-                        <td class='required'>ElectricFlow Server</td>
+                        <td class="required">ElectricFlow Server</td>
                         <td>The ElectricFlow server name.</td>
                     </tr>
                     <tr>
-                        <td class='required'>Project for Developer Builds</td>
+                        <td class="required">Project for Developer Builds</td>
                         <td>The ElectricFlow project that contains the procedure for developer builds, such as <i>EC-Gerrit-2.0.1.0</i>.</td>
                     </tr>
                     <tr>
-                        <td class='required'>Procedure for Developer Builds</td>
+                        <td class="required">Procedure for Developer Builds</td>
                         <td>The ElectricFlow procedure that will be called for developer builds, such as <i>DevBuildExample</i>.</td>
                     </tr>
                     <tr>
-                        <td class='required'>Project/branches manifest file</td>
+                        <td class="required">Project/branches manifest file</td>
                         <td>The file that contains the name of the projects and branches to be included in the verification by the 
 												DeveloperScan procedure. You can also specify the individual changes to be verified. A valid example 
 												of this file is shown in the <a href="#project-manifest-file">Project/branches manifest file</a> image.
@@ -215,40 +214,40 @@
                         </td>
                     </tr>
                     <tr>
-                        <td class='required'>Resource Pool</td>
+                        <td class="required">Resource Pool</td>
                         <td>The resource pool to use.</td>
                     </tr>
                     <tr>
-                        <td class='required'>Developer Build Mode</td>
+                        <td class="required">Developer Build Mode</td>
                         <td><p><b>Auto</b> - Builds run automatically.</p>
                             <p><b>Manual</b> - Builds must be initiated by clicking links in Gerrit.</p>
                             <p><b>Off</b> - Do not run scan for this configuration.</p>
                         </td>
                     </tr>
                     <tr>
-                        <td class='required'>Branch</td>
+                        <td class="required">Branch</td>
                         <td>The branch to watch.</td>
                     </tr>
                     <tr>
-                        <td class='required'>Manifest</td>
+                        <td class="required">Manifest</td>
                         <td>The manifest file to use. This is a .xml file used by repo tool that includes the projects and branches 
 												from the original repository to download. The standard used to configure this file can be found 
                         <a href="http://www.androidenea.com/2010/06/using-localmanifestxml-file-in-repo-to.html">here</a>. A valid 
 												example of this file is in the <a href="#project-manifest">Manifest file</a> image, such as <i>/home/usergerrit/default.xml</i>.</td>
                     </tr>
                     <tr>
-                        <td class='required'>Developer Build Rules</td>
+                        <td class="required">Developer Build Rules</td>
                         <td>The list of actions for category/value to approve when the build finishes. 
                             <p><b>Example</b></p>
                             <p>ACTION SUCCESS Verified +1<br />
                              ACTION ERROR Verified -1<br />
                             <br />
-                            Meaning: when you complete the build, set the >Verified label to +1 if the build 
+                            Meaning: when you complete the build, set the &gt;Verified label to +1 if the build 
 														 succeeds and -1 if the build fails.</p>
                         </td>
                     </tr>
                     <tr>
-                        <td class='required'>Team Build Rules</td>
+                        <td class="required">Team Build Rules</td>
                         <td>The list of filters that determine the changes to include in a team build (multiple changes) and the 
 												actions to take in terms of the Gerrit review label values to set when the build finishes. 
 
@@ -294,7 +293,7 @@
 		
 		<div class="procedure" id="ElectricFlow">
 
-            <a name='ElectricFlow' id="ElectricFlow"></a> 
+            <a name="ElectricFlow" id="ElectricFlow"></a> 
 
            	<p>You perform these procedures in the ElectricFlow UI.</p>
 				
@@ -327,8 +326,8 @@
 						<h2>Scheduling When The Gerrit Server is Scanned</h2>
 						
 			      <p>The plugin scans your Gerrit server for changes every 15 minutes. based on an ElectricFlow schedule. If you want to 
-						change this frequency, modify the "Gerrit New Change Scanner" schedule in the <b>Administration</b> > <b>Plugins</b> > 
-						<b>EC-Gerrit</b> > <b>Schedules</b> page in ElectricFlow.</p>
+						change this frequency, modify the "Gerrit New Change Scanner" schedule in the <b>Administration</b> &gt; <b>Plugins</b> &gt; 
+						<b>EC-Gerrit</b> &gt; <b>Schedules</b> page in ElectricFlow.</p>
 
             <h2>Changing Resources in Procedures</h2>
 					  <p>The resource for some procedures is set to <i>local</i> for your convenience. However, if you need to change the resource, 
@@ -343,11 +342,11 @@
 
         <h1 id="procedures">Plugin Procedures</h1>
 
-        <p>IMPORTANT: For all parameter descriptions in this document, required parameters are shown in <span class='required'>bold italics</span>.</p>
+        <p>IMPORTANT: For all parameter descriptions in this document, required parameters are shown in <span class="required">bold italics</span>.</p>
 
      <div class="procedure" id="CustomBuildPrepare">
 
-     <a name='CustomBuildPrepare' id="CustomBuildPrepare"></a> 
+     <a name="CustomBuildPrepare" id="CustomBuildPrepare"></a> 
 
      <h2>CustomBuildPrepare</h2>
 
@@ -372,7 +371,7 @@
                 </thead>
                 <tbody>
                    <tr>
-                         <td class='required'>Gerrit Config</td>
+                         <td class="required">Gerrit Config</td>
                         <td>The name of the configuration that has the connection information for Gerrit.</td>
                     </tr>
                 </tbody>
@@ -417,7 +416,7 @@
 		 
 		 <div class="procedure" id="DevBuildCleanup">
 
-           <a name='DevBuildCleanup' id="DevBuildCleanup"></a> 
+           <a name="DevBuildCleanup" id="DevBuildCleanup"></a> 
 
             <h2>DevBuildCleanup</h2>
 
@@ -438,19 +437,19 @@
                 </thead>
                 <tbody>
                     <tr>
-                        <td class='required'>Change ID</td>
+                        <td class="required">Change ID</td>
                         <td>The short change ID to build, such as <i>5</i>.</td>
                     </tr>
                     <tr>
-                        <td class='required'>Gerrit Config</td>
+                        <td class="required">Gerrit Config</td>
                         <td>The name of the configuration that has the connection information for Gerrit.</td>
                     </tr>
                     <tr>
-                        <td class='required'>Patch ID</td>
+                        <td class="required">Patch ID</td>
                         <td>The short patch set ID to build, such as <i>1</i>.</td>
                     </tr>
                     <tr>
-                        <td class='required'>Project</td>
+                        <td class="required">Project</td>
                         <td>The project that contains the change to build.</td>
                     </tr>
                 </tbody>
@@ -477,7 +476,7 @@
 
 		<div class="procedure" id="DevBuildPrepare">
 
-            <a name='DevBuildPrepare' id="DevBuildPrepare"></a> 
+            <a name="DevBuildPrepare" id="DevBuildPrepare"></a> 
 
             <h2>DevBuildPrepare</h2>
 
@@ -502,19 +501,19 @@
                 </thead>
                 <tbody>
                     <tr>
-                        <td class='required'>Change ID</td>
+                        <td class="required">Change ID</td>
                         <td>The short change ID to be built, such as <i>5</i>.</td>
                     </tr>
                     <tr>
-                        <td class='required'>Gerrit Config</td>
+                        <td class="required">Gerrit Config</td>
                         <td>The name of the configuration that has the connection information for Gerrit.</td>
                     </tr>
                     <tr>
-                        <td class='required'>Patch ID</td>
+                        <td class="required">Patch ID</td>
                         <td>The short patch set ID to be built, such as <i>1</i>.</td>
                     </tr>
                     <tr>
-                        <td class='required'>Project</td>
+                        <td class="required">Project</td>
                         <td>The project that contains the change to build.</td>
                     </tr>
                 </tbody>
@@ -560,7 +559,7 @@
 
 	 <div class="procedure" id="DeveloperScan">
 
-            <a name='DeveloperScan' id="DeveloperScan"></a> 
+            <a name="DeveloperScan" id="DeveloperScan"></a> 
 
             <h2>DeveloperScan</h2>
 
@@ -589,7 +588,7 @@
 	 
 	 <div class="procedure" id="SetupGerritServer">
 
-       <a name='SetupGerritServer' id="SetupGerritServer"></a> 
+       <a name="SetupGerritServer" id="SetupGerritServer"></a> 
 						
 			 <h2>SetupGerritServer</h2>
 
@@ -612,7 +611,7 @@
                 </thead>
                 <tbody>
                     <tr>
-                        <td class='required'>Gerrit Config</td>
+                        <td class="required">Gerrit Config</td>
                         <td>The name of the configuration that has the connection information for Gerrit.</td>
                     </tr>
                 </tbody>
@@ -638,7 +637,7 @@
     
     <div class="procedure" id="TeamBuildCleanup">
 
-            <a name='TeamBuildCleanup' id="TeamBuildCleanup"></a> 
+            <a name="TeamBuildCleanup" id="TeamBuildCleanup"></a> 
 
             <h2>TeamBuildCleanup</h2>
 
@@ -664,11 +663,11 @@
                 </thead>
                 <tbody>
                     <tr>
-                        <td class='required'>Gerrit Config</td>
+                        <td class="required">Gerrit Config</td>
                         <td>Name of the configuration that has the connection information for Gerrit.</td>
                     </tr>
                     <tr>
-                        <td class='required'>Group Build Changes</td>
+                        <td class="required">Group Build Changes</td>
                         <td>List of the changes in the group. Any number of lines can be added. Enter the information in one of these ways: 
 												    <ul>
                             <li><b>Use the change ID:</b> Every change has two different IDs. The first is a short number and the second 
@@ -681,7 +680,7 @@
 										</td>
                     </tr>
                     <tr>
-                        <td class='required'>Project</td>
+                        <td class="required">Project</td>
                         <td>The project that contains the change to build.</td>
                     </tr>
                 </tbody>
@@ -715,7 +714,7 @@
 
     <div class="procedure" id="TeamBuildPrepare">
 
-    <a name='TeamBuildPrepare' id="TeamBuildPrepare"></a> 
+    <a name="TeamBuildPrepare" id="TeamBuildPrepare"></a> 
 
     <h2>TeamBuildPrepare</h2>
 
@@ -736,11 +735,11 @@
                 </thead>
                 <tbody>
                     <tr>
-                        <td class='required'>Gerrit Config</td>
+                        <td class="required">Gerrit Config</td>
                         <td>Name of the configuration that has the connection information for Gerrit.</td>
                     </tr>
                     <tr>
-                        <td class='required'>Group Build Changes</td>
+                        <td class="required">Group Build Changes</td>
                         <td>List of the changes in the group. Any number of lines can be added. Enter the information in one of these ways: 
 												    <ul>
                             <li><b>Use the change ID:</b> Every change has two different IDs. The first is a short number and the second 
@@ -753,7 +752,7 @@
 											  </td>
                     </tr>
                     <tr>
-                        <td class='required'>Project</td>
+                        <td class="required">Project</td>
                         <td>The project that contains the change to build.</td>
                     </tr>
                 </tbody>
@@ -813,7 +812,7 @@
 
         <div class="procedure" id="CustomBuildExample">
 
-            <a name='CustomBuildExample' id="CustomBuildExample"></a> 
+            <a name="CustomBuildExample" id="CustomBuildExample"></a> 
 
             <p>This procedure runs a sample custom build using the helper methods. This procedure runs the CustomBuildPrepare, DoWork, and TeamBuildCleanup 
 						procedures as steps. The DoWork step is where the builds and tests steps are run until TeamBuildCleanup step approves or rejects the changes.</p>
@@ -832,7 +831,7 @@
                 </thead>
                 <tbody>
                     <tr>
-                        <td class='required'>Gerrit Config</td>
+                        <td class="required">Gerrit Config</td>
                         <td>The name of the configuration that has the connection information for Gerrit.</td>
                     </tr>
                 </tbody>
@@ -882,7 +881,7 @@
 				<h2>DevBuildExample</h2>
 
         <div class="procedure" id="DevBuildExample">
-            <a name='DevBuildExample' id="DevBuildExample"></a> 
+            <a name="DevBuildExample" id="DevBuildExample"></a> 
 
             <p>The DevBuildExample procedure runs a sample developer build procedure.</p>
 						
@@ -900,19 +899,19 @@
                 </thead>
                 <tbody>
                     <tr>
-                        <td class='required'>Change ID</td>
+                        <td class="required">Change ID</td>
                         <td>The short change ID to build, such as <i>2</i>.</td>
                     </tr>
                     <tr>
-                        <td class='required'>Gerrit Config</td>
+                        <td class="required">Gerrit Config</td>
                         <td>The name of the configuration that has the connection information for Gerrit.</td>
                     </tr>
                     <tr>
-                        <td class='required'>Patch ID</td>
+                        <td class="required">Patch ID</td>
                         <td>The patchset ID to build, such as <i>1</i>.</td>
                     </tr>
                     <tr>
-                        <td class='required'>Project</td>
+                        <td class="required">Project</td>
                         <td>The project that contains the change to build.</td>
                     </tr>
                 </tbody>
@@ -965,7 +964,7 @@
 
         <div class="procedure" id="TeamBuildExample">
 
-            <a name='TeamBuildExample' id="TeamBuildExample"></a> 
+            <a name="TeamBuildExample" id="TeamBuildExample"></a> 
 
             <p>The TeamBuildExample run a sample team build.</p>
 
@@ -983,27 +982,27 @@
                 </thead>
                 <tbody>
                     <tr>
-                        <td class='required'>Branch</td>
+                        <td class="required">Branch</td>
                         <td>The branch to use, such as <i>master</i>.</td>
                     </tr>
                     <tr>
-                        <td class='required'>Change ID</td>
+                        <td class="required">Change ID</td>
                         <td>The short change ID to build, such as <i>5</i>.</td>
                     </tr>
                     <tr>
-                        <td class='required'>Gerrit Config</td>
+                        <td class="required">Gerrit Config</td>
                         <td>The name of the configuration that has the connection information for Gerrit.</td>
                     </tr>
                     <tr>
-                        <td class='required'>Patch ID</td>
+                        <td class="required">Patch ID</td>
                         <td>The patch set ID to build, such as <i>1</i>.</td>
                     </tr>
                     <tr>
-                        <td class='required'>Project</td>
+                        <td class="required">Project</td>
                         <td>The project that contains the change to build.</td>
                     </tr>
                     <tr>
-                        <td class='required'>Resource</td>
+                        <td class="required">Resource</td>
                         <td>The name of the resource to use.</td>
                     </tr>
                 </tbody>
@@ -1057,6 +1056,10 @@
         </div>
 
         <h1>Release Notes</h1>
+    <h2>@PLUGIN_KEY@ 2.1.2</h2>
+    <ul>
+        <li>Fixed issue with configurations being cached for IE.</li>
+    </ul>
         <h2>EC-Gerrit-2.1.1</h2>
 
         <ul>
@@ -1175,4 +1178,3 @@
 </body>
 
 </html>
-
