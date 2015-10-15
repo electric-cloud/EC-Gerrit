@@ -16,6 +16,7 @@ buildscript {
     }
     dependencies {
         classpath group: 'com.electriccloud.plugins', name: 'flow-gradle-plugin', version: '+'
+		classpath 'nl.javadude.gradle.plugins:license-gradle-plugin:0.11.0'
     }
 }
 
@@ -30,6 +31,12 @@ description = "Plugins : EC-Gerrit"
 version = "2.1.2"
 
 apply plugin: 'flow-gradle-plugin'
+apply plugin: 'license'
+
+license {
+    header = file ('shortHeader.txt')
+    exclude "**/project.xml"
+} 
 
 task wrapper(type: Wrapper) {
 	gradleVersion = '2.3'
