@@ -6,6 +6,12 @@
 		<description>Integration with Gerrit</description>
 		<workspaceName/>
 		<propertySheet>
+            <!-- Improvement for ECPSCMGERRIT-63 -->
+            <property>
+                <propertyName>ec_icon</propertyName>
+                <value>images/icon-plugin.svg</value>
+            </property>
+            <!-- End of improvement for ECPSCMGERRIT-63 -->
 			<property>
 				<propertyName>procedure_helpers</propertyName>
 				<description/>
