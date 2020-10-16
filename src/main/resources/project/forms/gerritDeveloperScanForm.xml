@@ -16,5 +16,5 @@
 
 -->
 <editor>
-    <help>/commander/pages/@PLUGIN_NAME@/@PLUGIN_KEY@_help?s=Administration&amp;ss=Plugins#DeveloperScan</help>
+    <help>https://docs.cloudbees.com/docs/cloudbees-cd/latest/plugins/ec-gerrit#DeveloperScan</help>
 </editor>

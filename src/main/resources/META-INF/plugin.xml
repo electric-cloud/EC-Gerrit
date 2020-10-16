@@ -33,4 +33,7 @@
       <javascript>war/ecplugins.gerrit.ConfigurationManagement/ecplugins.gerrit.ConfigurationManagement.nocache.js</javascript>
     </component>
   </components>
+  <hasAdoc>true</hasAdoc>
+  <catalogLabel>Gerrit Code Review System</catalogLabel>
+  <detailedDescription>The Gerrit Code Review system is used by the Android Open Source Project and commercial vendors to manage contributions to Android source code repositories. This plugin simplifies the build/test approval process.</detailedDescription>
 </plugin>

@@ -16,7 +16,7 @@
 
 -->
 <editor>
-    <help>/commander/pages/@PLUGIN_NAME@/@PLUGIN_KEY@_help?s=Administration&amp;ss=Plugins#DevBuildExample</help>
+    <help>https://docs.cloudbees.com/docs/cloudbees-cd/latest/plugins/ec-gerrit#DevBuildExample</help>
     <formElement>
         <type>entry</type>
         <label>Change ID:</label>
