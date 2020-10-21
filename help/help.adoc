@@ -1,18 +1,6 @@
 
 Plugin Version @PLUGIN_VERSION@
-
-
 Revised on December 25, 2018
-
-== {CD} integration to gerrit
-
-The ElectricFlow Gerrit plugin simplifies the build/test approval process. The goal is to run tests automatically before the reviewer looks at the change, although a setting is available to run builds on demand only. The Android team published a http://source.android.com/submit-patches/workflow[diagram] that describes the workflow for submitting changes.
-
-ElectricFlow automates the step after "A" titled "Verifier patches the commit to their local client, then builds and tests the change" for you. The plugin works closely with Gerrit by adding links to run builds and to finished builds directly in Gerrit change comments. ElectricFlow can also act as a reviewer by automatically setting a Gerrit category to a value based on the build success or failure. The plugin communicates with the Gerrit server to retrieve information about the change, including the commands used to pull files in a patch set.
-
-. A full repository is initialized to the head of a specified branch.
-. Changes submitted to Gerrit (adds/deletes/modifies) are overlaid.
-. A build that you create runs. This build can do whatever you need, from running a simple "make" operation to running complicated automatic test suites with physical hardware. You decide what determines test success or failure, and ElectricFlow annotates Gerrit with your build results.
 
 == Integrated version
 
@@ -25,36 +13,32 @@ To use this plugin with Gerrit, configure Gerrit as follows:
 
 . Add the repo tool to the PATH environment variable for the resource where the plugin will run. If the path cannot be updated for the resource, update the plugin property called _pseudo_code/repo_cmd_ to point to the repo tool. This plugin uses the repo tool for synchronizing with the Git repositories and downloading changes from the repositories.
 . Grant *Access Database* capability to the Gerrit user configured to communicate with the Gerrit server. Since Gerrit 2.6, Gerrit administrators no longer have the *Access Database* capability by default. This capability is required by the plugin for access to the Gerrit database using the *gsql* command.
-. 
 
-You perform these procedures in the ElectricFlow UI.
+You perform these procedures in the {CD} UI.
 
 == Creating {CD} resources
 
 Create one or more resources where your builds will run. Group these resources in one or more pools. When you create the Gerrit plugin configuration later, you can specify a pool name for the resources to use.
 
-You can also set a special property called _gerrit_working_dir_ for each resource. The value of this property is the directory where you want to put build sources. This directory can be relative to the current directory (the standard ElectricFlow workspace created for the build) or absolute.
+You can also set a special property called _gerrit_working_dir_ for each resource. The value of this property is the directory where you want to put build sources. This directory can be relative to the current directory (the standard {CD} workspace created for the build) or absolute.
 
-When the plugin runs, it checks if the directory exists. If the directory is found, ElectricFlow assumes there is a repository and only synchronizes changes. If the directory is not found, the plugin creates one and does a full initialization and synchronization of the repository. Because this process can be time consuming, the plugin also supports using cached directories.
+When the plugin runs, it checks if the directory exists. If the directory is found, {CD} assumes there is a repository and only synchronizes changes. If the directory is not found, the plugin creates one and does a full initialization and synchronization of the repository. Because this process can be time consuming, the plugin also supports using cached directories.
 
 You can setup one or more locations where builds can be run. Directory contents are not deleted after a build so the plugin only needs to reset and synchronize to the head of the branch at the start of each build. Assuming you build the same branch many times, each reset and synchronization will run much faster than a full initialization and synchronization. Changes are applied as before.
 
 This example shows how to create resource.
 
-. Go to the *Cloud* tab in the ElectricFlow UI.
+. Go to the *Cloud* tab in the {CD} UI.
 
-You can create the resource using the Gerrit tool or edit an existing one: image::cloudbees-common::cd-plugins/ec-gerrit/resource/ec-gerrit-resource1.png[image]
+You can create the resource using the Gerrit tool or edit an existing one:
+
 . Provide the parameters to create the resource.
-. Add the required _gerrit_working_dir_ property by clicking *Create Property* in the *Custom Resource Properties* section:
+. Add the required _gerrit_working_dir_ property by clicking *Create Property* in the *Custom Resource Properties* section.
+. Provide the name of the property and the value.
 
-image::cloudbees-common::cd-plugins/ec-gerrit/resource/ec-gerrit-resource2.png[image]
-. Provide the name of the property and the value. In this example, the *Name* is _gerrit_working_dir_ with the property value:
+== Scheduling when the Gerrit server is scanned
 
-image::cloudbees-common::cd-plugins/ec-gerrit/resource/ec-gerrit-resource3.png[image]
-
-== Scheduling when the gerrit server is scanned
-
-The plugin scans your Gerrit server for changes every 15 minutes. based on an ElectricFlow schedule. If you want to change this frequency, modify the "Gerrit New Change Scanner" schedule in the *Administration* > *Plugins* > *EC-Gerrit* > *Schedules* page in ElectricFlow.
+The plugin scans your Gerrit server for changes every 15 minutes. based on an {CD} schedule. If you want to change this frequency, modify the "Gerrit New Change Scanner" schedule in the *Administration* > *Plugins* > *EC-Gerrit* > *Schedules* page in {CD}.
 
 == Changing resources in procedures
 
@@ -92,27 +76,15 @@ The CustomBuildPrepare procedure uses the new helper methods to prepare an envir
 
 ==== Output
 
-After the job runs, you can view the results on the Job Details page in ElectricFlow. Every job step was completed successfully.
+After the job runs, you can view the results on the *Job Details* page in {CD}. Every job step was completed successfully.
 
-image::cloudbees-common::cd-plugins/ec-gerrit/custombuildprepare/ec-gerrit-custombuildprepare3.png[image]
-
-In the *CustomBuildPrepare* step, click the Log button to see the diagnostic information. The output is similar to the following diagnostic report:
+In the *CustomBuildPrepare* step, click the *Log* button to see the diagnostic information.
 
 * *allocate:* This step checks that the required parameters in the configuration are correct. It has no output if the job is successful. If an error occurs, it shows the error details.
-* *changes:* The step gets the list of changes to be processed and saves them for the rest of procedure. Because this procedure has no project parameter, the plugin search for changes in all the Gerrit projects, such as _ectest_ and _ECGerritTest_ projects:
-
-image::cloudbees-common::cd-plugins/ec-gerrit/custombuildprepare/ec-gerrit-custombuildprepare4.png[image]
-* *clone:* The step creates a clone of the remote repository:
-
-image::cloudbees-common::cd-plugins/ec-gerrit/custombuildprepare/ec-gerrit-custombuildprepare5.png[image]
-* *revert:* The step gets the tree in the clean state before overlaying files:
-
-image::cloudbees-common::cd-plugins/ec-gerrit/custombuildprepare/ec-gerrit-custombuildprepare6.png[image]
-* *apply:* The step gets the changes from Gerrit and overlays them on top of local repository:
-
-image::cloudbees-common::cd-plugins/ec-gerrit/custombuildprepare/ec-gerrit-custombuildprepare7.png[image]
-
-[[DevBuildCleanup]]
+* *changes:* The step gets the list of changes to be processed and saves them for the rest of procedure. Because this procedure has no project parameter, the plugin searches for changes in all the Gerrit projects.
+* *clone:* The step creates a clone of the remote repository.
+* *revert:* The step gets the tree in the clean state before overlaying files.
+* *apply:* The step gets the changes from Gerrit and overlays them on top of local repository.
 
 
 === DevBuildCleanup
@@ -136,20 +108,14 @@ This procedure cleans up after one developer build. The working tree is cleaned 
 
 ==== Output
 
-After the job runs, you can view the results on the Job Details page in ElectricFlow. The procedure was completed successfully.
-
-image::cloudbees-common::cd-plugins/ec-gerrit/devbuildcleanup/ec-gerrit-devbuildcleanup3.png[image]
-
-In the *DevBuildCleanup* step, click the Log button to see the diagnostic information. The output is similar to the following diagnostic report:
-
-image::cloudbees-common::cd-plugins/ec-gerrit/devbuildcleanup/ec-gerrit-devbuildcleanup4.png[image]
+After the job runs, you can view the results on the *Job Details* page in {CD}. In the *DevBuildCleanup* step, click the *Log* button to see the diagnostic information.
 
 [[DevBuildPrepare]]
 
 
 === DevBuildPrepare
 
-Developer builds are used to build a single patch set submitted by a developer. ElectricFlow scans Gerrit on a regular basis to find new patch sets to process. What the plugin does depends on the value you set for the *Developer Build Mode* in your plugin configuration.
+Developer builds are used to build a single patch set submitted by a developer. {CD} scans Gerrit on a regular basis to find new patch sets to process. What the plugin does depends on the value you set for the *Developer Build Mode* in your plugin configuration.
 
 The DevBuildPrepare procedure prepares for a developer build. This will be one change. The working tree is adjusted to be the head of the branch and updated with the changes.
 
@@ -170,32 +136,13 @@ The DevBuildPrepare procedure prepares for a developer build. This will be one c
 
 ==== Output
 
-After the job runs, you can view the results on the Job Details page in ElectricFlow. The procedure was completed successfully.
-
-image::cloudbees-common::cd-plugins/ec-gerrit/devbuildprepare/ec-gerrit-devbuildprepare3.png[image]
-
-In the *DevBuildPrepare* step, click the Log button to see the diagnostic information. The output is similar to the following diagnostic report:
-
-image::cloudbees-common::cd-plugins/ec-gerrit/setupgerritserver/ec-gerrit-setupgerritserver4.png[image]
-
-The output of any step must be similar to the following diagnostic report:
+After the job runs, you can view the results on the Job Details page in {CD}. In the *DevBuildPrepare* step, click the *Log* button to see the diagnostic information.
 
 * *allocate:* This step checks that the required parameters in the configuration are correct. It has no output if the job was successful, and if an error occurs, the output shows the error details.
-* *annotate:* If this job was launched manually, annotate Gerrit so it knows about the job:
-
-image::cloudbees-common::cd-plugins/ec-gerrit/devbuildprepare/ec-gerrit-devbuildprepare4.png[image]
-* *clone:* The output shows that a clone of the remote repository was created:
-
-image::cloudbees-common::cd-plugins/ec-gerrit/devbuildprepare/ec-gerrit-devbuildprepare5.png[image]
-* *revert:* The output shows that the tree is put in the clean state before the files are overlaid:
-
-image::cloudbees-common::cd-plugins/ec-gerrit/devbuildprepare/ec-gerrit-devbuildprepare6.png[image]
-* *apply:* The output shows that changes are retrieved from Gerrit and overlaid on top of local repostory:
-
-image::cloudbees-common::cd-plugins/ec-gerrit/devbuildprepare/ec-gerrit-devbuildprepare7.png[image]
-
-[[DeveloperScan]]
-
+* *annotate:* If this job was launched manually, annotate Gerrit so it knows about the job.
+* *clone:* The output shows that a clone of the remote repository was created.
+* *revert:* The output shows that the tree is put in the clean state before the files are overlaid.
+* *apply:* The output shows that changes are retrieved from Gerrit and overlaid on top of local repostory.
 
 === DeveloperScan
 
@@ -210,20 +157,11 @@ This procedure has no parameters.
 
 ==== Output
 
-After the job runs, you can view the results on the Job Details page in ElectricFlow. The procedure was completed successfully.
-
-image::cloudbees-common::cd-plugins/ec-gerrit/developerscan/ec-gerrit-developerscan2.png[image]
-
-In the *DeveloperScan* step, click the Log button to see the diagnostic information. The output is similar to the following diagnostic report:
-
-image::cloudbees-common::cd-plugins/ec-gerrit/developerscan/ec-gerrit-developerscan3.png[image]
-
-[[SetupGerritServer]]
-
+After the job runs, you can view the results on the Job Details page in {CD}. In the *DeveloperScan* step, click the *Log* button to see the diagnostic information.
 
 === SetupGerritServer
 
-[Deprecated] The SetupGerritServer procedure sets the default settings into Gerrit used with the ElectricFlow. This is the default method in Gerrit 2.6 and earlier. It sets the Commander user in Gerrit and also the approval bits needed for the integration. If you want to include different categories of approval bits, go to the http://code.google.com/p/gerrit/[Gerrit Home Page] for more information. Follow the steps link:#gerrit-setup[here] to set up Gerrit to be used with ElectricFlow.
+[Deprecated] The SetupGerritServer procedure sets the default settings into Gerrit used with the {CD}. This is the default method in Gerrit 2.6 and earlier. It sets the Commander user in Gerrit and also the approval bits needed for the integration. If you want to include different categories of approval bits, go to the http://code.google.com/p/gerrit/[Gerrit Home Page] for more information. Follow the steps link:#gerrit-setup[here] to set up Gerrit to be used with {CD}.
 
 ==== Input
 
@@ -239,20 +177,12 @@ image::cloudbees-common::cd-plugins/ec-gerrit/developerscan/ec-gerrit-developers
 
 ==== Output
 
-After the job runs, you can view the results on the Job Details page in ElectricFlow. The procedure was completed successfully.
-
-image::cloudbees-common::cd-plugins/ec-gerrit/setupgerritserver/ec-gerrit-setupgerritserver3.png[image]
-
-In the *SetupGerritServer* step, click the Log button to see the diagnostic information. The output is similar to the following diagnostic report:
-
-image::cloudbees-common::cd-plugins/ec-gerrit/setupgerritserver/ec-gerrit-setupgerritserver4.png[image]
-
-[[TeamBuildCleanup]]
+After the job runs, you can view the results on the *Job Details* page in {CD}. In the *SetupGerritServer* step, click the *Log* button to see the diagnostic information.
 
 
 === TeamBuildCleanup
 
-Team builds are designed for the build and release team. These builds combine changes of one or more patch sets to test how multiple changes will work together. The plugin finds patch sets based on rules provided in the _Team Build Rules_ property in the plugin configuration. The plugin does not run team builds automatically. You must run team build procedures from ElectricFlow.
+Team builds are designed for the build and release team. These builds combine changes of one or more patch sets to test how multiple changes will work together. The plugin finds patch sets based on rules provided in the _Team Build Rules_ property in the plugin configuration. The plugin does not run team builds automatically. You must run team build procedures from {CD}.
 
 The TeamBuildCleanup procedure marks the changes as approved if the job is successful. It also reverts any uncommitted changes from the working directory.
 
@@ -278,19 +208,10 @@ List of the changes in the group. Any number of lines can be added. Enter the in
 
 ==== Output
 
-After the job runs, you can view the results on the Job Details page in ElectricFlow. Every job step was completed successfully.
-
-image::cloudbees-common::cd-plugins/ec-gerrit/teambuildcleanup/ec-gerrit-teambuildcleanup3.png[image]
-
-In the *TeamBuildCleanup* step, click the Log button to see the diagnostic information. The output is similar to the following diagnostic report:
+After the job runs, you can view the results on the *Job Details* page in {CD}.  In the *TeamBuildCleanup* step, click the *Log* button to see the diagnostic information. The output is similar to the following diagnostic report:
 
 * *allocate:* This step checks that the required parameters in the configuration are correct. It has no output if the job is successful. If an error occurs, it shows the error details.
-* *approve:* The step gets the changes from Gerrit and overlays them on top of local repostiory:
-
-image::cloudbees-common::cd-plugins/ec-gerrit/teambuildcleanup/ec-gerrit-teambuildcleanup4.png[image]
-
-[[TeamBuildPrepare]]
-
+* *approve:* The step gets the changes from Gerrit and overlays them on top of local repostiory.
 
 === TeamBuildPrepare
 
@@ -318,30 +239,17 @@ List of the changes in the group. Any number of lines can be added. Enter the in
 
 ==== Output
 
-After the job runs, you can view the results on the Job Details page in ElectricFlow. Every job step was completed successfully.
-
-image::cloudbees-common::cd-plugins/ec-gerrit/teambuildprepare/ec-gerrit-teambuildprepare3.png[image]
+After the job runs, you can view the results on the Job Details page in {CD}. Every job step was completed successfully.
 
 In the *TeamBuildPrepare* step, click the Log button to see the diagnostic information. The output is similar to the following diagnostic report:
 
 * *allocate:* This step checks that the required parameters in the configuration are correct. It has no output if the job is successful. If an error occurs, it shows the error details.
-* *changes:* This step gets the list of changes to be processed and saves for rest of procedure:
+* *changes:* This step gets the list of changes to be processed and saves for rest of procedure.
+* *annotate:* The step gets the list of changes to be processed and saves for rest of procedure.
+* *clone:* If needed, the step clones the remote repository in Gerrit to a working directory and then gets the contents. The tree should now be synchronized with the head of the master.
+* *revert:* The step gets the tree in the clean state before overlaying files.
+* *apply:* The step gets the changes from Gerrit and overlays on top of local repository.
 
-image::cloudbees-common::cd-plugins/ec-gerrit/teambuildprepare/ec-gerrit-teambuildprepare4.png[image]
-* *annotate:* The step gets the list of changes to be processed and saves for rest of procedure:
-
-image::cloudbees-common::cd-plugins/ec-gerrit/teambuildprepare/ec-gerrit-teambuildprepare5.png[image]
-* *clone:* If needed, the step clones the remote repository in Gerrit to a working directory and then gets the contents. The tree should now be synchronized with the head of the master:
-
-image::cloudbees-common::cd-plugins/ec-gerrit/teambuildprepare/ec-gerrit-teambuildprepare6.png[image]
-* *revert:* The step gets the tree in the clean state before overlaying files:
-
-image::cloudbees-common::cd-plugins/ec-gerrit/teambuildprepare/ec-gerrit-teambuildprepare7.png[image]
-* *apply:* The step gets the changes from Gerrit and overlays on top of local repository:
-
-image::cloudbees-common::cd-plugins/ec-gerrit/teambuildprepare/ec-gerrit-teambuildprepare8.png[image]
-
-[[example]]
 == Examples and use cases
 
 This plugin has preconfigured example procedures that include the basic process to do the following:
@@ -373,38 +281,20 @@ This procedure runs a sample custom build using the helper methods. This procedu
 
 ==== Output
 
-After the job runs, you can view the results on the Job Details page in ElectricFlow. Every job step was completed successfully.
-
-image::cloudbees-common::cd-plugins/ec-gerrit/custombuildexample/ec-gerrit-custombuildexample3.png[image]
-
+After the job runs, you can view the results on the Job Details page in {CD}.
 In the *CustomBuildExample* step, click the Log button to see the diagnostic information. The output is similar to the following diagnostic report:
 
 *GetCodeFromGerrit:* This prepares the custom build using the CustomBuildPrepare procedure:
 
 * *allocate:* This step checks that the required parameters in the configuration are correct. It has no output if the job is successful. If an error occurs, it shows the error details.
-* *change:* It gets the list of changes to be processed and saves them for the rest of procedure. Because this procedure has no project parameter, the plugin searches for changes in all of the Gerrit projects. In this example, it searches in the ectest and ECGerritTest projects:
-
-image::cloudbees-common::cd-plugins/ec-gerrit/custombuildexample/ec-gerrit-custombuildexample4.png[image]
-* *clone:* This creates a clone of the remote repository:
-
-image::cloudbees-common::cd-plugins/ec-gerrit/custombuildexample/ec-gerrit-custombuildexample5.png[image]
-* *revert:* This gets the tree in a clean state before overlaying the files:
-
-image::cloudbees-common::cd-plugins/ec-gerrit/custombuildexample/ec-gerrit-custombuildexample6.png[image]
-* *apply:* This gets the changes from Gerrit and overlays them on top of local repostory:
-
-image::cloudbees-common::cd-plugins/ec-gerrit/custombuildexample/ec-gerrit-custombuildexample7.png[image]
-
-*DoWork:* This step runs the builds and tests:
-
-image::cloudbees-common::cd-plugins/ec-gerrit/custombuildexample/ec-gerrit-custombuildexample8.png[image]
-
-**GerritCleanup:**This step marks the changes as approved if the job is successful:
-
+* *change:* It gets the list of changes to be processed and saves them for the rest of procedure. Because this procedure has no project parameter, the plugin searches for changes in all of the Gerrit projects.
+* *clone:* This creates a clone of the remote repository.
+* *revert:* This gets the tree in a clean state before overlaying the files.
+* *apply:* This gets the changes from Gerrit and overlays them on top of local repostory.
+*DoWork:* This step runs the builds and tests.
+**GerritCleanup:**This step marks the changes as approved if the job is successful.
 * *allocate:* This step checks that the required parameters in the configuration are correct. It has no output if the job is successful. If an error occurs, it shows the error details.
-* *approve:* This gets the changes from Gerrit and overlays them on top of local repostory:
-
-image::cloudbees-common::cd-plugins/ec-gerrit/custombuildexample/ec-gerrit-custombuildexample9.png[image]
+* *approve:* This gets the changes from Gerrit and overlays them on top of local repostory.
 
 === DevBuildExample
 
@@ -430,37 +320,17 @@ The DevBuildExample procedure runs a sample developer build procedure.
 
 ==== Output
 
-After the job runs, you can view the results on the Job Details page in ElectricFlow. The procedure was completed successfully.
-
-image::cloudbees-common::cd-plugins/ec-gerrit/devbuildexample/ec-gerrit-devbuildexample3.png[image]
-
-In the *DevBuildExample* step, click the Log button to see the diagnostic information. The output is similar to the following diagnostic report:
+After the job runs, you can view the results on the Job Details page in {CD}. In the *DevBuildExample* step, click the *Log* button to see the diagnostic information. The output is similar to the following diagnostic report:
 
 *GetCodeFromGerrit:* This step of the example runs the DevBuildPrepare procedure to take the selected change in the parameters and download a copy to work with it:
-
 * *allocate:* This step checks that the required parameters in the configuration are correct. It has no output if the job is successful. If an error occurs, it shows the error details.
-* *annotate:* If this job was launched manually, annotate Gerrit so it knows about the job:
-
-image::cloudbees-common::cd-plugins/ec-gerrit/devbuildexample/ec-gerrit-devbuildexample4.png[image]
-* *clone:* This creates a clone of the remote repository:
-
-image::cloudbees-common::cd-plugins/ec-gerrit/devbuildexample/ec-gerrit-devbuildexample5.png[image]
-* *revert:* This gets the tree in the clean state before overlaying files:
-
-image::cloudbees-common::cd-plugins/ec-gerrit/devbuildexample/ec-gerrit-devbuildexample6.png[image]
-* *apply:* This gets the changes from Gerrit and overlays them on top of local repostory:
-
-image::cloudbees-common::cd-plugins/ec-gerrit/devbuildexample/ec-gerrit-devbuildexample7.png[image]
-
-*DoWork:* This step does the build and test procedures. In this example, the job only prints a message:
-
-image::cloudbees-common::cd-plugins/ec-gerrit/devbuildexample/ec-gerrit-devbuildexample8.png[image]
-
+* *annotate:* If this job was launched manually, annotate Gerrit so it knows about the job.
+* *clone:* This creates a clone of the remote repository.
+* *revert:* This gets the tree in the clean state before overlaying files.
+* *apply:* This gets the changes from Gerrit and overlays them on top of local repostory.
+*DoWork:* This step does the build and test procedures.
 **GerritCleanup:**This step cleans up the Gerrit environment, uploading the changes if the DoWork step is successfully completed or rejecting the change if the step fails:
-
-* *annotate:* This step approves or rejects the change and adds a comment to the change in Gerrit:
-
-image::cloudbees-common::cd-plugins/ec-gerrit/devbuildexample/ec-gerrit-devbuildexample9.png[image]
+* *annotate:* This step approves or rejects the change and adds a comment to the change in Gerrit.
 
 === TeamBuildExample
 
@@ -469,7 +339,7 @@ image::cloudbees-common::cd-plugins/ec-gerrit/devbuildexample/ec-gerrit-devbuild
 
 The TeamBuildExample run a sample team build.
 
-===== Input
+==== Input
 
 . Go to the TeamBuildExample procedure.
 . Enter the following parameters:
@@ -486,43 +356,22 @@ The TeamBuildExample run a sample team build.
 |Resource |The name of the resource to use.
 |===
 
-===== Output
+==== Output
 
-After the job runs, you can view the results on the Job Details page in ElectricFlow. The procedure was completed successfully.
-
-image::cloudbees-common::cd-plugins/ec-gerrit/teambuildexample/ec-gerrit-teambuildexample3.png[image]
-
-In the *TeamBuildExample* step, click the Log button to see the diagnostic information. The output is similar to the following diagnostic report:
+After the job runs, you can view the results on the *Job Details* page in {CD}. In the *TeamBuildExample* step, click the *Log* button to see the diagnostic information. The output is similar to the following diagnostic report:
 
 *GetCodeFromGerrit:* This runs a test of Gerrit changes:
 
 * *allocate:* This step checks that the required parameters in the configuration are correct. It has no output if the job is successful. If an error occurs, it shows the error details.
-* *change:* This gets the list of changes to be processed and saves them for the rest of procedure
-
-image::cloudbees-common::cd-plugins/ec-gerrit/teambuildexample/ec-gerrit-teambuildexample4.png[image]
-* *annotate:* This gets the list of changes to be processed and saves them for the rest of procedure:
-
-image::cloudbees-common::cd-plugins/ec-gerrit/teambuildexample/ec-gerrit-teambuildexample5.png[image]
-* *clone:* If needed, this clones the remote repository in Gerrit to a working directory and gets the contents. The tree should now be synchronized with the head of the master:
-
-image::cloudbees-common::cd-plugins/ec-gerrit/teambuildexample/ec-gerrit-teambuildexample6.png[image]
-* *revert:* This gets the tree in the clean state before overlaying files:
-
-image::cloudbees-common::cd-plugins/ec-gerrit/teambuildexample/ec-gerrit-teambuildexample7.png[image]
-* *apply:* This gets the changes from Gerrit and overlays them on top of local repostory:
-
-image::cloudbees-common::cd-plugins/ec-gerrit/teambuildexample/ec-gerrit-teambuildexample8.png[image]
-
-*DoWork:* This step does the build and test procedures. In this example, the job only prints a message:
-
-image::cloudbees-common::cd-plugins/ec-gerrit/teambuildexample/ec-gerrit-teambuildexample9.png[image]
-
-**GerritCleanup:**This step cleans up the Gerrit environment:
-
+* *change:* This gets the list of changes to be processed and saves them for the rest of procedure.
+* *annotate:* This gets the list of changes to be processed and saves them for the rest of procedure.
+* *clone:* If needed, this clones the remote repository in Gerrit to a working directory and gets the contents. The tree should now be synchronized with the head of the master.
+* *revert:* This gets the tree in the clean state before overlaying files.
+* *apply:* This gets the changes from Gerrit and overlays them on top of local repostory.
+*DoWork:* This step does the build and test procedures.
+* *GerritCleanup:**This step cleans up the Gerrit environment.
 * *allocate:* This step checks that the required parameters in the configuration are correct. It has no output if the job is successful. If an error occurs, it shows the error details.
-* *approve:* This gets the changes from Gerrit and overlays them on top of local repostory:
-
-image::cloudbees-common::cd-plugins/ec-gerrit/teambuildexample/ec-gerrit-teambuildexample10.png[image]
+* *approve:* This gets the changes from Gerrit and overlays them on top of local repostory.
 
 [[rns]]
 == Release notes
@@ -547,10 +396,10 @@ image::cloudbees-common::cd-plugins/ec-gerrit/teambuildexample/ec-gerrit-teambui
 === EC-Gerrit 2.1.0
 
 * Added support for Gerrit 2.8.5.
-* Updated the plugin logic to support the Gerrit review labels called _Code-Review_ and _Verified_. Starting with Gerrit 2.6, the Verified label is no longer installed by default. Follow the steps link:#gerrit-verified-label[here] to install the label that can be used with ElectricFlow.
+* Updated the plugin logic to support the Gerrit review labels called _Code-Review_ and _Verified_. Starting with Gerrit 2.6, the Verified label is no longer installed by default.
 * Updated the plugin logic to handle user names specified in build rule filters.
 * Allowed the _Repository Server_ configuration parameter to optionally accept the protocol it uses for data transfer as part of the parameter value. The _Repository Server_ value can now be set as _ssh://my_gerrit_server.my_domain.com_ if _my_gerrit_server.my_domain.com_ is using Secure Shell (SSH). To maintain backward-compatibility, if the value is specified without any protocol as _my_gerrit_server.my_domain.com_, _Git_ is assumed to be the protocol by default.
-* Deprecated the SetupGerritServer procedure. This procedure is no longer supported in Gerrit 2.6 and later. Follow the steps link:#gerrit-setup[here] to configure Gerrit to work with ElectricFlow.
+* Deprecated the SetupGerritServer procedure. This procedure is no longer supported in Gerrit 2.6 and later. Follow the steps link:#gerrit-setup[here] to configure Gerrit to work with {CD}.
 * Added a _revert_ step to the DevBuildCleanup and TeamBuildCleanup procedures to revert any uncommitted changes from the working directory as part of the cleanup.
 * Added postProcessors to track the progress of the plugin procedures.
 
